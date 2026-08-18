@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
@@ -9,12 +10,12 @@ export default {
       },
       colors: {
         wok: {
-          bg: '#0b0f17',
-          panel: '#111827',
-          accent: '#f97316',
-          chord: '#22d3ee',
-          text: '#e5e7eb',
-          muted: '#94a3b8',
+          bg: 'rgb(var(--wok-bg) / <alpha-value>)',
+          panel: 'rgb(var(--wok-panel) / <alpha-value>)',
+          accent: 'rgb(var(--wok-accent) / <alpha-value>)',
+          chord: 'rgb(var(--wok-chord) / <alpha-value>)',
+          text: 'rgb(var(--wok-text) / <alpha-value>)',
+          muted: 'rgb(var(--wok-muted) / <alpha-value>)',
         },
       },
     },

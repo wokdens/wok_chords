@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdminApp from '../../components/AdminApp.tsx';
+import {
+  DEFAULT_PASSWORD,
+  getPassword,
+  validateSession,
+} from '../../lib/admin-auth';
+
+const isAuthed = validateSession(Astro.request.headers.get('cookie'));
+const usingDefault = getPassword() === DEFAULT_PASSWORD;
+---
+<BaseLayout title="Admin" description="WokChords admin" hideSearch={false}>
+  <section class="max-w-6xl mx-auto px-3 md:px-5 py-6 md:py-10">
+    <div class="mb-4 md:mb-6">
+      <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">
+        WokChords · Admin
+      </h1>
+      <p class="text-wok-muted mt-1 text-sm">
+        {isAuthed ? 'Edit any song and save changes directly back to the source files.' : 'Login to access the song editor.'}
+        {usingDefault && isAuthed && (
+          <span class="ml-2 inline-flex items-center gap-1 rounded-md bg-amber-500/15 text-amber-700 dark:text-amber-300 px-2 py-0.5 text-[11px] font-semibold">
+            ⚠ Using default password — set <code class="font-mono">ADMIN_PASSWORD</code> env var.
+          </span>
+        )}
+      </p>
+    </div>
+    <AdminApp client:load initialAuthed={isAuthed} usingDefault={usingDefault} />
+  </section>
+</BaseLayout>

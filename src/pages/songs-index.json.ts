@@ -1,3 +1,5 @@
+export const prerender = true;
+
 import { extractLyricsSnippet } from '../lib/chordEngine';
 
 interface IndexedSong {

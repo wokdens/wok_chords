@@ -3,12 +3,71 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --wok-bg: 255 253 249;
+    --wok-panel: 255 250 240;
+    --wok-accent: 234 88 12;
+    --wok-chord: 8 145 178;
+    --wok-text: 15 23 42;
+    --wok-muted: 71 85 105;
+  }
+  .dark {
+    --wok-bg: 11 15 23;
+    --wok-panel: 17 24 39;
+    --wok-accent: 249 115 22;
+    --wok-chord: 34 211 238;
+    --wok-text: 229 231 235;
+    --wok-muted: 148 163 184;
+  }
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
   body {
     @apply bg-wok-bg text-wok-text antialiased;
     font-feature-settings: 'cv11', 'ss01';
+  }
+  ::selection {
+    @apply bg-wok-accent/25 text-wok-text;
+  }
+  #chord-sheet {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@layer components {
+  input[type="range"].wok-range {
+    @apply appearance-none bg-transparent h-8 cursor-pointer;
+  }
+  input[type="range"].wok-range::-webkit-slider-runnable-track {
+    height: 6px;
+    background: rgb(var(--wok-muted) / 0.2);
+    border-radius: 9999px;
+  }
+  input[type="range"].wok-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 18px;
+    width: 18px;
+    margin-top: -6px;
+    border-radius: 9999px;
+    background: rgb(var(--wok-accent));
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
+    border: 2px solid rgb(var(--wok-bg));
+  }
+  input[type="range"].wok-range::-moz-range-track {
+    height: 6px;
+    background: rgb(var(--wok-muted) / 0.2);
+    border-radius: 9999px;
+  }
+  input[type="range"].wok-range::-moz-range-thumb {
+    height: 18px;
+    width: 18px;
+    border-radius: 9999px;
+    background: rgb(var(--wok-accent));
+    border: 2px solid rgb(var(--wok-bg));
   }
 }
 
@@ -30,5 +89,14 @@
   }
   .chord-block .lyric {
     @apply lyric-line whitespace-pre;
+  }
+}
+
+@layer utilities {
+  .input-surface {
+    @apply border-black/10 bg-white/70 text-wok-text placeholder:text-wok-muted/70 focus:border-wok-accent/50 focus:ring-wok-accent/20;
+  }
+  .dark .input-surface {
+    @apply border-white/10 bg-black/30 text-wok-text placeholder:text-wok-muted/80 focus:border-wok-accent/50 focus:ring-wok-accent/20;
   }
 }

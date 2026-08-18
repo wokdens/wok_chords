@@ -175,6 +175,7 @@ export default function InteractiveControls({
 
   const rafRef = useRef<number | null>(null);
   const lastTsRef = useRef<number>(0);
+  const scrollFracRef = useRef<number>(0);
   const wakeLockRef = useRef<any>(null);
   const scrollTargetRef = useRef<HTMLElement | null>(null);
   const mountRef = useRef<HTMLElement | null>(null);
@@ -217,6 +218,7 @@ export default function InteractiveControls({
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
       }
+      scrollFracRef.current = 0;
       return;
     }
 
@@ -229,13 +231,23 @@ export default function InteractiveControls({
       const delta = (pxPerSec * dt) / 1000;
       const target = scrollTargetRef.current;
       if (target) {
-        target.scrollTop += delta;
+        scrollFracRef.current += delta;
+        const apply = Math.floor(scrollFracRef.current);
+        if (apply > 0) {
+          scrollFracRef.current -= apply;
+          target.scrollTop += apply;
+        }
         if (target.scrollTop + target.clientHeight >= target.scrollHeight - 4) {
           setScrollActive(false);
           return;
         }
       } else if (typeof window !== 'undefined') {
-        window.scrollBy(0, delta);
+        scrollFracRef.current += delta;
+        const apply = Math.floor(scrollFracRef.current);
+        if (apply > 0) {
+          scrollFracRef.current -= apply;
+          window.scrollBy(0, apply);
+        }
         const atBottom =
           window.innerHeight + window.scrollY >=
           document.documentElement.scrollHeight - 4;
@@ -303,7 +315,7 @@ export default function InteractiveControls({
   const handleReset = () => setTranspose(0);
 
   return (
-    <div className="sticky top-[44px] z-20 bg-wok-panel/90 backdrop-blur-md border border-white/5 rounded-2xl p-2.5 md:p-3 shadow-xl shadow-black/40">
+    <div className="sticky top-[44px] z-20 bg-wok-panel/90 backdrop-blur-md border border-black/5 dark:border-white/5 rounded-2xl p-2.5 md:p-3 shadow-xl shadow-black/40">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2.5 md:gap-3">
         <div className="flex items-center gap-1.5 md:gap-2">
           <span className="text-[11px] uppercase tracking-wider text-wok-muted font-semibold mr-0.5 md:mr-1">
@@ -313,11 +325,11 @@ export default function InteractiveControls({
             type="button"
             onClick={handleTransposeDown}
             aria-label="Transpose key down one semitone"
-            className="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-white/5 hover:bg-wok-accent/20 hover:text-wok-accent border border-white/5 transition"
+            className="w-10 md:w-8 h-10 md:h-8 inline-flex items-center justify-center rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent/20 hover:text-wok-accent border border-black/5 dark:border-white/5 transition"
           >
             <Minus size={15} />
           </button>
-          <div className="px-3 h-8 rounded-lg bg-black/40 border border-white/5 flex items-center gap-1.5 min-w-[76px] justify-center">
+          <div className="px-3 h-8 rounded-lg bg-black/10 dark:bg-black/40 border border-black/5 dark:border-white/5 flex items-center gap-1.5 min-w-[76px] justify-center">
             <span className="font-mono font-bold text-wok-chord text-sm">
               {transpose === 0 ? (displayKey ?? '—') : (displayKey ?? `${transpose >= 0 ? '+' : ''}${transpose}`)}
             </span>
@@ -331,7 +343,7 @@ export default function InteractiveControls({
             type="button"
             onClick={handleTransposeUp}
             aria-label="Transpose key up one semitone"
-            className="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-white/5 hover:bg-wok-accent/20 hover:text-wok-accent border border-white/5 transition"
+            className="w-10 md:w-8 h-10 md:h-8 inline-flex items-center justify-center rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent/20 hover:text-wok-accent border border-black/5 dark:border-white/5 transition"
           >
             <Plus size={15} />
           </button>
@@ -340,7 +352,7 @@ export default function InteractiveControls({
             onClick={handleReset}
             disabled={transpose === 0}
             title="Reset key to original"
-            className="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-white/5 hover:bg-wok-accent/20 hover:text-wok-accent border border-white/5 transition disabled:opacity-40 disabled:hover:bg-white/5 disabled:hover:text-inherit"
+            className="w-10 md:w-8 h-10 md:h-8 inline-flex items-center justify-center rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent/20 hover:text-wok-accent border border-black/5 dark:border-white/5 transition disabled:opacity-40 disabled:hover:bg-black/5 dark:disabled:hover:bg-white/5 disabled:hover:text-inherit"
           >
             <RotateCcw size={15} />
           </button>
@@ -351,17 +363,17 @@ export default function InteractiveControls({
             type="button"
             onClick={() => setScrollActive((v) => !v)}
             aria-pressed={scrollActive}
-            className={`h-8 px-2.5 inline-flex items-center gap-1.5 rounded-lg border transition ${
+            className={`h-10 md:h-8 px-2.5 md:px-2.5 inline-flex items-center gap-1.5 rounded-lg border transition ${
               scrollActive
                 ? 'bg-wok-accent text-black border-wok-accent shadow-[0_0_20px_-4px_rgba(249,115,22,0.6)]'
-                : 'bg-white/5 hover:bg-white/10 border-white/5'
+                : 'bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border-black/5 dark:border-white/5'
             }`}
           >
             {scrollActive ? <Pause size={15} /> : <Play size={15} />}
             <span className="text-xs md:text-sm font-medium">{scrollActive ? 'Pause' : 'Auto Scroll'}</span>
           </button>
 
-          <div className="flex items-center gap-1.5 h-8 px-2.5 rounded-lg bg-white/5 border border-white/5">
+          <div className="flex items-center gap-1.5 h-10 md:h-8 px-2.5 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
             <Gauge size={13} className="text-wok-muted" aria-hidden />
             <label className="text-xs sr-only" htmlFor="scroll-speed-range">
               Scroll speed
@@ -374,7 +386,7 @@ export default function InteractiveControls({
               step={0.1}
               value={scrollSpeed}
               onChange={(e) => setScrollSpeed(Number(e.target.value))}
-              className="w-24 md:w-32 accent-wok-accent"
+              className="w-24 md:w-32 accent-wok-accent wok-range"
             />
             <span className="text-[11px] font-mono text-wok-muted w-7 text-right">{scrollSpeed.toFixed(1)}x</span>
           </div>
@@ -393,10 +405,10 @@ export default function InteractiveControls({
                 ? 'Release wake lock (allow screen to dim)'
                 : 'Keep screen on'
             }
-            className={`h-8 px-2.5 inline-flex items-center gap-1.5 rounded-lg border transition disabled:opacity-40 disabled:cursor-not-allowed ${
+            className={`h-10 md:h-8 px-2.5 md:px-2.5 inline-flex items-center gap-1.5 rounded-lg border transition disabled:opacity-40 disabled:cursor-not-allowed ${
               wakeLockActive
                 ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-                : 'bg-white/5 hover:bg-white/10 border-white/5'
+                : 'bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border-black/5 dark:border-white/5'
             }`}
           >
             {wakeLockActive ? <BatteryFull size={15} /> : <Battery size={15} />}

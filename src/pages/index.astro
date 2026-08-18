@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import AlphabetNav from '../components/AlphabetNav.tsx';
 import { parseAndTranspose } from '../lib/chordEngine';
 
 interface SongFile {
@@ -75,94 +76,107 @@ const enriched = songs.map((song) => {
     snippet: firstLines.slice(0, 120),
   };
 });
+
+enriched.sort((a, b) => {
+  const ta = (a.parsed.metadata.title ?? a.data.title ?? '').toLowerCase();
+  const tb = (b.parsed.metadata.title ?? b.data.title ?? '').toLowerCase();
+  return ta.localeCompare(tb);
+});
+
+const groups = enriched.reduce<Record<string, typeof enriched>>((acc, s) => {
+  const title = (s.parsed.metadata.title ?? s.data.title ?? '').trim();
+  const letter = title.charAt(0).toUpperCase() || '#';
+  (acc[letter] ||= []).push(s);
+  return acc;
+}, {});
+const letters = Object.keys(groups).sort();
 ---
 
-<BaseLayout title="Chords & Lyrics" description="WokChords — Browse, transpose, and play along with chords and lyrics. SEO-first static site powered by Astro.">
-  <section class="max-w-[90rem] mx-auto px-3 md:px-5 py-8 md:py-14">
-    <div class="max-w-3xl mb-10 md:mb-14">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-wok-accent/15 text-wok-accent border border-wok-accent/30 text-xs font-semibold tracking-wider uppercase mb-5">
-        <span aria-hidden="true">🎵</span>
-        Chords & Lyrics Library
+<BaseLayout title="Chords & Lyrics" description="WokChords — Browse, transpose, and play along with chords and lyrics.">
+  <section class="max-w-[90rem] mx-auto px-3 md:px-5 pt-5 md:pt-7 pb-4 md:pb-6">
+    <div class="flex items-end justify-between gap-4">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">All Songs</h1>
+        <p class="mt-1 text-xs md:text-sm text-wok-muted">{enriched.length} chord sheets · click a letter on the left to jump</p>
       </div>
-      <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.05] mb-5">
-        Play along with <span class="text-wok-accent">perfect</span> chords.
-      </h1>
-      <p class="text-base md:text-xl text-wok-muted leading-relaxed">
-        WokChords serves blazing-fast, SEO-optimized chord and lyric pages.
-        Transpose on the fly, let the sheet auto-scroll while you play, and keep your device screen on — all without a backend.
-      </p>
+      <div class="hidden sm:block text-right text-[11px] md:text-xs text-wok-muted">
+        Tip: press <kbd class="font-mono px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">/</kbd> to search
+      </div>
     </div>
+  </section>
 
-    <div class="grid gap-4 md:gap-5 md:grid-cols-2">
-      {enriched.map(({ slug, data, parsed, snippet }) => (
-        <a
-          href={`/song/${slug}/`}
-          class="group block rounded-2xl border border-white/5 bg-wok-panel/40 hover:bg-wok-panel/70 transition-colors p-5 md:p-6 shadow-lg shadow-black/20 hover:border-wok-accent/30 hover:-translate-y-0.5 duration-150"
-        >
-          <div class="flex items-start justify-between gap-4 mb-3">
-            <div>
-              <h2 class="text-xl md:text-2xl font-bold tracking-tight group-hover:text-wok-accent transition-colors">
-                {parsed.metadata.title}
-              </h2>
-              <p class="text-wok-muted mt-1 inline-flex items-center gap-1.5 text-sm md:text-base">
-                <span aria-hidden="true" class="shrink-0">🧑‍🎤</span>
-                <span>{parsed.metadata.artist}</span>
-              </p>
-            </div>
-            {parsed.metadata.key && (
-              <span class="shrink-0 inline-flex items-center px-2.5 py-1 rounded-lg bg-wok-chord/10 text-wok-chord border border-wok-chord/30 text-xs font-mono font-bold">
-                {parsed.metadata.key}
-              </span>
-            )}
-          </div>
-
-          {snippet && (
-            <p class="text-sm md:text-sm text-wok-muted/90 italic leading-relaxed line-clamp-2 mb-4 pl-3 border-l-2 border-white/10">
-              “{snippet}
-              {snippet.length >= 120 ? '…' : ''}”
-            </p>
-          )}
-
-          <div class="flex flex-wrap items-center gap-2 text-xs">
-            {(data.tags ?? []).slice(0, 4).map((tag: string) => (
-              <span
-                key={tag}
-                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-wok-muted font-medium capitalize"
-              >
-                <span aria-hidden="true">#</span>
-                {tag}
-              </span>
-            ))}
-            <span class="ml-auto text-wok-muted/80 group-hover:text-wok-accent text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-1">
-              View chords
-              <span class="transition-transform group-hover:translate-x-0.5">→</span>
-            </span>
-          </div>
-        </a>
-      ))}
-
-      {enriched.length === 0 && (
-        <div class="col-span-full text-center py-20 border border-dashed border-white/10 rounded-2xl">
-          <p class="text-wok-muted">No songs yet. Drop a <code class="font-mono text-wok-chord">.chopro</code> file in <code class="font-mono text-wok-chord">src/content/songs/</code>.</p>
+  <section class="max-w-[90rem] mx-auto px-3 md:px-5 pb-12 md:pb-20">
+    <div class="grid grid-cols-1 md:grid-cols-[minmax(0,auto)_minmax(0,1fr)] gap-4 md:gap-8">
+      <aside class="md:sticky md:top-[56px] md:self-start md:h-fit order-2 md:order-1">
+        <div class="flex md:flex-col items-start gap-1.5">
+          <AlphabetNav client:idle letters={letters} />
         </div>
-      )}
-    </div>
+      </aside>
 
-    <div class="mt-16 md:mt-24 grid gap-6 md:grid-cols-3">
-      <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/5">
-        <div class="text-2xl mb-2">🎹</div>
-        <h3 class="font-semibold mb-1">Instant Transpose</h3>
-        <p class="text-sm text-wok-muted">Shift the key ±12 semitones in a single click.</p>
-      </div>
-      <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/5">
-        <div class="text-2xl mb-2">📜</div>
-        <h3 class="font-semibold mb-1">Smooth Auto-Scroll</h3>
-        <p class="text-sm text-wok-muted">Play along without touching your device. Adjustable speed via <span class="font-mono text-wok-accent">requestAnimationFrame</span>.</p>
-      </div>
-      <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/5">
-        <div class="text-2xl mb-2">🔋</div>
-        <h3 class="font-semibold mb-1">Wake Lock</h3>
-        <p class="text-sm text-wok-muted">Keep the screen alive during practice via the Screen Wake Lock API.</p>
+      <div class="min-w-0 order-1 md:order-2">
+        {enriched.length === 0 ? (
+          <div class="col-span-full text-center py-20 border border-dashed border-black/10 dark:border-white/10 rounded-2xl">
+            <p class="text-wok-muted">No songs yet.</p>
+          </div>
+        ) : (
+          letters.map((letter) => (
+            <section id={`letter-${letter}`} class="scroll-mt-20 mb-10 md:mb-12 last:mb-0">
+              <div class="flex items-center gap-2 mb-4 md:mb-5">
+                <span class="inline-flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-lg bg-wok-accent text-white font-black text-base md:text-lg shrink-0">
+                  {letter}
+                </span>
+                <span class="text-wok-muted text-xs md:text-sm font-medium">{groups[letter].length} song{groups[letter].length === 1 ? '' : 's'}</span>
+                <div class="flex-1 h-px bg-black/10 dark:bg-white/10"></div>
+              </div>
+
+              <div class="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                {groups[letter].map(({ slug, data, parsed, snippet }) => (
+                  <a
+                    href={`/song/${slug}/`}
+                    class="group block rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/40 hover:bg-wok-panel/70 transition-colors p-3.5 md:p-4.5 shadow-lg shadow-black/20 hover:border-wok-accent/30 hover:-translate-y-0.5 duration-150"
+                  >
+                    <div class="flex items-start justify-between gap-2.5 mb-2">
+                      <div class="min-w-0">
+                        <h3 class="text-base md:text-lg font-bold tracking-tight group-hover:text-wok-accent transition-colors truncate">
+                          {parsed.metadata.title}
+                        </h3>
+                        <p class="text-wok-muted mt-0.5 text-xs md:text-sm truncate max-w-full">
+                          {parsed.metadata.artist}
+                        </p>
+                      </div>
+                      {parsed.metadata.key && (
+                        <span class="shrink-0 inline-flex items-center px-2 py-0.5 rounded-md bg-wok-chord/10 text-wok-chord border border-wok-chord/30 text-[11px] font-mono font-bold">
+                          {parsed.metadata.key}
+                        </span>
+                      )}
+                    </div>
+
+                    {snippet && (
+                      <p class="text-xs text-wok-muted/90 italic leading-relaxed line-clamp-2 mb-2.5 pl-2 border-l-2 border-black/10 dark:border-white/10">
+                        “{snippet}{snippet.length >= 120 ? '…' : ''}”
+                      </p>
+                    )}
+
+                    <div class="flex flex-wrap items-center gap-1.5 text-[11px]">
+                      {(data.tags ?? []).slice(0, 3).map((tag: string) => (
+                        <span
+                          key={tag}
+                          class="inline-flex items-center px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-wok-muted font-medium capitalize"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                      <span class="ml-auto text-wok-muted/80 group-hover:text-wok-accent font-semibold text-[11px] inline-flex items-center gap-1 shrink-0">
+                        Open
+                        <span class="transition-transform group-hover:translate-x-0.5">→</span>
+                      </span>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </section>
+          ))
+        )}
       </div>
     </div>
   </section>

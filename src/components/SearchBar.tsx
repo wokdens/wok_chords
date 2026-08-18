@@ -171,7 +171,7 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
           placeholder="Search songs, artists, tags… (press /)"
-          className="w-full rounded-xl border border-white/10 bg-black/30 py-1.5 pl-8 pr-8 text-sm text-wok-text placeholder:text-wok-muted/80 outline-none transition focus:border-wok-accent/50 focus:ring-2 focus:ring-wok-accent/20"
+          className="w-full rounded-xl border py-1.5 pl-8 pr-8 text-sm outline-none transition focus:ring-2 input-surface"
           aria-label="Search songs"
           aria-expanded={showDropdown}
           role="combobox"
@@ -187,7 +187,7 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
               setFocusedIdx(-1);
               inputRef.current?.focus();
             }}
-            className="absolute right-1.5 inline-flex h-6 w-6 items-center justify-center rounded-md text-wok-muted hover:bg-white/10 hover:text-wok-text"
+            className="absolute right-1.5 inline-flex h-7 w-7 md:h-6 md:w-6 items-center justify-center rounded-md text-wok-muted hover:bg-black/5 dark:hover:bg-white/10 hover:text-wok-text"
             aria-label="Clear search"
           >
             <X size={13} />
@@ -199,7 +199,7 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
         <ul
           id="search-results"
           role="listbox"
-          className="absolute left-0 right-0 z-40 mt-1.5 max-h-[60vh] overflow-auto rounded-xl border border-white/10 bg-wok-panel/95 p-1 shadow-2xl shadow-black/60 backdrop-blur"
+          className="absolute left-0 right-0 z-40 mt-1.5 max-h-[60vh] overflow-auto rounded-xl border border-black/10 dark:border-white/10 bg-wok-panel/95 p-1 shadow-2xl shadow-black/40 backdrop-blur"
         >
           {results.map((r, i) => (
             <li key={r.slug} role="option" id={`search-result-${i}`} aria-selected={i === focusedIdx}>
@@ -207,7 +207,7 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
                 href={`/song/${r.slug}/`}
                 onMouseEnter={() => setFocusedIdx(i)}
                 className={`block rounded-lg px-3 py-2 transition ${
-                  i === focusedIdx ? 'bg-wok-accent/15 text-wok-text' : 'hover:bg-white/5'
+                  i === focusedIdx ? 'bg-wok-accent/15 text-wok-text' : 'hover:bg-black/5 dark:hover:bg-white/5'
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -225,7 +225,7 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
                       {r.tags?.slice(0, 2).map((t) => (
                         <span
                           key={t}
-                          className="rounded bg-white/5 px-1.5 py-0.5 capitalize"
+                          className="rounded bg-black/5 dark:bg-white/5 px-1.5 py-0.5 capitalize"
                         >
                           #{t}
                         </span>
