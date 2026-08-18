@@ -113,26 +113,28 @@ function renderChordHtml(rawText: string, semitones: number): RenderedResult {
 
 function applyStyling(scope: HTMLElement) {
   scope.querySelectorAll<HTMLElement>('.chord').forEach((el) => {
-    el.classList.add('font-mono', 'text-wok-chord', 'font-bold', 'text-sm', 'md:text-base', 'leading-tight', 'tracking-wide', 'select-none');
+    el.classList.add('font-mono', 'text-wok-chord', 'font-bold', 'text-sm', 'md:text-base', 'tracking-wide', 'select-none');
+    el.style.lineHeight = '1.2';
   });
 
   scope.querySelectorAll<HTMLElement>('.lyrics, .lyric').forEach((el) => {
-    el.classList.add('font-sans', 'text-wok-text', 'text-base', 'md:text-lg', 'leading-relaxed', 'whitespace-pre-wrap');
+    el.classList.add('font-sans', 'text-wok-text', 'text-base', 'md:text-lg', 'whitespace-pre-wrap');
+    el.style.lineHeight = '1.5';
   });
 
   scope.querySelectorAll<HTMLElement>('.comment, .label').forEach((el) => {
     const text = el.textContent?.trim() ?? '';
     if (text) {
-      el.classList.add('uppercase', 'text-xs', 'md:text-sm', 'font-semibold', 'text-wok-muted', 'tracking-widest', 'mt-6', 'mb-2', 'border-l-2', 'border-wok-accent', 'pl-3');
+      el.classList.add('uppercase', 'text-xs', 'md:text-sm', 'font-semibold', 'text-wok-muted', 'tracking-widest', 'mt-4', 'mb-1.5', 'border-l-2', 'border-wok-accent', 'pl-2.5');
     }
   });
 
   scope.querySelectorAll<HTMLElement>('.row').forEach((row) => {
-    row.classList.add('mb-2');
+    row.classList.add('mb-1.5');
     row.style.display = 'flex';
     row.style.flexWrap = 'wrap';
     row.style.alignItems = 'flex-end';
-    row.style.rowGap = '0.75rem';
+    row.style.rowGap = '0.5rem';
   });
 
   scope.querySelectorAll<HTMLElement>('.column').forEach((col) => {
@@ -146,7 +148,7 @@ function applyStyling(scope: HTMLElement) {
   });
 
   scope.querySelectorAll<HTMLElement>('.verse, .chorus, .bridge, .tab, .indeterminate').forEach((sec) => {
-    sec.classList.add('mb-6', 'md:mb-8');
+    sec.classList.add('mb-4', 'md:mb-5');
   });
 }
 
@@ -223,7 +225,7 @@ export default function InteractiveControls({
       const last = lastTsRef.current || ts;
       const dt = ts - last;
       lastTsRef.current = ts;
-      const pxPerSec = 8 + scrollSpeed * 22;
+      const pxPerSec = scrollSpeed * 30;
       const delta = (pxPerSec * dt) / 1000;
       const target = scrollTargetRef.current;
       if (target) {
@@ -301,21 +303,21 @@ export default function InteractiveControls({
   const handleReset = () => setTranspose(0);
 
   return (
-    <div className="sticky top-[57px] z-20 bg-wok-panel/90 backdrop-blur-md border border-white/5 rounded-2xl p-3 md:p-4 shadow-xl shadow-black/40">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="text-xs uppercase tracking-wider text-wok-muted font-semibold mr-1">
+    <div className="sticky top-[44px] z-20 bg-wok-panel/90 backdrop-blur-md border border-white/5 rounded-2xl p-2.5 md:p-3 shadow-xl shadow-black/40">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2.5 md:gap-3">
+        <div className="flex items-center gap-1.5 md:gap-2">
+          <span className="text-[11px] uppercase tracking-wider text-wok-muted font-semibold mr-0.5 md:mr-1">
             Key
           </span>
           <button
             type="button"
             onClick={handleTransposeDown}
             aria-label="Transpose key down one semitone"
-            className="w-9 h-9 inline-flex items-center justify-center rounded-lg bg-white/5 hover:bg-wok-accent/20 hover:text-wok-accent border border-white/5 transition"
+            className="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-white/5 hover:bg-wok-accent/20 hover:text-wok-accent border border-white/5 transition"
           >
-            <Minus size={16} />
+            <Minus size={15} />
           </button>
-          <div className="px-4 h-9 rounded-lg bg-black/40 border border-white/5 flex items-center gap-2 min-w-[88px] justify-center">
+          <div className="px-3 h-8 rounded-lg bg-black/40 border border-white/5 flex items-center gap-1.5 min-w-[76px] justify-center">
             <span className="font-mono font-bold text-wok-chord text-sm">
               {transpose === 0 ? (displayKey ?? '—') : (displayKey ?? `${transpose >= 0 ? '+' : ''}${transpose}`)}
             </span>
@@ -329,52 +331,52 @@ export default function InteractiveControls({
             type="button"
             onClick={handleTransposeUp}
             aria-label="Transpose key up one semitone"
-            className="w-9 h-9 inline-flex items-center justify-center rounded-lg bg-white/5 hover:bg-wok-accent/20 hover:text-wok-accent border border-white/5 transition"
+            className="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-white/5 hover:bg-wok-accent/20 hover:text-wok-accent border border-white/5 transition"
           >
-            <Plus size={16} />
+            <Plus size={15} />
           </button>
           <button
             type="button"
             onClick={handleReset}
             disabled={transpose === 0}
             title="Reset key to original"
-            className="w-9 h-9 inline-flex items-center justify-center rounded-lg bg-white/5 hover:bg-wok-accent/20 hover:text-wok-accent border border-white/5 transition disabled:opacity-40 disabled:hover:bg-white/5 disabled:hover:text-inherit"
+            className="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-white/5 hover:bg-wok-accent/20 hover:text-wok-accent border border-white/5 transition disabled:opacity-40 disabled:hover:bg-white/5 disabled:hover:text-inherit"
           >
-            <RotateCcw size={16} />
+            <RotateCcw size={15} />
           </button>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 md:gap-2">
           <button
             type="button"
             onClick={() => setScrollActive((v) => !v)}
             aria-pressed={scrollActive}
-            className={`h-9 px-3 inline-flex items-center gap-2 rounded-lg border transition ${
+            className={`h-8 px-2.5 inline-flex items-center gap-1.5 rounded-lg border transition ${
               scrollActive
                 ? 'bg-wok-accent text-black border-wok-accent shadow-[0_0_20px_-4px_rgba(249,115,22,0.6)]'
                 : 'bg-white/5 hover:bg-white/10 border-white/5'
             }`}
           >
-            {scrollActive ? <Pause size={16} /> : <Play size={16} />}
-            <span className="text-sm font-medium">{scrollActive ? 'Pause Scroll' : 'Auto Scroll'}</span>
+            {scrollActive ? <Pause size={15} /> : <Play size={15} />}
+            <span className="text-xs md:text-sm font-medium">{scrollActive ? 'Pause' : 'Auto Scroll'}</span>
           </button>
 
-          <div className="flex items-center gap-2 h-9 px-3 rounded-lg bg-white/5 border border-white/5">
-            <Gauge size={14} className="text-wok-muted" aria-hidden />
+          <div className="flex items-center gap-1.5 h-8 px-2.5 rounded-lg bg-white/5 border border-white/5">
+            <Gauge size={13} className="text-wok-muted" aria-hidden />
             <label className="text-xs sr-only" htmlFor="scroll-speed-range">
               Scroll speed
             </label>
             <input
               id="scroll-speed-range"
               type="range"
-              min={0.2}
-              max={5}
+              min={0.5}
+              max={1.5}
               step={0.1}
               value={scrollSpeed}
               onChange={(e) => setScrollSpeed(Number(e.target.value))}
               className="w-24 md:w-32 accent-wok-accent"
             />
-            <span className="text-xs font-mono text-wok-muted w-7 text-right">{scrollSpeed.toFixed(1)}x</span>
+            <span className="text-[11px] font-mono text-wok-muted w-7 text-right">{scrollSpeed.toFixed(1)}x</span>
           </div>
         </div>
 
@@ -391,14 +393,14 @@ export default function InteractiveControls({
                 ? 'Release wake lock (allow screen to dim)'
                 : 'Keep screen on'
             }
-            className={`h-9 px-3 inline-flex items-center gap-2 rounded-lg border transition disabled:opacity-40 disabled:cursor-not-allowed ${
+            className={`h-8 px-2.5 inline-flex items-center gap-1.5 rounded-lg border transition disabled:opacity-40 disabled:cursor-not-allowed ${
               wakeLockActive
                 ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
                 : 'bg-white/5 hover:bg-white/10 border-white/5'
             }`}
           >
-            {wakeLockActive ? <BatteryFull size={16} /> : <Battery size={16} />}
-            <span className="text-sm font-medium">
+            {wakeLockActive ? <BatteryFull size={15} /> : <Battery size={15} />}
+            <span className="text-xs md:text-sm font-medium">
               {wakeLockActive ? 'Screen On' : 'Keep Screen On'}
             </span>
           </button>

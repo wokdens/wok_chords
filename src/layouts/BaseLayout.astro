@@ -32,20 +32,20 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
   </head>
   <body class="min-h-screen flex flex-col">
     <header class="sticky top-0 z-30 backdrop-blur-md bg-wok-bg/80 border-b border-white/5">
-      <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center gap-4">
-        <a href="/" class="flex items-center gap-2 group shrink-0">
-          <span class="text-2xl group-hover:rotate-6 transition-transform inline-block">🎸</span>
-          <span class="font-bold text-lg tracking-tight hidden sm:inline">
+      <div class="max-w-[90rem] mx-auto px-3 md:px-5 py-2 flex items-center gap-3 md:gap-4">
+        <a href="/" class="flex items-center gap-1.5 group shrink-0">
+          <span class="text-xl md:text-2xl group-hover:rotate-6 transition-transform inline-block">🎸</span>
+          <span class="font-bold text-base md:text-lg tracking-tight hidden sm:inline">
             Wok<span class="text-wok-accent">Chords</span>
           </span>
         </a>
         {!hideSearch && (
-          <div class="flex-1 flex justify-center min-w-0">
+          <div class="flex-1 flex justify-end min-w-0">
             <SearchBar client:load />
           </div>
         )}
         {hideSearch && <div class="flex-1" />}
-        <nav class="text-sm text-wok-muted hover:text-wok-text transition-colors shrink-0">
+        <nav class="text-xs md:text-sm text-wok-muted hover:text-wok-text transition-colors shrink-0">
           <a href="/" class="hover:text-wok-accent whitespace-nowrap">All Songs</a>
         </nav>
       </div>
@@ -55,8 +55,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
       <slot />
     </main>
 
-    <footer class="mt-16 border-t border-white/5 py-8">
-      <div class="max-w-7xl mx-auto px-4 md:px-6 text-center text-wok-muted text-sm">
+    <footer class="mt-12 md:mt-16 border-t border-white/5 py-6 md:py-8">
+      <div class="max-w-[90rem] mx-auto px-3 md:px-5 text-center text-wok-muted text-xs md:text-sm">
         <p>© {new Date().getFullYear()} WokChords · Built with Astro, React &amp; Tailwind</p>
       </div>
     </footer>

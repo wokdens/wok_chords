@@ -153,10 +153,10 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
   }
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-xl">
+    <div ref={containerRef} className="relative w-full max-w-lg">
       <div className="relative flex items-center">
         <Search
-          className="pointer-events-none absolute left-3 h-4 w-4 text-wok-muted"
+          className="pointer-events-none absolute left-2.5 h-4 w-4 text-wok-muted"
           aria-hidden="true"
         />
         <input
@@ -171,7 +171,7 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
           placeholder="Search songs, artists, tags… (press /)"
-          className="w-full rounded-xl border border-white/10 bg-black/30 py-2 pl-9 pr-9 text-sm text-wok-text placeholder:text-wok-muted/80 outline-none transition focus:border-wok-accent/50 focus:ring-2 focus:ring-wok-accent/20"
+          className="w-full rounded-xl border border-white/10 bg-black/30 py-1.5 pl-8 pr-8 text-sm text-wok-text placeholder:text-wok-muted/80 outline-none transition focus:border-wok-accent/50 focus:ring-2 focus:ring-wok-accent/20"
           aria-label="Search songs"
           aria-expanded={showDropdown}
           role="combobox"
@@ -187,10 +187,10 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
               setFocusedIdx(-1);
               inputRef.current?.focus();
             }}
-            className="absolute right-2 inline-flex h-7 w-7 items-center justify-center rounded-md text-wok-muted hover:bg-white/10 hover:text-wok-text"
+            className="absolute right-1.5 inline-flex h-6 w-6 items-center justify-center rounded-md text-wok-muted hover:bg-white/10 hover:text-wok-text"
             aria-label="Clear search"
           >
-            <X size={14} />
+            <X size={13} />
           </button>
         )}
       </div>
@@ -199,14 +199,14 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
         <ul
           id="search-results"
           role="listbox"
-          className="absolute left-0 right-0 z-40 mt-2 max-h-[60vh] overflow-auto rounded-xl border border-white/10 bg-wok-panel/95 p-1 shadow-2xl shadow-black/60 backdrop-blur"
+          className="absolute left-0 right-0 z-40 mt-1.5 max-h-[60vh] overflow-auto rounded-xl border border-white/10 bg-wok-panel/95 p-1 shadow-2xl shadow-black/60 backdrop-blur"
         >
           {results.map((r, i) => (
             <li key={r.slug} role="option" id={`search-result-${i}`} aria-selected={i === focusedIdx}>
               <a
                 href={`/song/${r.slug}/`}
                 onMouseEnter={() => setFocusedIdx(i)}
-                className={`block rounded-lg px-3 py-2.5 transition ${
+                className={`block rounded-lg px-3 py-2 transition ${
                   i === focusedIdx ? 'bg-wok-accent/15 text-wok-text' : 'hover:bg-white/5'
                 }`}
               >
