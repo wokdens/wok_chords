@@ -1,0 +1,50 @@
+---
+title: "Let It Be"
+artist: "The Beatles"
+key: "C"
+tempo: 76
+tags: ["classic", "pop", "piano"]
+draft: false
+---
+
+{title: Let It Be}
+{artist: The Beatles}
+{key: C}
+{tempo: 76}
+{time: 4/4}
+
+{c: Intro}
+[C] [G] [Am] [F]
+[C] [G] [F] [C]
+
+{c: Verse 1}
+When I [C]find myself in [G]times of [Am]trouble,
+[F]Mother Mary [C]comes to [G]me,
+[F]Speaking words of [C]wisdom, [G]let it [Am]be, [F]
+And in my [C]hour of dark[G]ness she is [Am]standing [F]right in front of [C]me,
+[G]Speaking words of [F]wisdom, let it [C]be.
+
+{c: Chorus}
+[Am]Let it [G]be, let it [F]be, let it [C]be, let it [G]be,
+[Am]Whisper words of [F]wisdom, let it [C]be [G] [C].
+
+{c: Verse 2}
+And when the [C]broken-hearted [G]people living [Am]in the world a[F]gree,
+There will [C]be an answer, [G]let it [F]be,
+For though they may [C]be parted, there is [G]still a chance that [Am]they will [F]see,
+There will [C]be an answer, [G]let it [F]be.
+
+{c: Chorus}
+[Am]Let it [G]be, let it [F]be, let it [C]be, let it [G]be,
+[Am]Whisper words of [F]wisdom, let it [C]be [G] [C].
+
+{c: Bridge}
+And when the [C]night is [G]cloudy, there is [Am]still a [F]light that shines on [C]me,
+[G]Shine on until to[F]morrow, let it [C]be,
+I wake up [C]to the sound of [G]music, Mother [Am]Mary comes to [F]me,
+[G]Speaking words of [F]wisdom, let it [C]be.
+
+{c: Outro}
+[C] [G] [Am] [F]
+Let it [C]be, let it [G]be, let it [F]be, yeah, let it [C]be,
+[G]There will be an [F]answer, let it [C]be.

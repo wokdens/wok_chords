@@ -1,0 +1,169 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { parseAndTranspose } from '../lib/chordEngine';
+
+interface SongFile {
+  slug: string;
+  rawBody: string;
+  data: {
+    title: string;
+    artist: string;
+    key?: string;
+    tempo?: number;
+    tags?: string[];
+    draft?: boolean;
+  };
+}
+
+const modules = import.meta.glob<string>('/src/content/songs/*.chopro', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+});
+
+function parseFrontmatter(raw: string): { data: any; body: string } {
+  const m = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+  if (!m) return { data: {}, body: raw };
+  const [, fm, body] = m;
+  const data: Record<string, any> = {};
+  for (const line of fm.split('\n')) {
+    const lm = line.match(/^(\w+):\s*(.*)$/);
+    if (!lm) continue;
+    const [, k, vRaw] = lm;
+    let v: any = vRaw.trim().replace(/^["']|["']$/g, '');
+    if (v.startsWith('[') && v.endsWith(']')) {
+      try {
+        v = JSON.parse(v);
+      } catch {
+        const items = v.slice(1, -1).split(',').map((s) => s.trim().replace(/^["']|["']$/g, ''));
+        v = items;
+      }
+    }
+    if (k === 'tempo') {
+      const n = Number(v);
+      if (!Number.isNaN(n)) v = n;
+    }
+    if (k === 'draft') {
+      v = v === 'true' || v === true;
+    }
+    data[k] = v;
+  }
+  return { data, body: raw };
+}
+
+const allSongs: SongFile[] = Object.entries(modules).map(([filePath, rawText]) => {
+  const slugMatch = filePath.match(/\/([^/]+)\.chopro$/);
+  const slug = slugMatch ? slugMatch[1] : filePath;
+  const { data } = parseFrontmatter(rawText);
+  return { slug, rawBody: rawText, data };
+});
+
+const songs = allSongs.filter((s) => !s.data.draft);
+
+const enriched = songs.map((song) => {
+  const parsed = parseAndTranspose(song.rawBody, 0);
+  const firstLines = parsed.text
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0 && !/^\[(verse|chorus|intro|outro|bridge|pre|interlude|solo|tag|break|ending)/i.test(l))
+    .slice(0, 2)
+    .join(' ');
+  return {
+    slug: song.slug,
+    data: song.data,
+    parsed,
+    snippet: firstLines.slice(0, 120),
+  };
+});
+---
+
+<BaseLayout title="Chords & Lyrics" description="WokChords — Browse, transpose, and play along with chords and lyrics. SEO-first static site powered by Astro.">
+  <section class="max-w-5xl mx-auto px-4 md:px-6 py-12 md:py-20">
+    <div class="max-w-3xl mb-10 md:mb-14">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-wok-accent/15 text-wok-accent border border-wok-accent/30 text-xs font-semibold tracking-wider uppercase mb-5">
+        <span aria-hidden="true">🎵</span>
+        Chords & Lyrics Library
+      </div>
+      <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.05] mb-5">
+        Play along with <span class="text-wok-accent">perfect</span> chords.
+      </h1>
+      <p class="text-base md:text-xl text-wok-muted leading-relaxed">
+        WokChords serves blazing-fast, SEO-optimized chord and lyric pages.
+        Transpose on the fly, let the sheet auto-scroll while you play, and keep your device screen on — all without a backend.
+      </p>
+    </div>
+
+    <div class="grid gap-4 md:gap-5 md:grid-cols-2">
+      {enriched.map(({ slug, data, parsed, snippet }) => (
+        <a
+          href={`/song/${slug}/`}
+          class="group block rounded-2xl border border-white/5 bg-wok-panel/40 hover:bg-wok-panel/70 transition-colors p-5 md:p-6 shadow-lg shadow-black/20 hover:border-wok-accent/30 hover:-translate-y-0.5 duration-150"
+        >
+          <div class="flex items-start justify-between gap-4 mb-3">
+            <div>
+              <h2 class="text-xl md:text-2xl font-bold tracking-tight group-hover:text-wok-accent transition-colors">
+                {parsed.metadata.title}
+              </h2>
+              <p class="text-wok-muted mt-1 inline-flex items-center gap-1.5 text-sm md:text-base">
+                <span aria-hidden="true" class="shrink-0">🧑‍🎤</span>
+                <span>{parsed.metadata.artist}</span>
+              </p>
+            </div>
+            {parsed.metadata.key && (
+              <span class="shrink-0 inline-flex items-center px-2.5 py-1 rounded-lg bg-wok-chord/10 text-wok-chord border border-wok-chord/30 text-xs font-mono font-bold">
+                {parsed.metadata.key}
+              </span>
+            )}
+          </div>
+
+          {snippet && (
+            <p class="text-sm md:text-sm text-wok-muted/90 italic leading-relaxed line-clamp-2 mb-4 pl-3 border-l-2 border-white/10">
+              “{snippet}
+              {snippet.length >= 120 ? '…' : ''}”
+            </p>
+          )}
+
+          <div class="flex flex-wrap items-center gap-2 text-xs">
+            {(data.tags ?? []).slice(0, 4).map((tag: string) => (
+              <span
+                key={tag}
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-wok-muted font-medium capitalize"
+              >
+                <span aria-hidden="true">#</span>
+                {tag}
+              </span>
+            ))}
+            <span class="ml-auto text-wok-muted/80 group-hover:text-wok-accent text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-1">
+              View chords
+              <span class="transition-transform group-hover:translate-x-0.5">→</span>
+            </span>
+          </div>
+        </a>
+      ))}
+
+      {enriched.length === 0 && (
+        <div class="col-span-full text-center py-20 border border-dashed border-white/10 rounded-2xl">
+          <p class="text-wok-muted">No songs yet. Drop a <code class="font-mono text-wok-chord">.chopro</code> file in <code class="font-mono text-wok-chord">src/content/songs/</code>.</p>
+        </div>
+      )}
+    </div>
+
+    <div class="mt-16 md:mt-24 grid gap-6 md:grid-cols-3">
+      <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/5">
+        <div class="text-2xl mb-2">🎹</div>
+        <h3 class="font-semibold mb-1">Instant Transpose</h3>
+        <p class="text-sm text-wok-muted">Shift the key ±12 semitones in a single click.</p>
+      </div>
+      <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/5">
+        <div class="text-2xl mb-2">📜</div>
+        <h3 class="font-semibold mb-1">Smooth Auto-Scroll</h3>
+        <p class="text-sm text-wok-muted">Play along without touching your device. Adjustable speed via <span class="font-mono text-wok-accent">requestAnimationFrame</span>.</p>
+      </div>
+      <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/5">
+        <div class="text-2xl mb-2">🔋</div>
+        <h3 class="font-semibold mb-1">Wake Lock</h3>
+        <p class="text-sm text-wok-muted">Keep the screen alive during practice via the Screen Wake Lock API.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

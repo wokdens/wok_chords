@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-wok-bg text-wok-text antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+}
+
+@layer components {
+  .chord-line {
+    @apply font-mono text-wok-chord font-bold text-sm md:text-base leading-tight tracking-wide select-none;
+  }
+  .lyric-line {
+    @apply font-sans text-wok-text text-base md:text-lg leading-relaxed;
+  }
+  .section-heading {
+    @apply uppercase text-xs md:text-sm font-semibold text-wok-muted tracking-widest mt-6 mb-2 border-l-2 border-wok-accent pl-3;
+  }
+  .chord-block {
+    @apply inline-flex flex-col leading-none align-bottom mr-2;
+  }
+  .chord-block .chord {
+    @apply chord-line mb-1;
+  }
+  .chord-block .lyric {
+    @apply lyric-line whitespace-pre;
+  }
+}
