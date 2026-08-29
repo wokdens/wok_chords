@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SearchBar from '../components/SearchBar.tsx';
+
+export const prerender = true;
+---
+
+<BaseLayout
+  title="Page Not Found (404)"
+  description="Sorry, the chord sheet or page you are looking for does not exist on WokChords. Search our 4,000+ chord catalog."
+>
+  <section class="max-w-3xl mx-auto px-4 py-16 sm:py-24 text-center">
+    <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-wok-accent/10 text-wok-accent font-black text-4xl mb-6 shadow-sm">
+      404
+    </div>
+
+    <h1 class="text-3xl sm:text-5xl font-black text-wok-text tracking-tight mb-3">
+      Chord Sheet Not Found
+    </h1>
+    <p class="text-sm sm:text-base text-wok-muted max-w-lg mx-auto mb-8 leading-relaxed">
+      The song or page you requested might have been moved or renamed. Search our library of 4,000+ songs below:
+    </p>
+
+    <!-- Center Search Bar -->
+    <div class="max-w-lg mx-auto mb-10 shadow-lg shadow-black/5 rounded-2xl">
+      <SearchBar client:load />
+    </div>
+
+    <!-- Quick Jump Recommendations -->
+    <div class="rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/40 p-6 sm:p-8">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-wok-muted mb-4">
+        Popular Destinations
+      </h2>
+      <div class="flex flex-wrap items-center justify-center gap-3 text-xs sm:text-sm font-semibold">
+        <a href="/" class="px-4 py-2 rounded-xl bg-wok-accent text-white hover:opacity-90 transition shadow-sm">
+          Home Page
+        </a>
+        <a href="/songs/" class="px-4 py-2 rounded-xl bg-black/5 dark:bg-white/5 text-wok-text hover:bg-wok-accent hover:text-white transition">
+          All 4,000+ Songs (A–Z)
+        </a>
+        <a href="/artists/" class="px-4 py-2 rounded-xl bg-black/5 dark:bg-white/5 text-wok-text hover:bg-wok-accent hover:text-white transition">
+          Artists Directory
+        </a>
+        <a href="/movies/" class="px-4 py-2 rounded-xl bg-black/5 dark:bg-white/5 text-wok-text hover:bg-wok-accent hover:text-white transition">
+          Soundtracks & Albums
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

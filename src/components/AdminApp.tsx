@@ -105,12 +105,7 @@ export default function AdminApp({ initialAuthed, usingDefault }: Props) {
           <ListMusic size={18} /> Admin login
         </h2>
         <p class="text-wok-muted text-sm mb-4">
-          Default password is{' '}
-          <code class="font-mono bg-black/5 dark:bg-white/5 rounded px-1 py-0.5">
-            wokchords123
-          </code>
-          . Set <code class="font-mono">ADMIN_PASSWORD</code> in a{' '}
-          <code class="font-mono">.env</code> file to customize.
+          Enter your administrative credentials to manage songs.
         </p>
         <form class="flex flex-col gap-3" onSubmit={handleLogin}>
           <label class="flex flex-col gap-1 text-sm">
@@ -353,7 +348,7 @@ function SongEditor(props: {
                 ? 'Loading…'
                 : dirty
                 ? 'Unsaved changes'
-                : 'Saved'}{usingDefault ? ' · ⚠ default password' : ''}
+                : 'Saved'}
             </div>
           </div>
         </div>

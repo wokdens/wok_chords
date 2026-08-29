@@ -1,0 +1,1841 @@
+{
+  "totalWokChords": 2913,
+  "competitorsAnalyzed": {
+    "tabAndChord": 2397,
+    "rewindTabs": 803,
+    "guitarChordWorld": 0,
+    "uniqueCompetitorSongs": 2615
+  },
+  "overlapCount": 1508,
+  "missingCount": 1107,
+  "highPriorityMissingCount": 53,
+  "highPriorityMissing": [
+    {
+      "title": "smells like teen spirit",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/08/smells-like-teen-spirit-chords/"
+    },
+    {
+      "title": "rehnuma",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2016/03/rehnuma-guitar-chords-rocky-handsome/"
+    },
+    {
+      "title": "bachpan",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2018/01/bachpan-guitar-chords-ayushmann-khurana/"
+    },
+    {
+      "title": "chala jata hoon",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/08/chala-jata-hoon-guitar-chords-kishore-kumar/"
+    },
+    {
+      "title": "abhi mujh mein kahin",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/abhi-mujh-mein-kahin-guitar-chords-agneepath/"
+    },
+    {
+      "title": "pani da rang",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/pani-da-rang-guitar-chords-most-accurate-evervicky-donor/"
+    },
+    {
+      "title": "sunn le zara",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2017/12/sunn-le-zara-piano-notes-1921/"
+    },
+    {
+      "title": "phir kya hai gham",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2018/03/phir-kya-hai-gham-chords-hichki/"
+    },
+    {
+      "title": "ek galti",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2018/05/ek-galti-piano-notes/"
+    },
+    {
+      "title": "aa jao na",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2018/05/aa-jao-na-lyrics-veere-di-wedding/"
+    },
+    {
+      "title": "de de jagah",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2018/05/de-de-jagah-guitar-chords-parmanu/"
+    },
+    {
+      "title": "sare karo dab",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2018/05/sare-karo-dab-lyrics-raftaar-sonu-kakkar/"
+    },
+    {
+      "title": "paniyon sa",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2018/08/paniyon-sa-chords-satyamev-jayate/"
+    },
+    {
+      "title": "chota sa fasana",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2018/08/chota-sa-fasana-chords-karwaan/"
+    },
+    {
+      "title": "dekhte dekhte",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2018/08/dekhte-dekhte-chords-batti-gul-meter-chalu/"
+    },
+    {
+      "title": "sweetheart",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2018/11/sweetheart-guitar-chords-kedarnath/"
+    },
+    {
+      "title": "qaafirana",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2018/11/qaafirana-guitar-chords-kedarnath/"
+    },
+    {
+      "title": "mamla dil da",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2018/12/mamla-dil-da-chords-tony-kakkar/"
+    },
+    {
+      "title": "jab se mera dil",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/01/jab-se-mera-dil-chords-armaan-malik/"
+    },
+    {
+      "title": "gum hoon",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/01/gum-hoon-chords-bhaagte-raho/"
+    },
+    {
+      "title": "ann bann",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/01/ann-bann-chords-zero/"
+    },
+    {
+      "title": "aankh marey",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/01/aankh-marey-piano-notes-simmba/"
+    },
+    {
+      "title": "phir mulaaqat",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/01/phir-mulaaqat-piano-notes-cheat-india/"
+    },
+    {
+      "title": "auliya",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/01/auliya-chords-hum-chaar/"
+    },
+    {
+      "title": "manmeet mere",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/01/manmeet-mere-chords-hum-chaar/"
+    },
+    {
+      "title": "sakhiyaan",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/01/sakhiyaan-piano-notes-maninder-buttar/"
+    },
+    {
+      "title": "anxiety",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/01/anxiety-chords-julia-michaels-ft-selena-gomez/"
+    },
+    {
+      "title": "ae mere des",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/01/ae-mere-des-chords-jubin-nautiyal/"
+    },
+    {
+      "title": "marham",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/02/marham-lyrics-sonu-nigam/"
+    },
+    {
+      "title": "mungda",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/02/mungda-lyrics-total-dhamaal/"
+    },
+    {
+      "title": "mujhse kaha naa gaya",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/02/mujhse-kaha-naa-gaya-chords-palash-sen/"
+    },
+    {
+      "title": "bas mein",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/03/bas-mein-chords-bhuvan-bam/"
+    },
+    {
+      "title": "shallow",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/03/shallow-chords-a-star-is-born/"
+    },
+    {
+      "title": "ghar more pardesiya",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/03/ghar-more-pardesiya-chords-kalank/"
+    },
+    {
+      "title": "fakeera ghar aaja",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/03/fakeera-ghar-aaja-chords-junglee/"
+    },
+    {
+      "title": "jee len de",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/03/jee-len-de-chords-raw/"
+    },
+    {
+      "title": "haaye oye",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/03/haaye-oye-chords-qaran-ft-ash-king/"
+    },
+    {
+      "title": "coffin dance",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2020/04/coffin-dance-guitar-tabs-astronomia-meme/"
+    },
+    {
+      "title": "humraah",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2020/04/humraah-chords-malang/"
+    },
+    {
+      "title": "jinke liye",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2020/04/jinke-liye-guitar-chords-neha-kakkar/"
+    },
+    {
+      "title": "sau galtiyan",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2020/02/sau-galtiyan-guitar-chords-shimla-mirch/"
+    },
+    {
+      "title": "nok jhok",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/12/nok-jhok-guitar-chords-chhapaak/"
+    },
+    {
+      "title": "itna pyaar karo",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/12/itna-pyaar-karo-guitar-chords-the-body/"
+    },
+    {
+      "title": "ja ja ja",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/12/ja-ja-ja-guitar-chords-gajendra-verma/"
+    },
+    {
+      "title": "valam",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/10/valam-guitar-chords-arijit-made-in-china/"
+    },
+    {
+      "title": "pehla pyaar",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/06/pehla-pyaar-guitar-chords-kabir-singh/"
+    },
+    {
+      "title": "intezari",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/06/intezari-guitar-chords-article-15/"
+    },
+    {
+      "title": "jugraafiya",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/06/jugraafiya-guitar-chords-super-30/"
+    },
+    {
+      "title": "sambhaal rakhiyaan",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/04/sambhaal-rakhiyaan-chords-music-teacher/"
+    },
+    {
+      "title": "tabaah ho gaye",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/04/tabaah-ho-gaye-chords-kalank/"
+    },
+    {
+      "title": "hawa banke",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2019/07/hawa-banke-piano-notes-darshan-raval/"
+    },
+    {
+      "title": "dil ko maine di kasam",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2020/08/dil-ko-maine-di-kasam-guitar-tabs-arijit-singh/"
+    },
+    {
+      "title": "bharat ki beti",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2020/08/bharat-ki-beti-guitar-tabs-gunjan-saxena/"
+    }
+  ],
+  "missingSample": [
+    {
+      "title": "jan gan man guitar tab",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2012/09/jan-gan-man-guitar-tab/"
+    },
+    {
+      "title": "lafzon mein keh na saku guitar tab abhijeet sawant",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2012/09/lafzon-mein-keh-na-saku-guitar-tab-abhijeet-sawant/"
+    },
+    {
+      "title": "raghupati raghav raja ram guitar tab",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2012/09/raghupati-raghav-raja-ram-guitar-tab/"
+    },
+    {
+      "title": "mann udhan varyache guitar tab aga bai arechya",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2012/09/mann-udhan-varyache-guitar-tab-aga-bai-arechya/"
+    },
+    {
+      "title": "bheege hote tere guitar tab murder",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2012/09/bheege-hote-tere-guitar-tab-murder/"
+    },
+    {
+      "title": "its magic guitar tab koi mil gaya",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2012/09/its-magic-guitar-tab-koi-mil-gaya/"
+    },
+    {
+      "title": "ishq shava guitar tab jab tak hai jaan",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2012/10/ishq-shava-guitar-tab-jab-tak-hai-jaan/"
+    },
+    {
+      "title": "pirates of the caribbean guitar tab",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2012/10/pirates-of-the-caribbean-guitar-tab/"
+    },
+    {
+      "title": "uska hi banaa guitar tab 1920",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2012/11/uska-hi-banaa-guitar-tab-1920/"
+    },
+    {
+      "title": "dekha hai teri ankhon ko guitar tab aryans",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2012/11/dekha-hai-teri-ankhon-ko-guitar-tab-aryans/"
+    },
+    {
+      "title": "doremon guitar tab",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2012/11/doremon-guitar-tab/"
+    },
+    {
+      "title": "how to make",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2012/12/how-to-make-chords/"
+    },
+    {
+      "title": "hookah bar guitar tab khiladi 786",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2012/12/hookah-bar-guitar-tab-khiladi-786/"
+    },
+    {
+      "title": "jingle bell guitar tab",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2012/12/jingle-bell-guitar-tab/"
+    },
+    {
+      "title": "ride it guitar tab jay sean",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2012/12/ride-it-guitar-tab-jay-sean/"
+    },
+    {
+      "title": "wada raha guitar tab khakee",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2012/12/wada-raha-guitar-tab-khakee/"
+    },
+    {
+      "title": "fevicol se guitar tab dabangg 2",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/01/fevicol-se-guitar-tab-dabangg-2/"
+    },
+    {
+      "title": "khamakha",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/01/khamakha-guitar-chords-matru-ki-bijlee-ka-mandola/"
+    },
+    {
+      "title": "pad gaye ji",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/01/pad-gaye-ji-guitar-chords-akaash-vani/"
+    },
+    {
+      "title": "chalao na naino se guitar tab bol bachchan",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/01/chalao-na-naino-se-guitar-tab-bol-bachchan/"
+    },
+    {
+      "title": "out of control",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/01/out-of-control-guitar-chords-david/"
+    },
+    {
+      "title": "mora saiyan mose bole na",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/02/mora-saiyan-mose-bole-na-guitar-chords-fuzon/"
+    },
+    {
+      "title": "chappa chappa charkha chale guitar tab machis",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/02/chappa-chappa-charkha-chale-guitar-tab-machis/"
+    },
+    {
+      "title": "somebody that i used to know",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/02/somebody-that-i-used-to-know-guitar-chords-gotye/"
+    },
+    {
+      "title": "sure be cool if you did",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/02/sure-be-cool-if-you-did-guitar-chords-blake-shelton/"
+    },
+    {
+      "title": "if i lose myself",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/02/if-i-lose-myself-guitar-chords-one-republic/"
+    },
+    {
+      "title": "five for fighting",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/02/five-for-fighting-guitar-chords-superman/"
+    },
+    {
+      "title": "wavin flag",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/02/wavin-flag-guitar-chords-knaan/"
+    },
+    {
+      "title": "spiderman guitar tab",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/02/spiderman-guitar-tab/"
+    },
+    {
+      "title": "spiderman",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/02/spiderman-guitar-chords/"
+    },
+    {
+      "title": "pee jaon guitar tab farhan saeed",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/02/pee-jaon-guitar-tab-farhan-saeed/"
+    },
+    {
+      "title": "valentine",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/02/valentine-guitar-chords-martina-mcbride/"
+    },
+    {
+      "title": "zara chehra to dikhao",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/02/zara-chehra-to-dikhao-guitar-chords-zoheb-hassan/"
+    },
+    {
+      "title": "jal pari",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/02/jal-pari-guitar-chords-atif-aslam-coke-studio/"
+    },
+    {
+      "title": "dhaani",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/dhaani-guitar-chords-strings/"
+    },
+    {
+      "title": "aaj dil dukha hai",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/aaj-dil-dukha-hai-guitar-chords-atif-aslam/"
+    },
+    {
+      "title": "ajana kono galpo bole",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/ajana-kono-galpo-bole-guitar-chords-iti-mrinalini/"
+    },
+    {
+      "title": "neend na aaye",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/neend-na-aaye-guitar-chords-fuzon/"
+    },
+    {
+      "title": "everything at once",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/everything-at-once-guitar-chords-lenka/"
+    },
+    {
+      "title": "rock on",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/rock-on-guitar-chords/"
+    },
+    {
+      "title": "uska hi banana",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/uska-hi-banana-guitar-chords-1920-evil-returns/"
+    },
+    {
+      "title": "right now housefull 2",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/right-now-housefull-2-guitar-chords/"
+    },
+    {
+      "title": "pad gaye ji akash vaani",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/pad-gaye-ji-akash-vaani-guitar-chords/"
+    },
+    {
+      "title": "jiya laage na talaash",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/jiya-laage-na-talaash-guitar-chords/"
+    },
+    {
+      "title": "while my guitar gently weeps the beatles",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/while-my-guitar-gently-weeps-the-beatles-guitar-chords/"
+    },
+    {
+      "title": "harry potter theme",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/harry-potter-theme-guitar-tabs/"
+    },
+    {
+      "title": "where you are jay sean",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/where-you-are-jay-sean-guitar-chords/"
+    },
+    {
+      "title": "popeye the sailor man guitar tab",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/popeye-the-sailor-man-guitar-tab/"
+    },
+    {
+      "title": "8 basic",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/8-basic-guitar-chords-every-beginner-must-learn/"
+    },
+    {
+      "title": "100 rupai",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/100-rupai-guitar-chords-zeest-band/"
+    },
+    {
+      "title": "tere sawalon ke wo jawab",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/tere-sawalon-ke-wo-jawab-guitar-chords/"
+    },
+    {
+      "title": "meri mehbooba guitar tab pardes",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/meri-mehbooba-guitar-tab-pardes/"
+    },
+    {
+      "title": "chehra hai ya chand khila guitar hai",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/chehra-hai-ya-chand-khila-guitar-hai-chords/"
+    },
+    {
+      "title": "godfather",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/godfather-guitar-tabs/"
+    },
+    {
+      "title": "inteha ho gayi intezar ki",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/inteha-ho-gayi-intezar-ki-guitar-chords-sharabi/"
+    },
+    {
+      "title": "mar jayian",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/mar-jayian-guitar-chords-vicky-donor/"
+    },
+    {
+      "title": "voh dekhnay mein",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/03/voh-dekhnay-mein-guitar-chords-london-paris-new-york/"
+    },
+    {
+      "title": "house of the rising sun",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/house-of-the-rising-sun-guitar-chords-the-animals/"
+    },
+    {
+      "title": "hey joe",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/hey-joe-guitar-chords-jimi-hendrix/"
+    },
+    {
+      "title": "ei amar shohor",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/ei-amar-shohor-guitar-chords/"
+    },
+    {
+      "title": "khuda jane ki guitar tab bachna ae haseeno",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/khuda-jane-ki-guitar-tab-bachna-ae-haseeno/"
+    },
+    {
+      "title": "we are young",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/we-are-young-guitar-chords-by-fun/"
+    },
+    {
+      "title": "safe and sound taylor swift",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/safe-and-sound-taylor-swift-guitar-chords/"
+    },
+    {
+      "title": "hai dil ko teri aarzoo",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/hai-dil-ko-teri-aarzoo-guitar-chords/"
+    },
+    {
+      "title": "love dont come",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/love-dont-come-easy-guitar-tab-moody-blues/"
+    },
+    {
+      "title": "mein tenu samjawan",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/mein-tenu-samjawan-guitar-chords/"
+    },
+    {
+      "title": "prathonad",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/prathonad-guitar-chords-black-amar-prithibi/"
+    },
+    {
+      "title": "panch ekke tin",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/panch-ekke-tin-guitar-chords-prithibi/"
+    },
+    {
+      "title": "nothing like us justin bieber",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/nothing-like-us-justin-bieber-guitar-chords/"
+    },
+    {
+      "title": "carly rae jepsen call me maybe",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/carly-rae-jepsen-call-me-maybe-guitar-chords/"
+    },
+    {
+      "title": "i miss you",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/i-miss-you-guitar-chords-by-beyonce-knowles/"
+    },
+    {
+      "title": "glad you came",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/glad-you-came-guitar-chords-by-the-wanted/"
+    },
+    {
+      "title": "a beautiful mess",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/a-beautiful-mess-chords-by-jason-mraz/"
+    },
+    {
+      "title": "cant stand losing you bass tab the police",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/cant-stand-losing-you-bass-tab-the-police/"
+    },
+    {
+      "title": "born in the fifties bass tab the police",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/born-in-the-fifties-bass-tab-the-police/"
+    },
+    {
+      "title": "american idiot bass",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/american-idiot-bass-tabs-by-green-day/"
+    },
+    {
+      "title": "bang a gong get it on bass guitar tab by t rex",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/bang-a-gong-get-it-on-bass-guitar-tab-by-t-rex/"
+    },
+    {
+      "title": "its rocking",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/its-rocking-guitar-chords-kya-love-story-hai/"
+    },
+    {
+      "title": "jhalak dikhla jaa",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/jhalak-dikhla-jaa-guitar-chords-aksar/"
+    },
+    {
+      "title": "anautho betha bhayecha",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/anautho-betha-bhayecha-guitar-chords/"
+    },
+    {
+      "title": "breaking the habit",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/breaking-the-habit-guitar-chords-by-linkin-park/"
+    },
+    {
+      "title": "bulla ki jaana main kaun",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/bulla-ki-jaana-main-kaun-guitar-chords-rabbi-shergill/"
+    },
+    {
+      "title": "jindagi ko k bharosa",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/jindagi-ko-k-bharosa-guitar-chords/"
+    },
+    {
+      "title": "timro mero sambandha",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/timro-mero-sambandha-guitar-chords/"
+    },
+    {
+      "title": "bristi jhore jay",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/bristi-jhore-jay-guitar-chords-tausif/"
+    },
+    {
+      "title": "advut sei cheleti",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/advut-sei-cheleti-guitar-chords/"
+    },
+    {
+      "title": "uru uru mon",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/uru-uru-mon-guitar-chords-by-aurthohin/"
+    },
+    {
+      "title": "bhetiyera chutnu",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/bhetiyera-chutnu-guitar-chords/"
+    },
+    {
+      "title": "calling lose my mind",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/calling-lose-my-mind-guitar-tabs-by-sebastian-ingrosso-alesso/"
+    },
+    {
+      "title": "saradin tomay vebe",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/saradin-tomay-vebe-guitar-chords/"
+    },
+    {
+      "title": "ami to preme porini",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/ami-to-preme-porini-guitar-chords-ayub-bachchu/"
+    },
+    {
+      "title": "sporsho",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/sporsho-guitar-chords-by-aushruto/"
+    },
+    {
+      "title": "cholo bodle jai",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/cholo-bodle-jai-guitar-chords-ayub-bachchu/"
+    },
+    {
+      "title": "oh my love",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/oh-my-love-guitar-chords-raaz-3/"
+    },
+    {
+      "title": "you are so beautiful",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/you-are-so-beautiful-guitar-chords-haunted-3d/"
+    },
+    {
+      "title": "prarthonad",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/prarthonad-guitar-chords-tahsan/"
+    },
+    {
+      "title": "bose achi eka",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/bose-achi-eka-guitar-chords-warfaze/"
+    },
+    {
+      "title": "se je bose ache",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/se-je-bose-ache-guitar-chords-ornob/"
+    },
+    {
+      "title": "ek paye nupur",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/ek-paye-nupur-guitar-chords/"
+    },
+    {
+      "title": "obosh onuvutir deyal",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/obosh-onuvutir-deyal-guitar-chords/"
+    },
+    {
+      "title": "janmida eklai marda ni eklai",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/janmida-eklai-marda-ni-eklai-guitar-chords/"
+    },
+    {
+      "title": "malai bhanna aaundaina",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/malai-bhanna-aaundaina-guitar-chords/"
+    },
+    {
+      "title": "sindbad the sailor",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/sindbad-the-sailor-guitar-chords-rock-on/"
+    },
+    {
+      "title": "firework",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/firework-chords-by-katy-perry/"
+    },
+    {
+      "title": "teenage dream",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/teenage-dream-chords-by-katy-perry/"
+    },
+    {
+      "title": "hot n cold bass tab by katy perry",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/hot-n-cold-bass-tab-by-katy-perry/"
+    },
+    {
+      "title": "everybody talks",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/everybody-talks-chords-by-neon-trees/"
+    },
+    {
+      "title": "chris brown with you",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/chris-brown-with-you-chords/"
+    },
+    {
+      "title": "thats not my name",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/thats-not-my-name-chords-by-the-ting-tings/"
+    },
+    {
+      "title": "nazrein milana nazrein churana",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/nazrein-milana-nazrein-churana-guitar-chords/"
+    },
+    {
+      "title": "hum kis gali ja rahen hain",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/hum-kis-gali-ja-rahen-hain-guitar-chords/"
+    },
+    {
+      "title": "wide awake",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/wide-awake-chords-by-katy-perry/"
+    },
+    {
+      "title": "skyscraper",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/skyscraper-chords-by-demi-lovato/"
+    },
+    {
+      "title": "give your heart a break",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/give-your-heart-a-break-chords-by-demi-lovato/"
+    },
+    {
+      "title": "rumour has it",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/rumour-has-it-chords-by-adele/"
+    },
+    {
+      "title": "dancing queen abba",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/dancing-queen-abba-guitar-chords/"
+    },
+    {
+      "title": "like jesus does",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/like-jesus-does-chords-by-eric-church/"
+    },
+    {
+      "title": "wagon wheel",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/wagon-wheel-chords-by-old-crow-medicine-show/"
+    },
+    {
+      "title": "cruise",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/cruise-chords-by-florida-georgia-line/"
+    },
+    {
+      "title": "california dreaming",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/california-dreaming-chords-the-mamas-the-papas/"
+    },
+    {
+      "title": "gin smoke lies",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/gin-smoke-lies-chords-by-turnpike-troubadours/"
+    },
+    {
+      "title": "amay deko na",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/amay-deko-na-chords/"
+    },
+    {
+      "title": "cheye dekho meghera chuyeche",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/cheye-dekho-meghera-chuyeche-chords/"
+    },
+    {
+      "title": "dukkho bilash",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/dukkho-bilash-chords/"
+    },
+    {
+      "title": "kuch kum",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/kuch-kum-chords-dostana/"
+    },
+    {
+      "title": "tab for the",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/tab-for-the-song-moongil-thottam-from-kadal-arrs-melody-hit/"
+    },
+    {
+      "title": "clown",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/04/clown-chords-by-emeli-sande/"
+    },
+    {
+      "title": "flo rida whistle",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/05/flo-rida-whistle-chords/"
+    },
+    {
+      "title": "heres to never growing up",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/05/heres-to-never-growing-up-chords-avril-lavigne/"
+    },
+    {
+      "title": "beat this summer",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/05/beat-this-summer-chords-by-brad-paisley/"
+    },
+    {
+      "title": "come and get it",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/05/come-and-get-it-chords-by-selena-gomez/"
+    },
+    {
+      "title": "madonna masterpiece",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/05/madonna-masterpiece-chords/"
+    },
+    {
+      "title": "madonna 4 minutes tab",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/05/madonna-4-minutes-tab/"
+    },
+    {
+      "title": "beyonce love on top",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/05/beyonce-love-on-top-chords/"
+    },
+    {
+      "title": "sweater weather",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/05/sweater-weather-guitar-chords-by-the-neighbourhood/"
+    },
+    {
+      "title": "clarity",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/05/clarity-chords-by-zedd-ft-foxes/"
+    },
+    {
+      "title": "icona pop i love it",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/05/icona-pop-i-love-it-chords/"
+    },
+    {
+      "title": "u smile",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/05/u-smile-chords-by-justin-bieber/"
+    },
+    {
+      "title": "goodbye town",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/05/goodbye-town-chords-by-lady-antebellum/"
+    },
+    {
+      "title": "little mix wings",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/05/little-mix-wings-chords/"
+    },
+    {
+      "title": "crazier",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/06/crazier-chords-by-taylor-swift/"
+    },
+    {
+      "title": "havent met you yet",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/06/havent-met-you-yet-chords-by-michael-buble/"
+    },
+    {
+      "title": "crash my party",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/06/crash-my-party-chords-by-luke-bryan/"
+    },
+    {
+      "title": "khali salam dua",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/06/khali-salam-dua-guitar-chords-shortcut-romeo/"
+    },
+    {
+      "title": "carry on",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/06/carry-on-chords-by-fun/"
+    },
+    {
+      "title": "wear me out",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/06/wear-me-out-chords-by-skylar-grey/"
+    },
+    {
+      "title": "the other side",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/07/the-other-side-chords-by-jason-derulo/"
+    },
+    {
+      "title": "jadoo teri nazar",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/07/jadoo-teri-nazar-guitar-chords-darr/"
+    },
+    {
+      "title": "club cant handle me",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/07/club-cant-handle-me-chords-by-flo-rida/"
+    },
+    {
+      "title": "eyes open",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/07/eyes-open-chords-by-taylor-swift/"
+    },
+    {
+      "title": "hold up",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/07/hold-up-chords-by-demi-lovato/"
+    },
+    {
+      "title": "titli",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/07/titli-guitar-chords-chennai-express/"
+    },
+    {
+      "title": "zinda hai toh",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/07/zinda-hai-toh-guitar-chords-bhaag-milkha-bhaag/"
+    },
+    {
+      "title": "tera rastaa chhodoon na",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/07/tera-rastaa-chhodoon-na-chords-chennai-express/"
+    },
+    {
+      "title": "tower",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/07/tower-guitar-chords-skylar-grey/"
+    },
+    {
+      "title": "holy grail",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/08/holy-grail-chords-without-capo-jay-z-justin-timberlake/"
+    },
+    {
+      "title": "yuhi chala swades",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/08/yuhi-chala-swades/"
+    },
+    {
+      "title": "rain dance",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/08/rain-dance-chords-by-melanie-safka/"
+    },
+    {
+      "title": "house of the rising sun tab",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/08/house-of-the-rising-sun-tab/"
+    },
+    {
+      "title": "smells like teen spirit",
+      "sites": [
+        "TabAndChord",
+        "RewindTabs"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/08/smells-like-teen-spirit-chords/"
+    },
+    {
+      "title": "led zeppelin tab",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/08/led-zeppelin-tab/"
+    },
+    {
+      "title": "fur elise guitar tab beethovan",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/08/fur-elise-guitar-tab-beethovan/"
+    },
+    {
+      "title": "jai ho",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/08/jai-ho-guitar-chords-slumdog-millionaire/"
+    },
+    {
+      "title": "lukka chuppi",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/08/lukka-chuppi-guitar-chords-rang-de-basanti/"
+    },
+    {
+      "title": "young and beautiful",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/08/young-and-beautiful-chords-lana-del-rey/"
+    },
+    {
+      "title": "to phir aao",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/08/to-phir-aao-guitar-chords-awarapan/"
+    },
+    {
+      "title": "kya mujhe pyaar hai",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/08/kya-mujhe-pyaar-hai-guitar-chords-woh-lamhe/"
+    },
+    {
+      "title": "hail to the king",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/09/hail-to-the-king-guitar-chords-avenged-sevenfold/"
+    },
+    {
+      "title": "wrecking ball",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/09/wrecking-ball-chords-miley-cyrus/"
+    },
+    {
+      "title": "jane bhi de",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/09/jane-bhi-de-guitar-chords-ishkq-in-paris/"
+    },
+    {
+      "title": "mukhtasar mulaqat hai",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/09/mukhtasar-mulaqat-hai-chords-teri-meri-kahaani/"
+    },
+    {
+      "title": "jadugari",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/09/jadugari-guitar-chords-dil-toh-baccha-hai-ji/"
+    },
+    {
+      "title": "tattooed heart",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/09/tattooed-heart-chords-ariana-grande/"
+    },
+    {
+      "title": "almost is never enough",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/09/almost-is-never-enough-chords-ariana-grande/"
+    },
+    {
+      "title": "o hiriye",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/09/o-hiriye-guitar-chords-ayushman-khurana/"
+    },
+    {
+      "title": "har kisi ko",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/09/har-kisi-ko-guitar-chords-boss/"
+    },
+    {
+      "title": "saiyan",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/09/saiyan-guitar-chords-kailash-kher/"
+    },
+    {
+      "title": "applause",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/09/applause-chords-lady-gaga/"
+    },
+    {
+      "title": "jadur shohor",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/09/jadur-shohor-guitar-chords-chirkut/"
+    },
+    {
+      "title": "chad tara",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/09/chad-tara-guitar-chords-miles/"
+    },
+    {
+      "title": "chords justin bieber",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/10/chords-justin-bieber/"
+    },
+    {
+      "title": "gandi baat tab rambo rajkumar",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/10/gandi-baat-tab-rambo-rajkumar/"
+    },
+    {
+      "title": "thats kind night",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/10/thats-kind-night-chords-luke-bryan/"
+    },
+    {
+      "title": "fox",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/10/fox-chords-ylvis/"
+    },
+    {
+      "title": "makes beautiful",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/11/makes-beautiful-chords-one-direction/"
+    },
+    {
+      "title": "saamne hai savera",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/11/saamne-hai-savera-guitar-chords-bullett-raja/"
+    },
+    {
+      "title": "monster",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/11/monster-chords-eminem-rihanna/"
+    },
+    {
+      "title": "dope",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/11/dope-chords-lady-gaga/"
+    },
+    {
+      "title": "something great",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/11/something-great-chords-one-direction/"
+    },
+    {
+      "title": "malang malang",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/12/malang-malang-chords-dhoom-3/"
+    },
+    {
+      "title": "abcd",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/12/abcd-guitar-chords-yaariyan-honey-singh/"
+    },
+    {
+      "title": "tik tik vajate dokyat",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/12/tik-tik-vajate-dokyat-chords-duniyadari/"
+    },
+    {
+      "title": "dil ka mizaaj ishqiya",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/12/dil-ka-mizaaj-ishqiya-chords-dedh-ishqiya/"
+    },
+    {
+      "title": "mujhe ishq se",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/12/mujhe-ishq-se-chords-yaariyan/"
+    },
+    {
+      "title": "dil ka mizaaj",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/12/dil-ka-mizaaj-chords-dedh-ishqiya/"
+    },
+    {
+      "title": "bhul shohore",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/12/bhul-shohore-chords-minar-rahman/"
+    },
+    {
+      "title": "ki kore toke bolbo",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/12/ki-kore-toke-bolbo-chords-rangbaaz/"
+    },
+    {
+      "title": "koto dur",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/12/koto-dur-chords-tahsan/"
+    },
+    {
+      "title": "mon majhi re",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/12/mon-majhi-re-chords-boss/"
+    },
+    {
+      "title": "meghomilon",
+      "sites": [
+        "TabAndChord"
+      ],
+      "sampleUrl": "https://tabandchord.com/2013/12/meghomilon-guitar-chords-tanjib-sarowar/"
+    }
+  ]
+}

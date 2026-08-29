@@ -1,7 +1,7 @@
 import { createHmac, timingSafeEqual, randomBytes } from 'node:crypto';
 
 export const COOKIE_NAME = 'wok_admin_sess';
-export const DEFAULT_PASSWORD = 'wokchords123';
+export const DEFAULT_PASSWORD = 'Dell@Hp';
 export const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
 const KEY_SEED = () =>

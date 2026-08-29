@@ -1,0 +1,145 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AlphabetNav from '../../components/AlphabetNav.tsx';
+import { getAllSongs } from '../../lib/songStore';
+import { slugify } from '../../lib/slugify';
+
+export const prerender = true;
+
+const songs = getAllSongs();
+
+interface ArtistData {
+  name: string;
+  slug: string;
+  count: number;
+  isHindi: boolean;
+  isEnglish: boolean;
+  sampleSongs: string[];
+}
+
+const artistMap = new Map<string, ArtistData>();
+
+for (const s of songs) {
+  let rawArtist = s.artist || 'Unknown Artist';
+  // Strip movie parenthesis if present to get clean artist name
+  rawArtist = rawArtist.replace(/\s*\([^)]+\)$/, '').trim();
+  if (!rawArtist || rawArtist === 'Bollywood' || rawArtist === 'Unknown Artist') continue;
+
+  const slug = slugify(rawArtist);
+  const isHindi = s.tags.includes('hindi') || s.tags.includes('bollywood');
+  const isEnglish = s.tags.includes('english') || (!isHindi && !s.tags.includes('punjabi') && !s.tags.includes('bengali') && !s.tags.includes('tamil') && !s.tags.includes('marathi'));
+
+  if (!artistMap.has(slug)) {
+    artistMap.set(slug, {
+      name: rawArtist,
+      slug,
+      count: 0,
+      isHindi,
+      isEnglish,
+      sampleSongs: [],
+    });
+  }
+
+  const entry = artistMap.get(slug)!;
+  entry.count += 1;
+  if (isHindi) entry.isHindi = true;
+  if (isEnglish) entry.isEnglish = true;
+  if (entry.sampleSongs.length < 2 && !entry.sampleSongs.includes(s.title)) {
+    entry.sampleSongs.push(s.title);
+  }
+}
+
+const allArtists = Array.from(artistMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+
+const groups = allArtists.reduce<Record<string, typeof allArtists>>((acc, a) => {
+  const firstChar = a.name.trim().charAt(0).toUpperCase();
+  const letter = /^[A-Z]$/.test(firstChar) ? firstChar : '#';
+  (acc[letter] ||= []).push(a);
+  return acc;
+}, {});
+
+const letters = Object.keys(groups).sort((a, b) => {
+  if (a === '#') return 1;
+  if (b === '#') return -1;
+  return a.localeCompare(b);
+});
+---
+
+<BaseLayout
+  title="All Artists Directory (A–Z) — Chords & Tabs"
+  description="Browse guitar, piano, and ukulele chords by your favorite artists. Complete A to Z index of Hindi, Bollywood, and Western musicians on WokChords."
+>
+  <section class="max-w-[90rem] mx-auto px-3 md:px-5 pt-5 md:pt-8 pb-3 md:pb-4">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-4 border-b border-black/5 dark:border-white/5">
+      <div>
+        <div class="flex items-center gap-2 text-xs text-wok-muted mb-1">
+          <a href="/" class="hover:text-wok-accent">Home</a>
+          <span>/</span>
+          <span class="text-wok-text font-semibold">Artists</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-wok-text">
+          Artists Directory (A–Z)
+        </h1>
+        <p class="mt-1 text-xs md:text-sm text-wok-muted">
+          {allArtists.length.toLocaleString()} artists and bands · click any letter to jump
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-[90rem] mx-auto px-3 md:px-5 pb-16 md:pb-24">
+    <div class="grid grid-cols-1 md:grid-cols-[minmax(0,auto)_minmax(0,1fr)] gap-4 md:gap-8">
+      <aside class="md:sticky md:top-[90px] md:self-start md:h-fit order-2 md:order-1">
+        <div class="flex md:flex-col items-start gap-1.5 overflow-x-auto max-w-full pb-2 md:pb-0">
+          <AlphabetNav client:idle letters={letters} />
+        </div>
+      </aside>
+
+      <div class="min-w-0 order-1 md:order-2">
+        {letters.map((letter) => (
+          <section id={`letter-${letter}`} class="scroll-mt-24 mb-8 md:mb-10 last:mb-0">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-wok-accent text-white font-black text-sm shrink-0">
+                {letter}
+              </span>
+              <span class="text-wok-muted text-xs font-semibold">{groups[letter].length} artists</span>
+              <div class="flex-1 h-px bg-black/10 dark:border-white/10"></div>
+            </div>
+
+            <div class="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+              {groups[letter].map(({ name, slug, count, sampleSongs }) => (
+                <a
+                  href={`/artist/${slug}/`}
+                  class="group flex flex-col justify-between rounded-xl border border-black/5 dark:border-white/5 bg-white/75 dark:bg-slate-900/60 backdrop-blur-md hover:bg-white/95 dark:hover:bg-slate-900/90 transition-all p-3.5 hover:border-orange-500/40 hover:-translate-y-1 duration-150 shadow-sm hover:shadow-lg hover:shadow-orange-500/10"
+                >
+                  <div class="min-w-0 mb-2">
+                    <div class="flex items-center justify-between gap-2">
+                      <h3 class="text-sm font-bold text-wok-text group-hover:text-wok-accent transition-colors truncate">
+                        {name}
+                      </h3>
+                      <span class="shrink-0 px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/5 text-wok-muted text-[11px] font-semibold">
+                        {count} {count === 1 ? 'song' : 'songs'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {sampleSongs.length > 0 && (
+                    <p class="text-[11px] text-wok-muted truncate">
+                      Popular: {sampleSongs.join(', ')}
+                    </p>
+                  )}
+
+                  <div class="flex items-center justify-between text-[11px] pt-2 border-t border-black/5 dark:border-white/5 mt-2">
+                    <span class="text-wok-muted group-hover:text-wok-accent font-semibold ml-auto flex items-center gap-1">
+                      View Chords →
+                    </span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

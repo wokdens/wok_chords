@@ -28,6 +28,7 @@ export interface ParsedSong {
   text: string;
   rawChordSheet: Song;
   key?: string;
+  uniqueChords: string[];
 }
 
 const SHARP_KEYS = ['C', 'G', 'D', 'A', 'E', 'B', 'F#'];
@@ -76,11 +77,34 @@ function getMetadataFromSheet(sheet: any, frontmatter?: Partial<SongMetadata>): 
 
 export function parseAndTranspose(rawText: string, semitones: number): ParsedSong {
   const parser = new ChordProParser();
-  const normalized = rawText
+  let normalized = rawText
     .replace(/^---[\s\S]*?---\n?/, '')
     .trim();
 
-  const sheet: any = parser.parse(normalized);
+  // Sanitize common ChordPro parsing edge cases
+  normalized = normalized
+    .replace(/\\?&#x27;/g, "'")
+    .replace(/\\?&#39;/g, "'")
+    .replace(/\\?&amp;/g, '&')
+    .replace(/(\d+)%/g, '$1 percent')
+    .replace(/\{([^{}:]+)\}/g, (m, p1) => {
+      const t = p1.trim().toLowerCase();
+      if (['title', 'artist', 'subtitle', 'key', 'tempo', 'time', 'c', 'comment', 'soc', 'eoc'].includes(t)) return m;
+      return `{c: ${p1.trim()}}`;
+    });
+
+  let sheet: any;
+  try {
+    sheet = parser.parse(normalized);
+  } catch {
+    // If strict parser fails, strip braces and parse clean
+    const safeBody = normalized.replace(/\{[^}]*\}/g, '').replace(/\[\s*\]/g, '');
+    try {
+      sheet = parser.parse(safeBody);
+    } catch {
+      sheet = { lines: [] };
+    }
+  }
 
   const frontmatterBlock = rawText.match(/^---\n([\s\S]*?)\n---/)?.[1] ?? '';
   const frontmatter: Partial<SongMetadata> = {};
@@ -105,23 +129,20 @@ export function parseAndTranspose(rawText: string, semitones: number): ParsedSon
 
   let finalSheet: any = sheet;
   if (semitones !== 0) {
-    const transposed: any = parser.parse(normalized);
+    let transposed: any;
     try {
+      transposed = parser.parse(normalized);
       if (typeof transposed.transpose === 'function') {
         transposed.transpose(semitones);
       }
-    } catch {
-      /* no-op */
-    }
-    if (useFlats && originalKey) {
-      try {
+      if (useFlats && originalKey) {
         const newKeyName = transposeKeyName(originalKey, semitones, true);
         if (newKeyName && typeof transposed.setKey === 'function') {
           transposed.setKey(newKeyName);
         }
-      } catch {
-        /* no-op */
       }
+    } catch {
+      transposed = sheet;
     }
     finalSheet = transposed;
   }
@@ -173,12 +194,15 @@ export function parseAndTranspose(rawText: string, semitones: number): ParsedSon
     }
   }
 
+  const uniqueChords = Array.from(new Set(allChords.map((c) => String(c).trim()).filter(Boolean)));
+
   return {
     metadata,
     html,
     text,
     rawChordSheet: finalSheet as Song,
     key: currentKey,
+    uniqueChords,
   };
 }
 

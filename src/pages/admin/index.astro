@@ -18,11 +18,6 @@ const usingDefault = getPassword() === DEFAULT_PASSWORD;
       </h1>
       <p class="text-wok-muted mt-1 text-sm">
         {isAuthed ? 'Edit any song and save changes directly back to the source files.' : 'Login to access the song editor.'}
-        {usingDefault && isAuthed && (
-          <span class="ml-2 inline-flex items-center gap-1 rounded-md bg-amber-500/15 text-amber-700 dark:text-amber-300 px-2 py-0.5 text-[11px] font-semibold">
-            ⚠ Using default password — set <code class="font-mono">ADMIN_PASSWORD</code> env var.
-          </span>
-        )}
       </p>
     </div>
     <AdminApp client:load initialAuthed={isAuthed} usingDefault={usingDefault} />

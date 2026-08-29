@@ -9,8 +9,19 @@ interface Props {
   hideSearch?: boolean;
 }
 
-const { title, description = 'WokChords — Chord & Lyrics platform with transpose, auto-scroll, and SEO-first static pages.', hideSearch = false } = Astro.props;
+const { title, description = 'WokChords — Fast, clean, and accurate guitar, piano, and ukulele chords with transpose and auto-scroll.', hideSearch = false } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+const fullTitle = title.toLowerCase().includes('wokchords') ? title : `${title} — WokChords`;
+
+const languages = [
+  { name: 'Hindi', slug: 'hindi' },
+  { name: 'English', slug: 'english' },
+  { name: 'Bengali', slug: 'bengali' },
+  { name: 'Punjabi', slug: 'punjabi' },
+  { name: 'Spanish', slug: 'spanish' },
+  { name: 'Marathi', slug: 'marathi' },
+  { name: 'Tamil', slug: 'tamil' },
+];
 ---
 
 <!doctype html>
@@ -30,18 +41,18 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
     <meta name="format-detection" content="telephone=no" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="description" content={description} />
-    <meta property="og:title" content={title} />
+    <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
+    <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <link rel="canonical" href={canonicalURL} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
-    <title>{title} — WokChords</title>
+    <title>{fullTitle}</title>
     <script is:inline>
       (function () {
         try {
@@ -59,26 +70,98 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
         } catch (e) {}
       })();
     </script>
-  </head>
-  <body class="min-h-screen flex flex-col">
-    <header class="sticky top-0 z-30 backdrop-blur-md bg-wok-bg/80 border-b border-black/5 dark:border-white/5">
-      <div class="max-w-[90rem] mx-auto px-3 md:px-5 py-2 flex items-center gap-2 md:gap-3">
-        <a href="/" class="flex items-center gap-1.5 group shrink-0">
-          <span class="text-xl md:text-2xl group-hover:rotate-6 transition-transform inline-block">🎸</span>
-          <span class="font-bold text-base md:text-lg tracking-tight hidden sm:inline">
-            Wok<span class="text-wok-accent">Chords</span>
-          </span>
+  <body class="min-h-screen flex flex-col bg-wok-bg text-wok-text selection:bg-wok-accent/20 relative">
+    <!-- Ambient Living Mesh Gradient System (Across All Pages) -->
+    <div class="pointer-events-none fixed inset-0 -z-50 overflow-hidden select-none">
+      <!-- Light Theme Rich Sunset & Acoustic Pastel Gradients -->
+      <div class="block dark:hidden">
+        <!-- Top Left Warm Peach/Apricot Aura -->
+        <div class="absolute -top-36 -left-36 w-[44rem] h-[44rem] rounded-full bg-gradient-to-br from-orange-200/50 via-amber-100/40 to-transparent blur-3xl opacity-90"></div>
+        <!-- Top Right Sky Blue/Cyan Aura -->
+        <div class="absolute -top-24 -right-36 w-[48rem] h-[48rem] rounded-full bg-gradient-to-bl from-sky-200/55 via-cyan-100/45 to-transparent blur-3xl opacity-90"></div>
+        <!-- Center Floating Sunburst -->
+        <div class="absolute top-1/3 left-1/2 -translate-x-1/2 w-[55rem] h-[32rem] rounded-full bg-gradient-to-r from-amber-100/40 via-orange-100/30 to-sky-100/35 blur-3xl opacity-75"></div>
+        <!-- Mid-Left Gentle Rose/Lavender Glow -->
+        <div class="absolute top-1/2 -left-44 w-[40rem] h-[40rem] rounded-full bg-gradient-to-tr from-rose-200/40 via-pink-100/30 to-transparent blur-3xl opacity-80"></div>
+        <!-- Mid-Right Indigo/Electric Cyan Glow -->
+        <div class="absolute top-2/3 -right-40 w-[44rem] h-[44rem] rounded-full bg-gradient-to-tl from-cyan-200/45 via-indigo-100/35 to-transparent blur-3xl opacity-80"></div>
+        <!-- Bottom Warm Golden Glow -->
+        <div class="absolute -bottom-48 left-1/3 w-[46rem] h-[46rem] rounded-full bg-gradient-to-t from-amber-200/45 via-orange-100/30 to-transparent blur-3xl opacity-85"></div>
+      </div>
+
+      <!-- Dark Theme Deep Stage & Neon Ambient Arena Glows -->
+      <div class="hidden dark:block">
+        <!-- Top Warm Sunset Orange Glow -->
+        <div class="absolute -top-36 -left-36 w-[44rem] h-[44rem] rounded-full bg-gradient-to-br from-orange-500/12 via-amber-500/8 to-transparent blur-3xl"></div>
+        <!-- Top Right Electric Cyan Glow -->
+        <div class="absolute -top-24 -right-36 w-[48rem] h-[48rem] rounded-full bg-gradient-to-bl from-cyan-500/14 via-blue-500/8 to-transparent blur-3xl"></div>
+        <!-- Center Violet Ambiance -->
+        <div class="absolute top-1/3 left-1/2 -translate-x-1/2 w-[55rem] h-[32rem] rounded-full bg-gradient-to-r from-purple-500/8 via-indigo-500/6 to-cyan-500/8 blur-3xl"></div>
+        <!-- Mid-Left Electric Purple Glow -->
+        <div class="absolute top-1/2 -left-44 w-[40rem] h-[40rem] rounded-full bg-gradient-to-tr from-purple-500/10 via-pink-500/6 to-transparent blur-3xl"></div>
+        <!-- Mid-Right Stage Teal Glow -->
+        <div class="absolute top-2/3 -right-40 w-[44rem] h-[44rem] rounded-full bg-gradient-to-tl from-teal-500/10 via-cyan-500/8 to-transparent blur-3xl"></div>
+      </div>
+    </div>
+
+    <!-- Top Language Bar (Translucent Glass Bar) -->
+    <div class="bg-slate-950/90 text-white/90 text-xs border-b border-white/10 select-none backdrop-blur-md sticky top-0 z-40">
+      <div class="max-w-[90rem] mx-auto px-3 md:px-5 flex items-center justify-between overflow-x-auto no-scrollbar py-1.5 gap-4 sm:gap-6">
+        <div class="flex items-center gap-2 sm:gap-4 shrink-0 font-medium">
+          <span class="text-white/40 text-[11px] uppercase tracking-wider hidden md:inline font-bold">Explore:</span>
+          {languages.map((lang) => (
+            <a
+              href={`/tag/${lang.slug}/`}
+              class="px-2.5 py-0.5 rounded-full hover:bg-white/10 hover:text-orange-400 transition-all whitespace-nowrap text-[12px] sm:text-[13px]"
+            >
+              {lang.name}
+            </a>
+          ))}
+        </div>
+        <div class="flex items-center gap-3 shrink-0 text-white/70 text-[11px] sm:text-[12px]">
+          <a href="/movies/" class="hover:text-white transition-colors">Movies</a>
+          <span class="text-white/20">·</span>
+          <a href="/artists/" class="hover:text-white transition-colors">Artists</a>
+          <span class="text-white/20">·</span>
+          <a href="/about/" class="hover:text-white transition-colors">About Us</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <header class="sticky top-[33px] z-30 backdrop-blur-xl bg-white/75 dark:bg-slate-950/80 border-b border-black/5 dark:border-white/5 shadow-sm shadow-orange-500/5">
+      <div class="max-w-[90rem] mx-auto px-3 md:px-5 py-2.5 flex items-center gap-2 md:gap-4">
+        <a href="/" class="flex items-center gap-2.5 group shrink-0">
+          <span class="text-xl md:text-2xl group-hover:rotate-12 transition-transform inline-block drop-shadow-sm">🎸</span>
+          <div class="leading-none">
+            <span class="font-black text-lg md:text-xl tracking-tight bg-gradient-to-r from-orange-600 to-amber-600 dark:from-orange-400 dark:to-amber-400 bg-clip-text text-transparent">
+              Wok<span class="text-wok-text">Chords</span>
+            </span>
+            <span class="hidden sm:block text-[9px] uppercase tracking-widest text-wok-muted font-bold">by Wokdens</span>
+          </div>
         </a>
+
         {!hideSearch && (
-          <div class="flex-1 flex justify-end min-w-0">
+          <div class="flex-1 flex justify-end min-w-0 max-w-2xl ml-auto">
             <SearchBar client:load />
           </div>
         )}
         {hideSearch && <div class="flex-1" />}
-        <ThemeToggle client:idle />
-        <nav class="text-xs md:text-sm text-wok-muted hover:text-wok-text transition-colors shrink-0">
-          <a href="/" class="hover:text-wok-accent whitespace-nowrap">All Songs</a>
-        </nav>
+
+        <div class="flex items-center gap-1.5 md:gap-2 shrink-0">
+          <ThemeToggle client:idle />
+          <nav class="hidden md:flex items-center gap-1.5 text-xs font-bold text-wok-muted">
+            <a href="/songs/" class="px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-wok-accent transition-colors">
+              All Songs
+            </a>
+            <a href="/artists/" class="px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-wok-accent transition-colors">
+              Artists
+            </a>
+            <a href="/movies/" class="px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-wok-accent transition-colors">
+              Soundtracks
+            </a>
+          </nav>
+        </div>
       </div>
     </header>
 
@@ -86,9 +169,72 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
       <slot />
     </main>
 
-    <footer class="mt-10 md:mt-14 border-t border-black/5 dark:border-white/5 py-5 md:py-6">
-      <div class="max-w-[90rem] mx-auto px-3 md:px-5 text-center text-wok-muted text-[11px] md:text-xs">
-        <p>© {new Date().getFullYear()} WokChords</p>
+    <!-- Comprehensive Footer -->
+    <footer class="mt-14 md:mt-20 border-t border-black/10 dark:border-white/10 bg-wok-panel/30 py-10 md:py-14">
+      <div class="max-w-[90rem] mx-auto px-4 md:px-6">
+        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+          <!-- Column 1: Brand -->
+          <div class="col-span-2 sm:col-span-2 md:col-span-1">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-2xl">🎸</span>
+              <span class="font-extrabold text-lg tracking-tight">
+                Wok<span class="text-wok-accent">Chords</span>
+              </span>
+            </div>
+            <p class="text-xs text-wok-muted leading-relaxed mb-4">
+              The modern, clean, and distraction-free chord platform for guitarists, pianists, and ukulele players. Transpose keys, calculate capo positions, and auto-scroll smoothly.
+            </p>
+            <p class="text-[11px] font-semibold text-wok-muted">
+              Powered by <a href="https://wokdens.com" target="_blank" rel="noopener" class="text-wok-accent hover:underline">Wokdens</a>
+            </p>
+          </div>
+
+          <!-- Column 2: Languages -->
+          <div>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-wok-text mb-3">Languages</h4>
+            <ul class="space-y-2 text-xs text-wok-muted">
+              <li><a href="/tag/hindi/" class="hover:text-wok-accent transition-colors">Hindi Chords</a></li>
+              <li><a href="/tag/english/" class="hover:text-wok-accent transition-colors">English Chords</a></li>
+              <li><a href="/tag/punjabi/" class="hover:text-wok-accent transition-colors">Punjabi Chords</a></li>
+              <li><a href="/tag/bengali/" class="hover:text-wok-accent transition-colors">Bengali Chords</a></li>
+              <li><a href="/tag/marathi/" class="hover:text-wok-accent transition-colors">Marathi Chords</a></li>
+              <li><a href="/tag/tamil/" class="hover:text-wok-accent transition-colors">Tamil Chords</a></li>
+              <li><a href="/tag/spanish/" class="hover:text-wok-accent transition-colors">Spanish Chords</a></li>
+            </ul>
+          </div>
+
+          <!-- Column 3: Browse -->
+          <div>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-wok-text mb-3">Explore</h4>
+            <ul class="space-y-2 text-xs text-wok-muted">
+              <li><a href="/songs/" class="hover:text-wok-accent transition-colors">All 4,000+ Songs</a></li>
+              <li><a href="/artists/" class="hover:text-wok-accent transition-colors">Artist Directory</a></li>
+              <li><a href="/movies/" class="hover:text-wok-accent transition-colors">Movie Soundtracks</a></li>
+            </ul>
+          </div>
+
+          <!-- Column 4: Legal & About -->
+          <div>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-wok-text mb-3">Company & Legal</h4>
+            <ul class="space-y-2 text-xs text-wok-muted">
+              <li><a href="/about/" class="hover:text-wok-accent transition-colors">About WokChords</a></li>
+              <li><a href="/privacy-policy/" class="hover:text-wok-accent transition-colors">Privacy Policy</a></li>
+              <li><a href="/privacy-policy/#fair-use" class="hover:text-wok-accent transition-colors">Fair Use & DMCA</a></li>
+              <li><a href="/about/#contact" class="hover:text-wok-accent transition-colors">Contact & Feedback</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="pt-6 border-t border-black/5 dark:border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-wok-muted">
+          <p>© 2026 <a href="https://wokchords.wokdens.com" class="hover:text-wok-accent font-semibold">wokchords.wokdens.com</a>. All rights reserved.</p>
+          <p class="flex items-center gap-3">
+            <span>Made with ❤️ for musicians</span>
+            <span>·</span>
+            <a href="/privacy-policy/" class="hover:underline">Privacy Policy</a>
+            <span>·</span>
+            <a href="/about/" class="hover:underline">About Us</a>
+          </p>
+        </div>
       </div>
     </footer>
   </body>

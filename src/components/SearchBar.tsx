@@ -5,6 +5,8 @@ export interface SongSearchEntry {
   slug: string;
   title: string;
   artist: string;
+  movie?: string;
+  movieSlug?: string;
   key?: string;
   tags?: string[];
   snippet?: string;
@@ -28,10 +30,12 @@ function scoreSong(song: SongSearchEntry, q: string): number {
 
   const title = normalize(song.title);
   const artist = normalize(song.artist);
+  const movie = normalize(song.movie ?? '');
   const tags = (song.tags ?? []).map(normalize).join(' ');
   const snippet = normalize(song.snippet ?? '');
   const haystacks = [
     { text: title, weight: 10 },
+    { text: movie, weight: 8 },
     { text: artist, weight: 6 },
     { text: tags, weight: 4 },
     { text: snippet, weight: 1 },
@@ -39,6 +43,7 @@ function scoreSong(song: SongSearchEntry, q: string): number {
 
   let score = 0;
   for (const { text, weight } of haystacks) {
+    if (!text) continue;
     for (const tok of tokens) {
       if (!tok) continue;
       if (text.includes(tok)) {
@@ -99,33 +104,32 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
       if (!containerRef.current) return;
       if (!containerRef.current.contains(e.target as Node)) {
         setOpen(false);
-        setFocusedIdx(-1);
       }
     }
+    document.addEventListener('click', onDocClick);
+    return () => document.removeEventListener('click', onDocClick);
+  }, []);
+
+  useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+      if (e.key === '/' && document.activeElement !== inputRef.current) {
         e.preventDefault();
         inputRef.current?.focus();
+        setOpen(true);
       }
       if (e.key === 'Escape') {
         setOpen(false);
-        setFocusedIdx(-1);
         inputRef.current?.blur();
       }
     }
-    document.addEventListener('mousedown', onDocClick);
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('mousedown', onDocClick);
-      document.removeEventListener('keydown', onKey);
-    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, []);
 
   const results = useMemo(() => {
-    const q = query.trim();
-    if (!q) return [];
+    if (!query.trim()) return [];
     const scored = index
-      .map((s) => ({ s, score: scoreSong(s, q) }))
+      .map((s) => ({ s, score: scoreSong(s, query) }))
       .filter((x) => x.score > 0)
       .sort((a, b) => b.score - a.score)
       .slice(0, 8)
@@ -170,7 +174,7 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
           }}
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
-          placeholder="Search songs, artists, tags… (press /)"
+          placeholder="Search songs, artists, movies… (press /)"
           className="w-full rounded-xl border py-1.5 pl-8 pr-8 text-sm outline-none transition focus:ring-2 input-surface"
           aria-label="Search songs"
           aria-expanded={showDropdown}
@@ -217,6 +221,9 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
                     </div>
                     <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-wok-muted">
                       <span className="truncate">🧑‍🎤 {r.artist}</span>
+                      {r.movie && (
+                        <span className="truncate text-wok-accent font-medium">🎬 {r.movie}</span>
+                      )}
                       {r.key && (
                         <span className="rounded bg-wok-chord/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-wok-chord">
                           {r.key}

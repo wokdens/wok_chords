@@ -1,0 +1,199 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { slugify } from '../../lib/slugify';
+import { getAllSongs, type SongItem } from '../../lib/songStore';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const songs = getAllSongs();
+  const artistMap = new Map<string, { artistName: string; songs: SongItem[] }>();
+
+  for (const song of songs) {
+    const artistName = song.artist || 'Unknown Artist';
+    const artistSlug = slugify(artistName);
+    if (!artistMap.has(artistSlug)) {
+      artistMap.set(artistSlug, { artistName, songs: [] });
+    }
+    artistMap.get(artistSlug)!.songs.push(song);
+  }
+
+  const allArtists = Array.from(artistMap.entries()).map(([slug, { artistName, songs }]) => ({
+    params: { slug },
+    props: {
+      artistName,
+      artistSlug: slug,
+      songs,
+      allArtistsList: Array.from(artistMap.entries()).map(([s, val]) => ({
+        slug: s,
+        name: val.artistName,
+        count: val.songs.length,
+      })),
+    },
+  }));
+
+  return allArtists;
+}
+
+interface Props {
+  artistName: string;
+  artistSlug: string;
+  songs: SongItem[];
+  allArtistsList: Array<{ slug: string; name: string; count: number }>;
+}
+
+const { artistName, artistSlug, songs, allArtistsList } = Astro.props;
+
+const enriched = songs.map((song) => {
+  return {
+    slug: song.slug,
+    title: song.title || 'Untitled',
+    artist: song.artist || artistName,
+    key: song.key,
+    tags: song.tags ?? [],
+    snippet: song.snippet,
+  };
+});
+
+enriched.sort((a, b) => a.title.localeCompare(b.title));
+
+const otherArtists = allArtistsList
+  .filter((a) => a.slug !== artistSlug)
+  .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+  .slice(0, 8);
+
+const pageTitle = `${artistName} Guitar Chords, Lyrics & Tabs`;
+const pageDescription = `Play guitar and piano chords for songs by ${artistName} on WokChords. Transpose keys, capo calculator, auto-scroll, and interactive chord diagrams.`;
+const pageUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: new URL('/', Astro.site ?? Astro.url).toString(),
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Artists',
+      item: new URL('/', Astro.site ?? Astro.url).toString(),
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: artistName,
+      item: pageUrl.toString(),
+    },
+  ],
+};
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <div class="max-w-7xl mx-auto px-3 sm:px-5 py-5 md:py-8">
+    <nav class="flex items-center gap-2 text-xs text-wok-muted mb-4 uppercase tracking-wider font-semibold">
+      <a href="/" class="hover:text-wok-accent transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-wok-accent">Artist</span>
+      <span>/</span>
+      <span class="text-wok-text truncate">{artistName}</span>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+      <main class="lg:col-span-8 xl:col-span-9 min-w-0">
+        <header class="mb-6 pb-4 border-b border-black/5 dark:border-white/5">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-12 h-12 rounded-2xl bg-wok-accent/15 text-wok-accent flex items-center justify-center text-xl font-black">
+              {artistName.charAt(0)}
+            </div>
+            <div>
+              <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-wok-text">
+                {artistName}
+              </h1>
+              <p class="text-xs sm:text-sm text-wok-muted mt-0.5">
+                {songs.length} chord sheet{songs.length === 1 ? '' : 's'} available
+              </p>
+            </div>
+          </div>
+        </header>
+
+        <div class="grid gap-3.5 sm:grid-cols-2">
+          {enriched.map(({ slug, title, artist, key, tags, snippet }) => (
+            <a
+              href={`/song/${slug}/`}
+              class="group block rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/40 hover:bg-wok-panel/80 transition-all p-4 shadow-md hover:border-wok-accent/40 hover:-translate-y-0.5 duration-150"
+            >
+              <div class="flex items-start justify-between gap-2.5 mb-2">
+                <div class="min-w-0">
+                  <h2 class="text-base sm:text-lg font-bold tracking-tight text-wok-text group-hover:text-wok-accent transition-colors truncate">
+                    {title}
+                  </h2>
+                  <p class="text-wok-muted text-xs truncate mt-0.5">
+                    {artist}
+                  </p>
+                </div>
+                {key && (
+                  <span class="shrink-0 inline-flex items-center px-2 py-0.5 rounded-md bg-wok-chord/10 text-wok-chord border border-wok-chord/30 text-[11px] font-mono font-bold">
+                    Key {key}
+                  </span>
+                )}
+              </div>
+
+              {snippet && (
+                <p class="text-xs text-wok-muted/90 italic leading-relaxed line-clamp-2 mb-3 pl-2 border-l-2 border-black/10 dark:border-white/10">
+                  “{snippet}…”
+                </p>
+              )}
+
+              <div class="flex items-center justify-between text-[11px] pt-1">
+                <div class="flex flex-wrap gap-1">
+                  {tags.slice(0, 2).map((t: string) => (
+                    <span
+                      key={t}
+                      class="inline-flex items-center px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-wok-muted capitalize"
+                    >
+                      #{t}
+                    </span>
+                  ))}
+                </div>
+                <span class="text-wok-muted/80 group-hover:text-wok-accent font-semibold inline-flex items-center gap-1">
+                  Play Chords →
+                </span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </main>
+
+      <aside class="lg:col-span-4 xl:col-span-3">
+        <div class="lg:sticky lg:top-16 space-y-4">
+          <div class="rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/30 p-4">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-wok-muted mb-3">
+              Popular Artists
+            </h3>
+            <ul class="space-y-1.5">
+              {otherArtists.map((a) => (
+                <li>
+                  <a
+                    href={`/artist/${a.slug}/`}
+                    class="flex items-center justify-between p-2 rounded-xl text-xs font-semibold text-wok-text hover:bg-black/5 dark:hover:bg-white/5 hover:text-wok-accent transition"
+                  >
+                    <span class="truncate">{a.name}</span>
+                    <span class="text-[10px] font-mono text-wok-muted px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5">
+                      {a.count}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>

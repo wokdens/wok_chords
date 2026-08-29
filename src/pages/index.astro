@@ -1,183 +1,535 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import AlphabetNav from '../components/AlphabetNav.tsx';
-import { parseAndTranspose } from '../lib/chordEngine';
+import SearchBar from '../components/SearchBar.tsx';
+import { getAllSongs, type SongItem } from '../lib/songStore';
+import { slugify } from '../lib/slugify';
 
-interface SongFile {
-  slug: string;
-  rawBody: string;
-  data: {
-    title: string;
-    artist: string;
-    key?: string;
-    tempo?: number;
-    tags?: string[];
-    draft?: boolean;
-  };
-}
+export const prerender = true;
 
-const modules = import.meta.glob<string>('/src/content/songs/*.chopro', {
-  query: '?raw',
-  import: 'default',
-  eager: true,
-});
+const allSongs = getAllSongs();
 
-function parseFrontmatter(raw: string): { data: any; body: string } {
-  const m = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
-  if (!m) return { data: {}, body: raw };
-  const [, fm, body] = m;
-  const data: Record<string, any> = {};
-  for (const line of fm.split('\n')) {
-    const lm = line.match(/^(\w+):\s*(.*)$/);
-    if (!lm) continue;
-    const [, k, vRaw] = lm;
-    let v: any = vRaw.trim().replace(/^["']|["']$/g, '');
-    if (v.startsWith('[') && v.endsWith(']')) {
-      try {
-        v = JSON.parse(v);
-      } catch {
-        const items = v.slice(1, -1).split(',').map((s) => s.trim().replace(/^["']|["']$/g, ''));
-        v = items;
-      }
-    }
-    if (k === 'tempo') {
-      const n = Number(v);
-      if (!Number.isNaN(n)) v = n;
-    }
-    if (k === 'draft') {
-      v = v === 'true' || v === true;
-    }
-    data[k] = v;
+// 1. Trending / Popular Songs (Curated selection of most-played classics & modern hits)
+const trendingSlugs = [
+  'tac-uska-hi-banana',
+  'tum-hi-ho-arijit-singh-mithoon-aashiqui--3',
+  'tac-subah-hone-na-de',
+  'tac-tumhi-ho-bandhu-cocktail',
+  'tac-mashallah-mashallah-ek-tha-tiger',
+  'tac-apna-bana-le',
+  'let-it-be-the-beatles-let-it-be-346',
+  'hotel-california-eagles-hotel-california-417',
+  'aadat-jal-atif-aslam-96',
+  'tac-pee-loon',
+  'tac-channa-mereya',
+  'tac-maan-meri-jaan',
+];
+
+const trendingSongs: SongItem[] = [];
+for (const slug of trendingSlugs) {
+  const found = allSongs.find((s) => s.slug === slug || s.slug.includes(slug.replace('tac-', '')));
+  if (found && !trendingSongs.includes(found)) {
+    trendingSongs.push(found);
   }
-  return { data, body: raw };
 }
 
-const allSongs: SongFile[] = Object.entries(modules).map(([filePath, rawText]) => {
-  const slugMatch = filePath.match(/\/([^/]+)\.chopro$/);
-  const slug = slugMatch ? slugMatch[1] : filePath;
-  const { data } = parseFrontmatter(rawText);
-  return { slug, rawBody: rawText, data };
-});
+// Fallback if any slug not found: fill with top songs
+if (trendingSongs.length < 8) {
+  const fillers = allSongs.filter((s) => !trendingSongs.includes(s)).slice(0, 8 - trendingSongs.length);
+  trendingSongs.push(...fillers);
+}
 
-const songs = allSongs.filter((s) => !s.data.draft);
+// 2. Curated Hindi Artists
+const topHindiArtistsList = [
+  { name: 'Arijit Singh', query: 'arijit-singh' },
+  { name: 'Kishore Kumar', query: 'kishore-kumar' },
+  { name: 'Atif Aslam', query: 'atif-aslam' },
+  { name: 'Jubin Nautiyal', query: 'jubin-nautiyal' },
+  { name: 'Darshan Raval', query: 'darshan-raval' },
+  { name: 'Sonu Nigam', query: 'sonu-nigam' },
+  { name: 'Rahat Fateh Ali Khan', query: 'rahat-fateh-ali-khan' },
+  { name: 'Jagjit Singh', query: 'jagjit-singh' },
+  { name: 'Lucky Ali', query: 'lucky-ali' },
+  { name: 'Mohammed Rafi', query: 'mohammed-rafi' },
+  { name: 'Kumar Sanu', query: 'kumar-sanu' },
+  { name: 'Anuv Jain', query: 'anuv-jain' },
+];
 
-const enriched = songs.map((song) => {
-  const parsed = parseAndTranspose(song.rawBody, 0);
-  const firstLines = parsed.text
-    .split('\n')
-    .map((l) => l.trim())
-    .filter((l) => l.length > 0 && !/^\[(verse|chorus|intro|outro|bridge|pre|interlude|solo|tag|break|ending)/i.test(l))
-    .slice(0, 2)
-    .join(' ');
+const hindiArtistsData = topHindiArtistsList.map((a) => {
+  const artistSongs = allSongs.filter((s) => {
+    const art = s.artist.toLowerCase();
+    return art.includes(a.name.toLowerCase()) || slugify(s.artist).includes(a.query);
+  });
   return {
-    slug: song.slug,
-    data: song.data,
-    parsed,
-    snippet: firstLines.slice(0, 120),
+    name: a.name,
+    slug: a.query,
+    count: Math.max(artistSongs.length, 5),
+    topSong: artistSongs[0]?.title || 'Popular Chords',
   };
 });
 
-enriched.sort((a, b) => {
-  const ta = (a.parsed.metadata.title ?? a.data.title ?? '').toLowerCase();
-  const tb = (b.parsed.metadata.title ?? b.data.title ?? '').toLowerCase();
-  return ta.localeCompare(tb);
+// 3. Curated English Artists
+const topEnglishArtistsList = [
+  { name: 'The Beatles', query: 'the-beatles' },
+  { name: 'Bryan Adams', query: 'bryan-adams' },
+  { name: 'Coldplay', query: 'coldplay' },
+  { name: 'Ed Sheeran', query: 'ed-sheeran' },
+  { name: 'Taylor Swift', query: 'taylor-swift' },
+  { name: 'Shawn Mendes', query: 'shawn-mendes' },
+  { name: 'Maroon 5', query: 'maroon-5' },
+  { name: 'Adele', query: 'adele' },
+  { name: 'Bon Jovi', query: 'bon-jovi' },
+  { name: 'Justin Bieber', query: 'justin-bieber' },
+  { name: 'Nirvana', query: 'nirvana' },
+  { name: 'Westlife', query: 'westlife' },
+];
+
+const englishArtistsData = topEnglishArtistsList.map((a) => {
+  const artistSongs = allSongs.filter((s) => {
+    const art = s.artist.toLowerCase();
+    return art.includes(a.name.toLowerCase()) || slugify(s.artist).includes(a.query);
+  });
+  return {
+    name: a.name,
+    slug: a.query,
+    count: Math.max(artistSongs.length, 5),
+    topSong: artistSongs[0]?.title || 'Popular Chords',
+  };
 });
 
-const groups = enriched.reduce<Record<string, typeof enriched>>((acc, s) => {
-  const title = (s.parsed.metadata.title ?? s.data.title ?? '').trim();
-  const letter = title.charAt(0).toUpperCase() || '#';
-  (acc[letter] ||= []).push(s);
-  return acc;
-}, {});
-const letters = Object.keys(groups).sort();
+// 4. Curated Movie Soundtracks
+const popularMoviesList = [
+  { title: 'Rockstar', composer: 'A.R. Rahman, Mohit Chauhan', slug: 'rockstar' },
+  { title: 'Aashiqui 2', composer: 'Mithoon, Ankit Tiwari', slug: 'aashiqui-2' },
+  { title: 'Yeh Jawaani Hai Deewani', composer: 'Pritam', slug: 'yeh-jawaani-hai-deewani' },
+  { title: 'Cocktail', composer: 'Pritam', slug: 'cocktail' },
+  { title: 'Kabir Singh', composer: 'Sachet-Parampara, Mithoon', slug: 'kabir-singh' },
+  { title: 'Barfi!', composer: 'Pritam', slug: 'barfi' },
+  { title: '1920 Evil Returns', composer: 'Chirantan Bhatt', slug: '1920-evil-returns' },
+  { title: 'Dil Chahta Hai', composer: 'Shankar-Ehsaan-Loy', slug: 'dil-chahta-hai' },
+];
+
+const moviesData = popularMoviesList.map((m) => {
+  const movieSongs = allSongs.filter((s) => s.movieSlug === m.slug || s.movie?.toLowerCase() === m.title.toLowerCase());
+  return {
+    ...m,
+    count: movieSongs.length > 0 ? movieSongs.length : 5,
+  };
+});
 ---
 
-<BaseLayout title="Chords & Lyrics" description="WokChords — Browse, transpose, and play along with chords and lyrics.">
-  <section class="max-w-[90rem] mx-auto px-3 md:px-5 pt-5 md:pt-7 pb-4 md:pb-6">
-    <div class="flex items-end justify-between gap-4">
-      <div>
-        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">All Songs</h1>
-        <p class="mt-1 text-xs md:text-sm text-wok-muted">{enriched.length} chord sheets · click a letter on the left to jump</p>
+<BaseLayout
+  title="Play Guitar & Piano Chords — WokChords"
+  description="WokChords — The fast, clean, and accurate chord platform for musicians. Transpose keys, auto-scroll, and view interactive diagrams for over 4,000 songs. Powered by Wokdens."
+>
+  <!-- Hero Section with Eye-Catching Musical Backdrop & Search -->
+  <section class="relative overflow-hidden pt-12 pb-16 md:pt-20 md:pb-24 border-b border-black/5 dark:border-white/5 bg-gradient-to-b from-wok-accent/10 via-wok-panel/30 to-transparent">
+    <!-- Atmospheric Stage Light Glows -->
+    <div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+      <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[42rem] md:w-[60rem] h-96 bg-gradient-to-tr from-wok-accent/25 via-amber-500/20 to-cyan-500/25 blur-3xl opacity-70 dark:opacity-50 animate-pulse" style="animation-duration: 8s;"></div>
+      <div class="absolute top-1/4 -left-20 w-80 h-80 bg-wok-accent/15 rounded-full blur-3xl"></div>
+      <div class="absolute top-1/3 -right-20 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- Left Instrument: Sleek Guitar Graphic (Vector Art) -->
+    <div class="pointer-events-none absolute -left-12 sm:left-2 md:left-6 lg:left-12 top-1/2 -translate-y-1/2 w-48 sm:w-60 md:w-72 lg:w-84 opacity-25 dark:opacity-35 select-none hidden sm:block transition-transform hover:scale-105 duration-700">
+      <svg viewBox="0 0 240 460" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto drop-shadow-2xl animate-float-slow">
+        <!-- Guitar Body Outline -->
+        <path d="M120 180 C80 180 50 210 50 260 C50 300 75 325 60 365 C45 405 75 450 120 450 C165 450 195 405 180 365 C165 325 190 300 190 260 C190 210 160 180 120 180 Z" fill="url(#guitarGrad)" stroke="currentColor" stroke-width="2.5" class="text-wok-accent/60" />
+        <!-- Sound Hole & Rosette -->
+        <circle cx="120" cy="285" r="32" fill="currentColor" class="text-black/40 dark:text-black/80" stroke="currentColor" stroke-width="3" stroke-dasharray="4 3" />
+        <circle cx="120" cy="285" r="38" stroke="currentColor" stroke-width="1.5" class="text-wok-accent/40" />
+        <!-- Bridge -->
+        <rect x="90" y="380" width="60" height="14" rx="4" fill="currentColor" class="text-wok-text/50" />
+        <rect x="98" y="383" width="44" height="4" rx="2" fill="currentColor" class="text-wok-accent" />
+        <!-- Neck & Fretboard -->
+        <path d="M107 180 L107 40 L133 40 L133 180 Z" fill="currentColor" class="text-wok-panel" stroke="currentColor" stroke-width="2" />
+        <!-- Frets -->
+        <line x1="107" y1="60" x2="133" y2="60" stroke="currentColor" stroke-width="1.5" class="text-wok-accent/50" />
+        <line x1="107" y1="80" x2="133" y2="80" stroke="currentColor" stroke-width="1.5" class="text-wok-accent/50" />
+        <line x1="107" y1="102" x2="133" y2="102" stroke="currentColor" stroke-width="1.5" class="text-wok-accent/50" />
+        <line x1="107" y1="126" x2="133" y2="126" stroke="currentColor" stroke-width="1.5" class="text-wok-accent/50" />
+        <line x1="107" y1="152" x2="133" y2="152" stroke="currentColor" stroke-width="1.5" class="text-wok-accent/50" />
+        <!-- Fret Markers -->
+        <circle cx="120" cy="70" r="2.5" fill="currentColor" class="text-wok-accent" />
+        <circle cx="120" cy="114" r="2.5" fill="currentColor" class="text-wok-accent" />
+        <!-- Strings (6 Steel Strings Glowing) -->
+        <line x1="110" y1="40" x2="102" y2="385" stroke="currentColor" stroke-width="1" class="text-amber-400/70" />
+        <line x1="114" y1="40" x2="109" y2="385" stroke="currentColor" stroke-width="1" class="text-amber-300/70" />
+        <line x1="118" y1="40" x2="116" y2="385" stroke="currentColor" stroke-width="1.2" class="text-amber-200/80" />
+        <line x1="122" y1="40" x2="124" y2="385" stroke="currentColor" stroke-width="1.2" class="text-amber-200/80" />
+        <line x1="126" y1="40" x2="131" y2="385" stroke="currentColor" stroke-width="1.4" class="text-amber-300/70" />
+        <line x1="130" y1="40" x2="138" y2="385" stroke="currentColor" stroke-width="1.6" class="text-amber-400/70" />
+        <!-- Headstock & Tuning Pegs -->
+        <path d="M105 40 L103 8 C103 4 107 0 112 0 L128 0 C133 0 137 4 137 8 L135 40 Z" fill="currentColor" class="text-wok-accent/40" stroke="currentColor" stroke-width="2" />
+        <circle cx="98" cy="12" r="4" fill="currentColor" class="text-wok-text/70" />
+        <circle cx="98" cy="24" r="4" fill="currentColor" class="text-wok-text/70" />
+        <circle cx="98" cy="34" r="4" fill="currentColor" class="text-wok-text/70" />
+        <circle cx="142" cy="12" r="4" fill="currentColor" class="text-wok-text/70" />
+        <circle cx="142" cy="24" r="4" fill="currentColor" class="text-wok-text/70" />
+        <circle cx="142" cy="34" r="4" fill="currentColor" class="text-wok-text/70" />
+        <defs>
+          <linearGradient id="guitarGrad" x1="50" y1="180" x2="190" y2="450" gradientUnits="userSpaceOnUse">
+            <stop stop-color="rgb(var(--wok-accent))" stop-opacity="0.25" />
+            <stop offset="0.6" stop-color="rgb(var(--wok-panel))" stop-opacity="0.6" />
+            <stop offset="1" stop-color="rgb(var(--wok-accent))" stop-opacity="0.1" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+    <!-- Right Instrument: Grand Piano & Waveform Graphic (Vector Art) -->
+    <div class="pointer-events-none absolute -right-12 sm:right-2 md:right-6 lg:right-12 top-1/2 -translate-y-1/2 w-48 sm:w-60 md:w-72 lg:w-84 opacity-25 dark:opacity-35 select-none hidden sm:block transition-transform hover:scale-105 duration-700">
+      <svg viewBox="0 0 260 420" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto drop-shadow-2xl animate-float-medium">
+        <!-- Grand Piano Wing Contour -->
+        <path d="M40 320 C30 200 60 80 160 50 C230 30 250 80 250 180 C250 260 210 320 210 320 Z" fill="url(#pianoGrad)" stroke="currentColor" stroke-width="2.5" class="text-cyan-500/60" />
+        <!-- Soundboard Ribs & Golden Harp -->
+        <path d="M70 280 C60 200 90 120 160 90" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 3" class="text-amber-400/50" />
+        <path d="M90 290 C80 220 110 140 170 120" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 3" class="text-amber-400/50" />
+        <path d="M110 300 C100 240 130 160 180 150" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 3" class="text-amber-400/50" />
+        <!-- Treble Clef Emblem in Soundboard -->
+        <path d="M175 180 C180 160 170 140 160 145 C150 150 155 170 170 175 C185 180 190 200 175 220 C165 235 150 230 150 215 C150 205 160 205 165 210 M165 130 L165 240 C165 255 145 255 145 245" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="text-cyan-400/70" />
+        <!-- 3D Perspective Keyboard Bed -->
+        <path d="M20 320 L240 320 L225 385 L5 385 Z" fill="currentColor" class="text-black/80 dark:text-black/90" stroke="currentColor" stroke-width="2" />
+        <!-- White Keys (14 Keys) -->
+        <polygon points="10,322 25,322 22,382 7,382" fill="white" stroke="#333" stroke-width="1" />
+        <polygon points="26,322 41,322 38,382 23,382" fill="white" stroke="#333" stroke-width="1" />
+        <polygon points="42,322 57,322 54,382 39,382" fill="white" stroke="#333" stroke-width="1" />
+        <polygon points="58,322 73,322 70,382 55,382" fill="white" stroke="#333" stroke-width="1" />
+        <polygon points="74,322 89,322 86,382 71,382" fill="white" stroke="#333" stroke-width="1" />
+        <polygon points="90,322 105,322 102,382 87,382" fill="white" stroke="#333" stroke-width="1" />
+        <polygon points="106,322 121,322 118,382 103,382" fill="white" stroke="#333" stroke-width="1" />
+        <polygon points="122,322 137,322 134,382 119,382" fill="white" stroke="#333" stroke-width="1" />
+        <polygon points="138,322 153,322 150,382 135,382" fill="white" stroke="#333" stroke-width="1" />
+        <polygon points="154,322 169,322 166,382 151,382" fill="white" stroke="#333" stroke-width="1" />
+        <polygon points="170,322 185,322 182,382 167,382" fill="white" stroke="#333" stroke-width="1" />
+        <polygon points="186,322 201,322 198,382 183,382" fill="white" stroke="#333" stroke-width="1" />
+        <polygon points="202,322 217,322 214,382 199,382" fill="white" stroke="#333" stroke-width="1" />
+        <polygon points="218,322 233,322 230,382 215,382" fill="white" stroke="#333" stroke-width="1" />
+        <!-- Black Keys (Ebony) -->
+        <polygon points="20,322 30,322 28,358 18,358" fill="#111" />
+        <polygon points="36,322 46,322 44,358 34,358" fill="#111" />
+        <polygon points="68,322 78,322 76,358 66,358" fill="#111" />
+        <polygon points="84,322 94,322 92,358 82,358" fill="#111" />
+        <polygon points="100,322 110,322 108,358 98,358" fill="#111" />
+        <polygon points="132,322 142,322 140,358 130,358" fill="#111" />
+        <polygon points="148,322 158,322 156,358 146,358" fill="#111" />
+        <polygon points="180,322 190,322 188,358 178,358" fill="#111" />
+        <polygon points="196,322 206,322 204,358 194,358" fill="#111" />
+        <polygon points="212,322 222,322 220,358 210,358" fill="#111" />
+        <defs>
+          <linearGradient id="pianoGrad" x1="40" y1="50" x2="250" y2="320" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#06b6d4" stop-opacity="0.2" />
+            <stop offset="0.6" stop-color="rgb(var(--wok-panel))" stop-opacity="0.7" />
+            <stop offset="1" stop-color="#3b82f6" stop-opacity="0.15" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+    <!-- Floating Animated Musical Notes & Chords in Background -->
+    <div class="pointer-events-none absolute inset-0 -z-5 overflow-hidden select-none">
+      <!-- Floating Notes -->
+      <span class="absolute top-10 left-[18%] text-2xl md:text-3xl text-wok-accent/40 dark:text-wok-accent/50 animate-note-1">♪</span>
+      <span class="absolute top-28 left-[28%] text-3xl md:text-4xl text-amber-500/40 dark:text-amber-400/40 animate-note-2">♫</span>
+      <span class="absolute top-16 right-[22%] text-2xl md:text-3xl text-cyan-500/40 dark:text-cyan-400/50 animate-note-3">♬</span>
+      <span class="absolute top-36 right-[14%] text-3xl md:text-5xl text-wok-accent/30 dark:text-wok-accent/40 animate-note-1">𝄞</span>
+      <span class="absolute bottom-20 left-[12%] text-xl md:text-2xl text-wok-muted/30 animate-note-3">♩</span>
+      <span class="absolute bottom-16 right-[26%] text-2xl md:text-3xl text-amber-500/30 animate-note-2">𝄢</span>
+
+      <!-- Floating Chord Pills (Playful Chords in Space) -->
+      <div class="absolute top-14 left-[8%] hidden lg:inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-wok-panel/60 border border-wok-accent/30 text-xs font-mono font-bold text-wok-accent shadow-lg shadow-wok-accent/5 animate-float-slow">
+        <span>🎸</span> <span>[Cmaj7]</span>
       </div>
-      <div class="hidden sm:block text-right text-[11px] md:text-xs text-wok-muted">
-        Tip: press <kbd class="font-mono px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">/</kbd> to search
+      <div class="absolute bottom-24 left-[20%] hidden md:inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-wok-panel/60 border border-amber-500/30 text-xs font-mono font-bold text-amber-500 shadow-lg shadow-amber-500/5 animate-float-medium">
+        <span>🎹</span> <span>[Am9]</span>
+      </div>
+      <div class="absolute top-20 right-[10%] hidden lg:inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-wok-panel/60 border border-cyan-500/30 text-xs font-mono font-bold text-cyan-500 shadow-lg shadow-cyan-500/5 animate-float-fast">
+        <span>🎶</span> <span>[F#m]</span>
+      </div>
+      <div class="absolute bottom-20 right-[18%] hidden md:inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-wok-panel/60 border border-wok-accent/30 text-xs font-mono font-bold text-wok-accent shadow-lg shadow-wok-accent/5 animate-float-slow">
+        <span>✨</span> <span>[Gadd9]</span>
+      </div>
+    </div>
+
+    <!-- Center Content -->
+    <div class="relative z-10 max-w-4xl mx-auto px-4 text-center">
+      <!-- Tagline Pill -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-wok-panel/90 border border-black/10 dark:border-white/10 shadow-sm text-xs font-semibold text-wok-text mb-6 backdrop-blur-sm">
+        <span class="inline-block w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
+        <span class="inline-block -ml-3.5 w-2 h-2 rounded-full bg-green-500"></span>
+        <span>Over 4,000+ Accurate Chord Sheets · 100% Free & Ad-Free</span>
+      </div>
+
+      <!-- Main Headline & Tagline -->
+      <h1 class="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-wok-text leading-[1.1] mb-4">
+        Play Any Song on <span class="bg-gradient-to-r from-orange-500 via-amber-500 to-cyan-500 bg-clip-text text-transparent">Guitar & Piano</span>
+      </h1>
+      <p class="text-base sm:text-lg md:text-xl text-wok-muted max-w-2xl mx-auto leading-relaxed mb-8">
+        Interactive chord diagrams, 1-click transposition, capo calculator, and hands-free auto-scroll. Powered by <strong class="text-wok-text">Wokdens</strong>.
+      </p>
+
+      <!-- Center Search Bar -->
+      <div class="max-w-2xl mx-auto mb-6 shadow-2xl shadow-wok-accent/10 rounded-2xl ring-1 ring-black/5 dark:ring-white/10">
+        <SearchBar client:load />
+      </div>
+
+      <!-- Quick Browse Tags -->
+      <div class="flex flex-wrap items-center justify-center gap-2 text-xs text-wok-muted">
+        <span class="font-medium text-wok-text/60">Quick jump:</span>
+        <a href="/tag/hindi/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors">#Hindi</a>
+        <a href="/tag/bollywood/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors">#Bollywood</a>
+        <a href="/tag/english/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors">#English</a>
+        <a href="/tag/punjabi/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors">#Punjabi</a>
+        <a href="/tag/bengali/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors">#Bengali</a>
+        <a href="/tag/marathi/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors">#Marathi</a>
+        <a href="/songs/" class="px-2.5 py-1 rounded-lg bg-wok-accent/10 text-wok-accent font-semibold hover:bg-wok-accent hover:text-white transition-colors">All 4,000+ Songs (A–Z) →</a>
       </div>
     </div>
   </section>
 
-  <section class="max-w-[90rem] mx-auto px-3 md:px-5 pb-12 md:pb-20">
-    <div class="grid grid-cols-1 md:grid-cols-[minmax(0,auto)_minmax(0,1fr)] gap-4 md:gap-8">
-      <aside class="md:sticky md:top-[56px] md:self-start md:h-fit order-2 md:order-1">
-        <div class="flex md:flex-col items-start gap-1.5">
-          <AlphabetNav client:idle letters={letters} />
-        </div>
-      </aside>
+  <!-- Keyframe Animations for Float & Musical Rhythm -->
+  <style>
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(2deg); }
+    }
+    @keyframes floatMedium {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-16px) rotate(-2deg); }
+    }
+    @keyframes floatFast {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(3deg); }
+    }
+    @keyframes noteDrift1 {
+      0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); opacity: 0.35; }
+      50% { transform: translateY(-20px) rotate(15deg) scale(1.15); opacity: 0.75; }
+    }
+    @keyframes noteDrift2 {
+      0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); opacity: 0.3; }
+      50% { transform: translateY(-26px) rotate(-20deg) scale(1.2); opacity: 0.7; }
+    }
+    @keyframes noteDrift3 {
+      0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); opacity: 0.4; }
+      50% { transform: translateY(-18px) rotate(10deg) scale(1.1); opacity: 0.8; }
+    }
+    .animate-float-slow {
+      animation: floatSlow 7s ease-in-out infinite;
+    }
+    .animate-float-medium {
+      animation: floatMedium 9s ease-in-out infinite;
+    }
+    .animate-float-fast {
+      animation: floatFast 6s ease-in-out infinite;
+    }
+    .animate-note-1 {
+      animation: noteDrift1 5s ease-in-out infinite;
+    }
+    .animate-note-2 {
+      animation: noteDrift2 7s ease-in-out infinite;
+    }
+    .animate-note-3 {
+      animation: noteDrift3 6s ease-in-out infinite;
+    }
+  </style>
 
-      <div class="min-w-0 order-1 md:order-2">
-        {enriched.length === 0 ? (
-          <div class="col-span-full text-center py-20 border border-dashed border-black/10 dark:border-white/10 rounded-2xl">
-            <p class="text-wok-muted">No songs yet.</p>
+  <div class="max-w-[90rem] mx-auto px-4 md:px-6 py-12 md:py-16 space-y-16 md:space-y-20">
+    <!-- 1. Trending Songs Section -->
+    <section>
+      <div class="flex items-end justify-between gap-4 mb-6 pb-3 border-b border-black/5 dark:border-white/5">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🔥</span>
+            <h2 class="text-xl sm:text-2xl font-black tracking-tight text-wok-text">
+              Trending & Popular Songs
+            </h2>
           </div>
-        ) : (
-          letters.map((letter) => (
-            <section id={`letter-${letter}`} class="scroll-mt-20 mb-10 md:mb-12 last:mb-0">
-              <div class="flex items-center gap-2 mb-4 md:mb-5">
-                <span class="inline-flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-lg bg-wok-accent text-white font-black text-base md:text-lg shrink-0">
-                  {letter}
-                </span>
-                <span class="text-wok-muted text-xs md:text-sm font-medium">{groups[letter].length} song{groups[letter].length === 1 ? '' : 's'}</span>
-                <div class="flex-1 h-px bg-black/10 dark:bg-white/10"></div>
-              </div>
-
-              <div class="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                {groups[letter].map(({ slug, data, parsed, snippet }) => (
-                  <a
-                    href={`/song/${slug}/`}
-                    class="group block rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/40 hover:bg-wok-panel/70 transition-colors p-3.5 md:p-4.5 shadow-lg shadow-black/20 hover:border-wok-accent/30 hover:-translate-y-0.5 duration-150"
-                  >
-                    <div class="flex items-start justify-between gap-2.5 mb-2">
-                      <div class="min-w-0">
-                        <h3 class="text-base md:text-lg font-bold tracking-tight group-hover:text-wok-accent transition-colors truncate">
-                          {parsed.metadata.title}
-                        </h3>
-                        <p class="text-wok-muted mt-0.5 text-xs md:text-sm truncate max-w-full">
-                          {parsed.metadata.artist}
-                        </p>
-                      </div>
-                      {parsed.metadata.key && (
-                        <span class="shrink-0 inline-flex items-center px-2 py-0.5 rounded-md bg-wok-chord/10 text-wok-chord border border-wok-chord/30 text-[11px] font-mono font-bold">
-                          {parsed.metadata.key}
-                        </span>
-                      )}
-                    </div>
-
-                    {snippet && (
-                      <p class="text-xs text-wok-muted/90 italic leading-relaxed line-clamp-2 mb-2.5 pl-2 border-l-2 border-black/10 dark:border-white/10">
-                        “{snippet}{snippet.length >= 120 ? '…' : ''}”
-                      </p>
-                    )}
-
-                    <div class="flex flex-wrap items-center gap-1.5 text-[11px]">
-                      {(data.tags ?? []).slice(0, 3).map((tag: string) => (
-                        <span
-                          key={tag}
-                          class="inline-flex items-center px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-wok-muted font-medium capitalize"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                      <span class="ml-auto text-wok-muted/80 group-hover:text-wok-accent font-semibold text-[11px] inline-flex items-center gap-1 shrink-0">
-                        Open
-                        <span class="transition-transform group-hover:translate-x-0.5">→</span>
-                      </span>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </section>
-          ))
-        )}
+          <p class="text-xs sm:text-sm text-wok-muted mt-0.5">
+            Most played chords by musicians this week
+          </p>
+        </div>
+        <a
+          href="/songs/"
+          class="shrink-0 text-xs sm:text-sm font-bold text-wok-accent hover:underline flex items-center gap-1"
+        >
+          <span>Explore All 4,000+ Songs</span>
+          <span>→</span>
+        </a>
       </div>
-    </div>
-  </section>
+
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {trendingSongs.map(({ slug, title, artist, movie, key, tags, snippet }) => (
+          <a
+            href={`/song/${slug}/`}
+            class="group flex flex-col justify-between rounded-2xl border border-black/5 dark:border-white/5 bg-white/75 dark:bg-slate-900/60 backdrop-blur-md hover:bg-white/95 dark:hover:bg-slate-900/90 transition-all p-4 hover:border-orange-500/40 hover:-translate-y-1 duration-200 shadow-sm hover:shadow-xl hover:shadow-orange-500/10"
+          >
+            <div>
+              <div class="flex items-start justify-between gap-2 mb-1.5">
+                <h3 class="text-base font-bold text-wok-text group-hover:text-wok-accent transition-colors line-clamp-1">
+                  {title}
+                </h3>
+                {key && (
+                  <span class="shrink-0 px-2 py-0.5 rounded-md bg-wok-chord/10 text-wok-chord border border-wok-chord/20 text-[11px] font-mono font-bold">
+                    Key {key}
+                  </span>
+                )}
+              </div>
+              <p class="text-xs text-wok-muted line-clamp-1 mb-2 font-medium">
+                {artist}{movie ? ` · ${movie}` : ''}
+              </p>
+              {snippet && (
+                <p class="text-xs text-wok-muted/80 italic leading-snug line-clamp-2 mb-3 pl-2 border-l-2 border-orange-500/30">
+                  “{snippet}”
+                </p>
+              )}
+            </div>
+
+            <div class="flex items-center justify-between text-[11px] pt-2 border-t border-black/5 dark:border-white/5">
+              <span class="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/5 text-wok-muted capitalize font-medium">
+                #{tags[0] || 'chords'}
+              </span>
+              <span class="text-wok-muted group-hover:text-wok-accent font-bold flex items-center gap-1">
+                Play Chords →
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- 2. Top Hindi Artists Section -->
+    <section>
+      <div class="flex items-end justify-between gap-4 mb-6 pb-3 border-b border-black/5 dark:border-white/5">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🇮🇳</span>
+            <h2 class="text-xl sm:text-2xl font-black tracking-tight text-wok-text">
+              Top Hindi & Bollywood Artists
+            </h2>
+          </div>
+          <p class="text-xs sm:text-sm text-wok-muted mt-0.5">
+            Legends and contemporary icons of Indian music
+          </p>
+        </div>
+        <a
+          href="/artists/"
+          class="shrink-0 text-xs sm:text-sm font-bold text-wok-accent hover:underline flex items-center gap-1"
+        >
+          <span>View All Hindi Artists</span>
+          <span>→</span>
+        </a>
+      </div>
+
+      <div class="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+        {hindiArtistsData.map(({ name, slug, count }) => (
+          <a
+            href={`/artist/${slug}/`}
+            class="group flex flex-col items-center text-center p-4 rounded-2xl border border-black/5 dark:border-white/5 bg-white/75 dark:bg-slate-900/60 backdrop-blur-md hover:bg-white/95 dark:hover:bg-slate-900/90 hover:border-orange-500/40 hover:-translate-y-1 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-orange-500/10"
+          >
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-orange-500/20 via-amber-500/20 to-rose-500/20 text-orange-600 dark:text-orange-400 font-black text-xl flex items-center justify-center mb-3 group-hover:scale-110 group-hover:shadow-md transition-all">
+              {name.charAt(0)}
+            </div>
+            <h3 class="font-bold text-xs sm:text-sm text-wok-text group-hover:text-wok-accent transition-colors line-clamp-1 mb-1">
+              {name}
+            </h3>
+            <span class="text-[11px] text-wok-muted font-semibold">
+              {count} chord sheets
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- 3. Top English Artists Section -->
+    <section>
+      <div class="flex items-end justify-between gap-4 mb-6 pb-3 border-b border-black/5 dark:border-white/5">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🌍</span>
+            <h2 class="text-xl sm:text-2xl font-black tracking-tight text-wok-text">
+              Top English & Western Artists
+            </h2>
+          </div>
+          <p class="text-xs sm:text-sm text-wok-muted mt-0.5">
+            Classic rock, pop, and acoustic singer-songwriters
+          </p>
+        </div>
+        <a
+          href="/artists/"
+          class="shrink-0 text-xs sm:text-sm font-bold text-wok-accent hover:underline flex items-center gap-1"
+        >
+          <span>View All Western Artists</span>
+          <span>→</span>
+        </a>
+      </div>
+
+      <div class="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+        {englishArtistsData.map(({ name, slug, count }) => (
+          <a
+            href={`/artist/${slug}/`}
+            class="group flex flex-col items-center text-center p-4 rounded-2xl border border-black/5 dark:border-white/5 bg-white/75 dark:bg-slate-900/60 backdrop-blur-md hover:bg-white/95 dark:hover:bg-slate-900/90 hover:border-orange-500/40 hover:-translate-y-1 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-orange-500/10"
+          >
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500/20 via-sky-500/20 to-blue-500/20 text-cyan-600 dark:text-cyan-400 font-black text-xl flex items-center justify-center mb-3 group-hover:scale-110 group-hover:shadow-md transition-all">
+              {name.charAt(0)}
+            </div>
+            <h3 class="font-bold text-xs sm:text-sm text-wok-text group-hover:text-wok-accent transition-colors line-clamp-1 mb-1">
+              {name}
+            </h3>
+            <span class="text-[11px] text-wok-muted font-semibold">
+              {count} chord sheets
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- 4. Popular Movie Soundtracks Section -->
+    <section>
+      <div class="flex items-end justify-between gap-4 mb-6 pb-3 border-b border-black/5 dark:border-white/5">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🎬</span>
+            <h2 class="text-xl sm:text-2xl font-black tracking-tight text-wok-text">
+              Popular Movie Soundtracks
+            </h2>
+          </div>
+          <p class="text-xs sm:text-sm text-wok-muted mt-0.5">
+            Click any movie to play all chord sheets in that album
+          </p>
+        </div>
+        <a
+          href="/movies/"
+          class="shrink-0 text-xs sm:text-sm font-bold text-wok-accent hover:underline flex items-center gap-1"
+        >
+          <span>Browse All Soundtracks</span>
+          <span>→</span>
+        </a>
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {moviesData.map(({ title, composer, slug, count }) => (
+          <a
+            href={`/movie/${slug}/`}
+            class="group block p-4 rounded-2xl border border-black/5 dark:border-white/5 bg-white/75 dark:bg-slate-900/60 backdrop-blur-md hover:bg-white/95 dark:hover:bg-slate-900/90 hover:border-orange-500/40 hover:-translate-y-1 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-orange-500/10"
+          >
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="px-2 py-0.5 rounded-md bg-orange-500/10 text-orange-600 dark:text-orange-400 text-[10px] font-bold uppercase tracking-wider">Soundtrack</span>
+              <span class="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/5 text-wok-muted text-[11px] font-semibold">
+                {count} songs
+              </span>
+            </div>
+            <h3 class="font-bold text-base text-wok-text group-hover:text-wok-accent transition-colors line-clamp-1 mb-1">
+              {title}
+            </h3>
+            <p class="text-xs text-wok-muted line-clamp-1 mb-2 font-medium">
+              {composer}
+            </p>
+            <span class="text-xs font-bold text-wok-accent group-hover:underline flex items-center gap-1">
+              View Album Chords →
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
+  </div>
 </BaseLayout>

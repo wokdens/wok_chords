@@ -4,19 +4,19 @@
 
 @layer base {
   :root {
-    --wok-bg: 255 253 249;
-    --wok-panel: 255 250 240;
+    --wok-bg: 254 251 246;
+    --wok-panel: 255 255 255;
     --wok-accent: 234 88 12;
-    --wok-chord: 8 145 178;
+    --wok-chord: 14 116 144;
     --wok-text: 15 23 42;
     --wok-muted: 71 85 105;
   }
   .dark {
-    --wok-bg: 11 15 23;
+    --wok-bg: 10 14 23;
     --wok-panel: 17 24 39;
     --wok-accent: 249 115 22;
     --wok-chord: 34 211 238;
-    --wok-text: 229 231 235;
+    --wok-text: 241 245 249;
     --wok-muted: 148 163 184;
   }
   html {
@@ -34,6 +34,26 @@
   }
   #chord-sheet {
     -webkit-overflow-scrolling: touch;
+  }
+
+  /* Custom scrollbars for clean UI */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--wok-muted) / 0.3) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--wok-muted) / 0.3);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--wok-accent) / 0.6);
   }
 }
 
@@ -54,8 +74,12 @@
     margin-top: -6px;
     border-radius: 9999px;
     background: rgb(var(--wok-accent));
-    box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
-    border: 2px solid rgb(var(--wok-bg));
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    transition: transform 0.15s ease, background-color 0.15s ease;
+  }
+  input[type="range"].wok-range::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
   }
   input[type="range"].wok-range::-moz-range-track {
     height: 6px;
@@ -67,36 +91,18 @@
     width: 18px;
     border-radius: 9999px;
     background: rgb(var(--wok-accent));
-    border: 2px solid rgb(var(--wok-bg));
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    transition: transform 0.15s ease, background-color 0.15s ease;
   }
-}
 
-@layer components {
-  .chord-line {
-    @apply font-mono text-wok-chord font-bold text-sm md:text-base leading-tight tracking-wide select-none;
+  /* Glassmorphic panel effect */
+  .wok-glass {
+    @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-black/5 dark:border-white/10;
   }
-  .lyric-line {
-    @apply font-sans text-wok-text text-base md:text-lg leading-relaxed;
-  }
-  .section-heading {
-    @apply uppercase text-xs md:text-sm font-semibold text-wok-muted tracking-widest mt-6 mb-2 border-l-2 border-wok-accent pl-3;
-  }
-  .chord-block {
-    @apply inline-flex flex-col leading-none align-bottom mr-2;
-  }
-  .chord-block .chord {
-    @apply chord-line mb-1;
-  }
-  .chord-block .lyric {
-    @apply lyric-line whitespace-pre;
-  }
-}
 
-@layer utilities {
-  .input-surface {
-    @apply border-black/10 bg-white/70 text-wok-text placeholder:text-wok-muted/70 focus:border-wok-accent/50 focus:ring-wok-accent/20;
-  }
-  .dark .input-surface {
-    @apply border-white/10 bg-black/30 text-wok-text placeholder:text-wok-muted/80 focus:border-wok-accent/50 focus:ring-wok-accent/20;
+  /* Interactive card hover sheen */
+  .wok-card {
+    @apply relative overflow-hidden rounded-2xl bg-white/70 dark:bg-slate-900/60 backdrop-blur-md border border-black/5 dark:border-white/5 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-500/10 hover:border-orange-500/30;
   }
 }

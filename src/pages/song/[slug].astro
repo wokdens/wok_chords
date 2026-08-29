@@ -2,6 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import InteractiveControls from '../../components/InteractiveControls';
 import { parseAndTranspose, extractLyricsText } from '../../lib/chordEngine';
+import { slugify } from '../../lib/slugify';
+import { getAllSongs } from '../../lib/songStore';
 
 interface SongFile {
   slug: string;
@@ -9,6 +11,8 @@ interface SongFile {
   data: {
     title: string;
     artist: string;
+    movie?: string;
+    movieSlug?: string;
     key?: string;
     tempo?: number;
     tags?: string[];
@@ -16,111 +20,51 @@ interface SongFile {
   };
 }
 
-interface IndexedSong {
-  slug: string;
-  title: string;
-  artist: string;
-  key?: string;
-  tags?: string[];
-  snippet?: string;
-}
-
-const ALL_SONGS: Promise<IndexedSong[]> = (async () => {
-  const mods = import.meta.glob<string>('/src/content/songs/*.chopro', {
-    query: '?raw',
-    import: 'default',
-    eager: true,
-  });
-  const rows: IndexedSong[] = [];
-  for (const [filePath, rawText] of Object.entries(mods)) {
-    const fm = rawText.match(/^---\n([\s\S]*?)\n---\n?/)?.[1] ?? '';
-    const data: Record<string, any> = {};
-    for (const line of fm.split('\n')) {
-      const m = line.match(/^(\w+):\s*(.*)$/);
-      if (!m) continue;
-      const [, k, vRaw] = m;
-      let v: any = vRaw.trim().replace(/^["']|["']$/g, '');
-      if (v.startsWith('[') && v.endsWith(']')) {
-        try { v = JSON.parse(v); } catch {
-          v = v.slice(1, -1).split(',').map((s: string) => s.trim().replace(/^["']|["']$/g, ''));
-        }
-      }
-      data[k] = v;
-    }
-    if (data.draft === true || data.draft === 'true') continue;
-    const slug = filePath.match(/\/([^/]+)\.chopro$/)?.[1] ?? filePath;
-    const snippetMatch = rawText
-      .replace(/^---[\s\S]*?---\n?/, '')
-      .replace(/\{[^{}]*\}/g, '')
-      .replace(/\[[^\]]*\]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .slice(0, 70);
-    rows.push({
-      slug,
-      title: data.title ?? slug.replace(/-/g, ' '),
-      artist: data.artist ?? 'Unknown Artist',
-      key: data.key,
-      tags: data.tags ?? [],
-      snippet: snippetMatch,
-    });
-  }
-  return rows;
-})();
-
 export const prerender = true;
 
 export const getStaticPaths = async () => {
-  const modules = import.meta.glob<string>('/src/content/songs/*.chopro', {
-    query: '?raw',
-    import: 'default',
-    eager: true,
-  });
-  const list: SongFile[] = Object.entries(modules).map(([filePath, rawText]) => {
-    const m = rawText.match(/^---\n([\s\S]*?)\n---\n?/);
-    const data: Record<string, any> = {};
-    if (m) {
-      for (const line of m[1].split('\n')) {
-        const lm = line.match(/^(\w+):\s*(.*)$/);
-        if (!lm) continue;
-        const [, k, vRaw] = lm;
-        let v: any = vRaw.trim().replace(/^["']|["']$/g, '');
-        if (v.startsWith('[') && v.endsWith(']')) {
-          try {
-            v = JSON.parse(v);
-          } catch {
-            v = v.slice(1, -1).split(',').map((s: string) => s.trim().replace(/^["']|["']$/g, ''));
-          }
-        }
-        if (k === 'tempo') {
-          const n = Number(v);
-          if (!Number.isNaN(n)) v = n;
-        }
-        if (k === 'draft') {
-          v = v === 'true' || v === true;
-        }
-        data[k] = v;
-      }
-    }
-    const slugMatch = filePath.match(/\/([^/]+)\.chopro$/);
-    const slug = slugMatch ? slugMatch[1] : filePath;
-    return { slug, rawBody: rawText, data } as SongFile;
-  });
-  return list
-    .filter((s) => !s.data.draft)
-    .map((song) => ({
-      params: { slug: song.slug },
-      props: { song },
-    }));
+  const songs = getAllSongs();
+  return songs.map((s) => ({
+    params: { slug: s.slug },
+    props: {
+      song: {
+        slug: s.slug,
+        rawBody: s.rawBody,
+        data: {
+          title: s.title,
+          artist: s.artist,
+          movie: s.movie,
+          movieSlug: s.movieSlug,
+          key: s.key,
+          tempo: s.tempo,
+          tags: s.tags,
+          draft: s.draft,
+        },
+      },
+    },
+  }));
 };
 
 function normalize(s: string): string {
   return s.toLowerCase().trim();
 }
 
+interface IndexedSong {
+  slug: string;
+  title: string;
+  artist: string;
+  movie?: string;
+  tags: string[];
+}
+
 function scoreRelated(curr: SongFile, cand: IndexedSong): number {
   if (cand.slug === curr.slug) return -1;
   let score = 0;
+
+  if (curr.data.movie && cand.movie && normalize(curr.data.movie) === normalize(cand.movie)) {
+    score += 20;
+  }
+
   const curArtist = normalize(curr.data.artist);
   const candArtist = normalize(cand.artist);
   if (curArtist && candArtist && curArtist === candArtist) score += 10;
@@ -151,51 +95,81 @@ const rawBody = song.rawBody;
 const initial = parseAndTranspose(rawBody, 0);
 const title = initial.metadata.title;
 const artist = initial.metadata.artist;
+const movie = song.data.movie;
+const movieSlug = song.data.movieSlug;
 const originalKey = initial.metadata.key ?? initial.key;
 const tempo = initial.metadata.tempo;
 const timeSig = initial.metadata.time;
 const lyricsText = extractLyricsText(rawBody);
 const pageUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
 
-const firstLine = lyricsText.split('\n').find((l) => l.trim().length > 0) ?? title;
-const description = `${title} by ${artist}${originalKey ? ` · Key: ${originalKey}` : ''}. Chords & lyrics on WokChords — ${firstLine.trim().slice(0, 120)}`;
+const artistSlug = slugify(artist);
+const pageTitle = `${title} Chords & Lyrics (${originalKey ? `Key of ${originalKey}` : 'Original'}) — ${artist}${movie ? ` (${movie})` : ''} | Guitar & Piano Chords`;
+const description = `Play ${title} chords by ${artist}${movie ? ` from ${movie}` : ''} on Guitar, Ukulele & Piano. Features key transpose, capo calculator, auto-scroll, and interactive chord fingering diagrams on WokChords.`;
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'MusicComposition',
-  name: title,
-  author: {
-    '@type': 'Person',
-    name: artist,
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'MusicComposition',
+    name: title,
+    author: {
+      '@type': 'Person',
+      name: artist,
+    },
+    byArtist: {
+      '@type': 'MusicGroup',
+      name: artist,
+    },
+    inLanguage: 'en',
+    url: pageUrl.toString(),
+    ...(originalKey ? { musicalKey: originalKey } : {}),
+    ...(tempo ? { tempo } : {}),
+    ...(timeSig ? { timeSignature: timeSig } : {}),
+    lyrics: {
+      '@type': 'CreativeWork',
+      text: lyricsText.slice(0, 4000),
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'WokChords',
+    },
+    isAccessibleForFree: true,
+    keywords: ['chords', 'guitar chords', 'piano chords', 'ukulele chords', 'lyrics', artist, title, movie].filter(Boolean).join(', '),
   },
-  byArtist: {
-    '@type': 'MusicGroup',
-    name: artist,
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: Astro.site?.toString() ?? 'https://wokchords.wokdens.com',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: artist,
+        item: `${Astro.site?.toString() ?? 'https://wokchords.wokdens.com'}/artist/${artistSlug}/`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: title,
+        item: pageUrl.toString(),
+      },
+    ],
   },
-  inLanguage: 'en',
-  url: pageUrl.toString(),
-  ...(originalKey ? { musicalKey: originalKey } : {}),
-  ...(tempo ? { tempo } : {}),
-  ...(timeSig ? { timeSignature: timeSig } : {}),
-  lyricist: {
-    '@type': 'Person',
-    name: artist,
-  },
-  lyrics: {
-    '@type': 'CreativeWork',
-    text: lyricsText.slice(0, 4000),
-  },
-  publisher: {
-    '@type': 'Organization',
-    name: 'WokChords',
-  },
-  isAccessibleForFree: true,
-  keywords: ['chords', 'lyrics', 'guitar', 'piano', 'ukulele', 'music', 'song', artist, title].join(', '),
-};
+];
 
-const tags = song.data.tags ?? [];
+const allSongs = getAllSongs().map((s) => ({
+  slug: s.slug,
+  title: s.title,
+  artist: s.artist,
+  movie: s.movie,
+  tags: s.tags,
+}));
 
-const allSongs = await ALL_SONGS;
 const related = allSongs
   .map((s) => ({ s, score: scoreRelated(song, s) }))
   .filter((x) => x.score >= 0)
@@ -210,66 +184,79 @@ const fallback = allSongs
 const relatedSongs = [...related, ...fallback].slice(0, 6);
 ---
 
-<BaseLayout title={`${title} — ${artist}`} description={description}>
+<BaseLayout title={pageTitle} description={description}>
   <script
     type="application/ld+json"
     set:html={JSON.stringify(jsonLd)}
   />
 
-  <div class="max-w-[90rem] mx-auto px-3 md:px-5 py-3 md:py-5">
-    <div class="grid grid-cols-12 gap-3 lg:gap-4 xl:gap-5">
-      <aside class="hidden xl:block xl:col-span-2 order-first" aria-label="Advertisement">
-        <div class="sticky top-16 space-y-6">
-          <div
-            class="w-full min-h-[280px] rounded-xl border border-dashed border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02]"
-            data-adsense-slot="left-sidebar"
-          />
-        </div>
-      </aside>
+  <div class="max-w-[90rem] mx-auto px-3 sm:px-6 py-4 md:py-6">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-wok-muted mb-4 uppercase tracking-wider font-semibold">
+      <a href="/" class="hover:text-wok-accent transition-colors">Home</a>
+      <span>/</span>
+      <a href={`/artist/${artistSlug}/`} class="hover:text-wok-accent transition-colors truncate">{artist}</a>
+      {movie && movieSlug && (
+        <>
+          <span>/</span>
+          <a href={`/movie/${movieSlug}/`} class="hover:text-wok-accent transition-colors truncate">{movie}</a>
+        </>
+      )}
+      <span>/</span>
+      <span class="text-wok-accent truncate">{title}</span>
+    </nav>
 
-      <article class="col-span-12 xl:col-span-8 order-2 min-w-0">
-        <header class="mb-3 md:mb-5">
-          <div class="flex items-center gap-2 mb-2">
-            <a
-              href="/"
-              class="text-xs uppercase tracking-wider text-wok-muted hover:text-wok-accent transition-colors"
-            >
-              ← All Songs
-            </a>
-          </div>
-          <h1 class="text-2xl md:text-4xl font-extrabold tracking-tight leading-tight mb-1">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+      <!-- Main Sheet Article -->
+      <article class="lg:col-span-8 xl:col-span-9 min-w-0">
+        <header class="mb-4 md:mb-6">
+          <h1 class="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight mb-2 text-wok-text">
             {title}
           </h1>
-          <p class="text-sm md:text-lg text-wok-muted mb-3">
-            {artist}
+          <p class="text-base sm:text-lg text-wok-muted mb-3 font-medium flex flex-wrap items-center gap-x-2">
+            <span>By <a href={`/artist/${artistSlug}/`} class="text-wok-accent hover:underline font-semibold">{artist}</a></span>
+            {movie && movieSlug && (
+              <span class="text-xs sm:text-sm font-normal text-wok-muted">
+                · From <a href={`/movie/${movieSlug}/`} class="text-wok-accent hover:underline font-semibold">🎬 {movie}</a>
+              </span>
+            )}
           </p>
-          <div class="flex flex-wrap gap-1.5 md:gap-2 items-center">
+          <div class="flex flex-wrap gap-2 items-center">
             {originalKey && (
-              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-wok-accent/10 text-wok-accent border border-wok-accent/30 text-xs font-semibold">
+              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-wok-chord/10 text-wok-chord border border-wok-chord/30 text-xs font-mono font-bold">
                 Key {originalKey}
               </span>
             )}
             {tempo && (
-              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-wok-muted text-xs font-medium">
+              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-wok-muted text-xs font-medium">
                 {tempo} BPM
               </span>
             )}
             {timeSig && (
-              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-wok-muted text-xs font-medium">
+              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-wok-muted text-xs font-medium">
                 {timeSig}
               </span>
             )}
-            {tags.map((tag) => (
-              <span
-                key={tag}
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20 text-xs font-medium capitalize"
+            {movie && movieSlug && (
+              <a
+                href={`/movie/${movieSlug}/`}
+                class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 text-xs font-semibold hover:bg-orange-500/20 transition-colors"
               >
-                {tag}
-              </span>
+                🎬 {movie} Soundtrack
+              </a>
+            )}
+            {song.data.tags?.map((t) => (
+              <a
+                href={`/tag/${slugify(t)}/`}
+                class="inline-flex items-center px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 text-wok-muted hover:text-wok-text text-xs transition-colors capitalize"
+              >
+                #{t}
+              </a>
             ))}
           </div>
         </header>
 
+        <!-- Interactive Sticky Controls -->
         <InteractiveControls
           client:load
           rawText={rawBody}
@@ -278,11 +265,12 @@ const relatedSongs = [...related, ...fallback].slice(0, 6);
           scrollTargetSelector="#chord-sheet"
         />
 
+        <!-- Original Clean Chord Sheet Display -->
         <div
           id="chord-sheet"
-          class="mt-4 md:mt-5 px-4 md:px-6 py-4 md:py-5 rounded-2xl bg-wok-panel/40 border border-black/5 dark:border-white/5 max-h-[85vh] overflow-y-auto overscroll-contain shadow-inner"
+          class="mt-4 md:mt-6 px-5 md:px-8 py-6 md:py-8 rounded-3xl bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl border border-black/5 dark:border-white/10 shadow-xl shadow-orange-950/5 ring-1 ring-black/5 dark:ring-white/5 overflow-x-auto"
         >
-          <div id="chord-sheet-mount" class="chordsheetjs space-y-0.5" set:html={initial.html}></div>
+          <div id="chord-sheet-mount" class="chordsheetjs select-text" set:html={initial.html}></div>
         </div>
 
         <noscript>
@@ -291,143 +279,133 @@ const relatedSongs = [...related, ...fallback].slice(0, 6);
             #chord-sheet-mount .lyrics, #chord-sheet-mount .lyric { color: #e5e7eb; }
           </style>
         </noscript>
+      </article>
 
-        <aside class="mt-6 xl:hidden" aria-label="Advertisement">
-          <div
-            class="w-full min-h-[120px] rounded-xl border border-dashed border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02]"
-            data-adsense-slot="mobile-inline"
-          />
-        </aside>
-
-        <footer class="mt-5 md:mt-7 pt-4 md:pt-5 border-t border-black/5 dark:border-white/5">
-          <dl class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 text-xs md:text-sm">
+      <!-- Sidebar -->
+      <aside class="lg:col-span-4 xl:col-span-3 space-y-6">
+        <!-- Song Details Card -->
+        <div class="rounded-2xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md p-5 shadow-sm">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-wok-muted mb-4">Song Details</h2>
+          <dl class="space-y-2.5 text-xs">
+            <div class="flex justify-between py-1 border-b border-black/5 dark:border-white/5">
+              <dt class="text-wok-muted">Artist</dt>
+              <dd class="font-semibold text-wok-text truncate max-w-[60%]">
+                <a href={`/artist/${artistSlug}/`} class="text-wok-accent hover:underline">{artist}</a>
+              </dd>
+            </div>
+            {movie && movieSlug && (
+              <div class="flex justify-between py-1 border-b border-black/5 dark:border-white/5">
+                <dt class="text-wok-muted">Movie / Album</dt>
+                <dd class="font-semibold text-wok-text truncate max-w-[60%]">
+                  <a href={`/movie/${movieSlug}/`} class="text-wok-accent hover:underline">{movie}</a>
+                </dd>
+              </div>
+            )}
             {originalKey && (
-              <div>
-                <dt class="text-wok-muted">Key</dt>
-                <dd class="font-mono font-semibold text-wok-chord">{originalKey}</dd>
+              <div class="flex justify-between py-1 border-b border-black/5 dark:border-white/5">
+                <dt class="text-wok-muted">Original Key</dt>
+                <dd class="font-mono font-bold text-wok-chord">{originalKey}</dd>
               </div>
             )}
             {tempo && (
-              <div>
+              <div class="flex justify-between py-1 border-b border-black/5 dark:border-white/5">
                 <dt class="text-wok-muted">Tempo</dt>
-                <dd class="font-mono font-semibold">{tempo} BPM</dd>
+                <dd class="font-mono font-semibold text-wok-text">{tempo} BPM</dd>
               </div>
             )}
-            {timeSig && (
-              <div>
-                <dt class="text-wok-muted">Time</dt>
-                <dd class="font-mono font-semibold">{timeSig}</dd>
-              </div>
-            )}
-            {tags.length > 0 && (
-              <div class="col-span-2 sm:col-span-1">
-                <dt class="text-wok-muted">Tags</dt>
-                <dd class="font-semibold truncate">{tags.slice(0, 3).join(' · ')}</dd>
-              </div>
-            )}
+            <div class="flex justify-between py-1">
+              <dt class="text-wok-muted">Tuning</dt>
+              <dd class="font-mono text-wok-muted">Standard (E A D G B E)</dd>
+            </div>
           </dl>
-        </footer>
-      </article>
+        </div>
 
-      <aside class="col-span-12 xl:col-span-2 order-3" aria-label="Related Songs">
-        <div class="xl:sticky xl:top-16 space-y-3 md:space-y-4">
-          <div class="rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/30 p-3 md:p-4">
-            <h2 class="text-xs font-bold uppercase tracking-widest text-wok-muted mb-3">
-              More
+        <!-- Related Songs Card -->
+        {relatedSongs.length > 0 && (
+          <div class="rounded-2xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md p-5 shadow-sm">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-wok-muted mb-4">
+              {movie ? `More from ${movie}` : `More by ${artist}`}
             </h2>
-            <ul class="space-y-2 md:space-y-2.5">
-              {relatedSongs.map((r) => (
+            <ul class="space-y-2">
+              {relatedSongs.map((rel) => (
                 <li>
                   <a
-                    href={`/song/${r.slug}/`}
-                    class="group block rounded-xl p-2 -mx-1 transition hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
+                    href={`/song/${rel.slug}/`}
+                    class="group flex items-start gap-2.5 p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
                   >
-                    <div class="flex items-start gap-2.5">
-                      <div class="mt-0.5 h-7 w-7 shrink-0 rounded-lg bg-wok-accent/15 text-wok-accent flex items-center justify-center text-xs font-bold group-hover:bg-wok-accent group-hover:text-white transition">
-                        {r.title.charAt(0)}
-                      </div>
-                      <div class="min-w-0 flex-1">
-                        <div class="text-xs md:text-sm font-semibold text-wok-text truncate group-hover:text-wok-accent transition">
-                          {r.title}
-                        </div>
-                        <div class="mt-0.5 text-[11px] md:text-xs text-wok-muted truncate">
-                          {r.artist}
-                        </div>
-                        <div class="mt-1 flex flex-wrap gap-1">
-                          {r.key && (
-                            <span class="rounded bg-wok-chord/10 px-1.5 py-0.5 font-mono text-[9px] font-bold text-wok-chord">
-                              {r.key}
-                            </span>
-                          )}
-                          {r.tags?.slice(0, 2).map((t) => (
-                            <span
-                              key={t}
-                              class="rounded bg-white/5 px-1.5 py-0.5 text-[9px] capitalize text-wok-muted/80"
-                            >
-                              #{t}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
+                    <div class="mt-0.5 w-7 h-7 shrink-0 rounded-lg bg-wok-accent/15 text-wok-accent font-bold text-xs flex items-center justify-center group-hover:bg-wok-accent group-hover:text-white transition-colors">
+                      {rel.title.charAt(0)}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <p class="text-xs font-semibold text-wok-text group-hover:text-wok-accent transition-colors truncate">
+                        {rel.title}
+                      </p>
+                      <p class="text-[11px] text-wok-muted truncate">
+                        {rel.artist}{rel.movie ? ` · ${rel.movie}` : ''}
+                      </p>
                     </div>
                   </a>
                 </li>
               ))}
             </ul>
-            <div class="mt-3 pt-3 border-t border-black/5 dark:border-white/5">
-              <a
-                href="/"
-                class="flex items-center justify-center gap-1 text-[11px] font-semibold text-wok-accent hover:underline"
-              >
-                Browse all songs →
-              </a>
-            </div>
           </div>
-
-          <div
-            class="hidden lg:block rounded-2xl border border-dashed border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] min-h-[250px]"
-            data-adsense-slot="right-sidebar"
-          />
-        </div>
+        )}
       </aside>
     </div>
   </div>
 
+  <!-- Original WokChords Typography & Sheet Styling -->
   <style is:global>
     #chord-sheet-mount .chord {
       color: rgb(var(--wok-chord));
       font-weight: 700;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 0.875rem;
-      line-height: 1.2;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.95rem;
+      line-height: 1.25;
+      cursor: pointer;
+      user-select: none;
+      display: inline-block;
+      transition: color 0.15s ease, transform 0.15s ease;
+    }
+    #chord-sheet-mount .chord:hover {
+      color: rgb(var(--wok-accent));
+      transform: translateY(-1px);
+      text-decoration: underline;
     }
     @media (min-width: 768px) {
-      #chord-sheet-mount .chord { font-size: 1rem; }
+      #chord-sheet-mount .chord {
+        font-size: 1.05rem;
+      }
     }
     #chord-sheet-mount .lyrics, #chord-sheet-mount .lyric {
       color: rgb(var(--wok-text));
       font-size: 1rem;
-      line-height: 1.5;
+      line-height: 1.6;
       white-space: pre-wrap;
+      font-family: inherit;
     }
     @media (min-width: 768px) {
-      #chord-sheet-mount .lyrics, #chord-sheet-mount .lyric { font-size: 1.125rem; }
+      #chord-sheet-mount .lyrics, #chord-sheet-mount .lyric {
+        font-size: 1.125rem;
+      }
     }
     #chord-sheet-mount .comment, #chord-sheet-mount .label {
       text-transform: uppercase;
-      font-size: 0.7rem;
-      letter-spacing: 0.1em;
-      font-weight: 600;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      font-weight: 700;
       color: rgb(var(--wok-muted));
-      margin: 1rem 0 0.4rem;
-      padding-left: 0.6rem;
-      border-left: 2px solid rgb(var(--wok-accent));
+      margin: 1.5rem 0 0.5rem;
+      padding-left: 0.75rem;
+      border-left: 3px solid rgb(var(--wok-accent));
     }
     @media (min-width: 768px) {
-      #chord-sheet-mount .comment, #chord-sheet-mount .label { font-size: 0.75rem; }
+      #chord-sheet-mount .comment, #chord-sheet-mount .label {
+        font-size: 0.8rem;
+      }
     }
     #chord-sheet-mount .row {
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.4rem;
       display: flex;
       flex-wrap: wrap;
       align-items: flex-end;
@@ -437,17 +415,22 @@ const relatedSongs = [...related, ...fallback].slice(0, 6);
       display: inline-flex;
       flex-direction: column;
       vertical-align: bottom;
+      min-width: fit-content;
     }
-    #chord-sheet-mount .verse, #chord-sheet-mount .chorus,
-    #chord-sheet-mount .bridge, #chord-sheet-mount .tab,
+    #chord-sheet-mount .verse,
+    #chord-sheet-mount .chorus,
+    #chord-sheet-mount .bridge,
+    #chord-sheet-mount .tab,
     #chord-sheet-mount .indeterminate {
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
     }
     @media (min-width: 768px) {
-      #chord-sheet-mount .verse, #chord-sheet-mount .chorus,
-      #chord-sheet-mount .bridge, #chord-sheet-mount .tab,
+      #chord-sheet-mount .verse,
+      #chord-sheet-mount .chorus,
+      #chord-sheet-mount .bridge,
+      #chord-sheet-mount .tab,
       #chord-sheet-mount .indeterminate {
-        margin-bottom: 1.25rem;
+        margin-bottom: 1.5rem;
       }
     }
   </style>

@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+export const prerender = true;
+---
+
+<BaseLayout
+  title="Privacy Policy & Terms — WokChords"
+  description="Privacy Policy, Local Storage disclosures, and Fair Use Copyright statement for WokChords (wokchords.wokdens.com)."
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+    <header class="mb-10 pb-6 border-b border-black/5 dark:border-white/5">
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-wok-text mb-2">
+        Privacy Policy & Legal Terms
+      </h1>
+      <p class="text-xs sm:text-sm text-wok-muted">
+        Last updated: August 29, 2026 · Effective for <span class="font-semibold text-wok-text">wokchords.wokdens.com</span> (Powered by Wokdens)
+      </p>
+    </header>
+
+    <div class="space-y-8 text-xs sm:text-sm text-wok-text/90 leading-relaxed">
+      <!-- Section 1 -->
+      <section>
+        <h2 class="text-lg sm:text-xl font-bold text-wok-text mb-2">1. Introduction</h2>
+        <p class="mb-2">
+          Welcome to <strong>WokChords</strong> (<a href="https://wokchords.wokdens.com" class="text-wok-accent underline">wokchords.wokdens.com</a>), an online music chord and transcription utility developed and maintained by <strong>Wokdens</strong>.
+        </p>
+        <p>
+          We respect your personal privacy. This Privacy Policy explains our practices regarding user information, local device storage, cookies, and our intellectual property guidelines.
+        </p>
+      </section>
+
+      <!-- Section 2 -->
+      <section>
+        <h2 class="text-lg sm:text-xl font-bold text-wok-text mb-2">2. Information We Collect</h2>
+        <p class="mb-2">
+          <strong>WokChords does not require you to create an account, register, or provide personal information</strong> (such as your name, phone number, or payment details) to access our chord database and playback tools.
+        </p>
+        <p>
+          Like most standard web servers, our infrastructure may log non-identifiable technical data automatically (e.g., browser type, IP address, referral URLs, and requested paths) strictly for security, traffic monitoring, and server performance optimization.
+        </p>
+      </section>
+
+      <!-- Section 3 -->
+      <section>
+        <h2 class="text-lg sm:text-xl font-bold text-wok-text mb-2">3. Local Device Storage (Browser LocalStorage)</h2>
+        <p class="mb-2">
+          To provide a seamless musical experience, WokChords saves your personal playing preferences locally inside your browser's <code class="font-mono text-wok-accent">localStorage</code>. This data never leaves your device:
+        </p>
+        <ul class="list-disc list-inside space-y-1 pl-2 text-wok-muted">
+          <li><strong>Theme Mode:</strong> Stores your Dark Mode / Light Mode preference.</li>
+          <li><strong>Font Scale:</strong> Remembers your preferred lyrics font zoom percentage (85%–150%).</li>
+          <li><strong>Auto-Scroll Speed:</strong> Preserves your last used scrolling speed.</li>
+          <li><strong>Instrument Preference:</strong> Remembers whether you view Guitar or Ukulele chord diagrams.</li>
+        </ul>
+      </section>
+
+      <!-- Section 4 -->
+      <section>
+        <h2 class="text-lg sm:text-xl font-bold text-wok-text mb-2">4. Cookies and Third-Party Analytics</h2>
+        <p>
+          We may utilize minimal, privacy-conscious performance analytics to understand which songs and genres are most popular. You may disable cookies at any time via your browser settings without impacting your ability to view chords.
+        </p>
+      </section>
+
+      <!-- Section 5: Fair Use & Copyright -->
+      <section id="fair-use" class="rounded-2xl border border-black/10 dark:border-white/10 bg-wok-panel/30 p-6">
+        <h2 class="text-lg sm:text-xl font-bold text-wok-text mb-3">5. Fair Use & Educational Transcription Notice</h2>
+        <p class="mb-3">
+          All musical chord arrangements, chord progression analyses, and accompanying lyric excerpts displayed on WokChords are community-contributed and algorithmically indexed for <strong>private study, music education, scholarship, and personal practice</strong>.
+        </p>
+        <p class="mb-3">
+          Song titles, artist names, composer credits, and original lyrics remain the exclusive intellectual property of their respective copyright owners, recording labels, and publishers. WokChords does not sell audio files, master recordings, or official sheet music.
+        </p>
+        <p>
+          These user-contributed chords represent personal musical interpretations protected under international principles of Fair Use (17 U.S.C. § 107 and equivalent copyright provisions).
+        </p>
+      </section>
+
+      <!-- Section 6: DMCA -->
+      <section>
+        <h2 class="text-lg sm:text-xl font-bold text-wok-text mb-2">6. DMCA / Copyright Takedown Procedure</h2>
+        <p class="mb-2">
+          If you are a copyright owner or authorized representative and believe that any content on WokChords infringes upon your copyright, please contact our designated agent with:
+        </p>
+        <ol class="list-decimal list-inside space-y-1 pl-2 text-wok-muted mb-3">
+          <li>Identification of the copyrighted work claimed to have been infringed.</li>
+          <li>The exact URL(s) of the material to be removed or updated.</li>
+          <li>Your contact information (name, email address, phone number).</li>
+          <li>A statement made in good faith that the use is not authorized by the copyright owner.</li>
+        </ol>
+        <p>
+          We will promptly review and take appropriate action, including removal or correction of the specified content.
+        </p>
+      </section>
+
+      <!-- Section 7: Contact -->
+      <section class="pt-4 border-t border-black/5 dark:border-white/5">
+        <h2 class="text-lg sm:text-xl font-bold text-wok-text mb-2">7. Contact Information</h2>
+        <p class="text-wok-muted">
+          For legal inquiries, copyright notices, or privacy questions, please email us at:
+          <br />
+          <a href="mailto:contact@wokdens.com" class="text-wok-accent font-semibold hover:underline">contact@wokdens.com</a> or visit <a href="https://wokdens.com" target="_blank" rel="noopener" class="text-wok-accent hover:underline">wokdens.com</a>.
+        </p>
+      </section>
+    </div>
+  </div>
+</BaseLayout>

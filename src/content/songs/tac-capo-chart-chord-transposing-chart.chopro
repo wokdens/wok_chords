@@ -1,0 +1,210 @@
+---
+title: "Capo Chart And Chord Transposing Chart"
+artist: "Chart"
+key: "Gb"
+tags: ["english"]
+---
+
+<table style="font-size: 100 percent; font-weight: bold;" border="2" cellspacing="1" cellpadding="2" align="center" bgcolor="#ffffff">
+<tbody>
+<tr style="font-family: Georgia,'Times New Roman',serif;">
+<td style="table-layout: fixed; text-align: center;" colspan="8" align="center">Capo Chart</td>
+</tr>
+<tr style="font-family: Arial,Helvetica,sans-serif; font-weight: normal;">
+<td style="text-align: left;" colspan="8">Find the actual chord in the left column. The open chord is shown, where applicable,
+
+under fret number for capo placement. Capo 1 is the first fret, Capo 2
+
+is the second fret, etc.</td>,        </tr>
+<tr>
+<td style="text-align: center;" align="center" bgcolor="#ffffcc">Chord</td>
+<td style="text-align: center;" align="center" bgcolor="#ff99ff">Capo 1</td>
+<td style="text-align: center;" align="center" bgcolor="#ff99ff">Capo 2</td>
+<td style="text-align: center;" align="center" bgcolor="#ff99ff">Capo 3</td>
+<td style="text-align: center;" align="center" bgcolor="#ff99ff">Capo 4</td>
+<td style="text-align: center;" align="center" bgcolor="#ff99ff">Capo 5</td>
+<td style="text-align: center;" align="center" bgcolor="#ff99ff">Capo 6</td>
+<td style="text-align: center;" align="center" bgcolor="#ff99ff">Capo 7</td>
+</tr>,        <tr>
+<td align="center" bgcolor="#ffffcc">A</td>
+<td align="center">n/a</td>,        <td align="center">G</td>
+<td align="center">F# [Gb]</td>,        <td align="center">F</td>
+<td align="center">E</td>,        <td align="center">n/a</td>
+<td align="center">D</td>,        </tr>
+<tr>
+<td align="center" bgcolor="#ffffcc">A# [Bb]</td>
+<td align="center">A</td>,        <td align="center">n/a</td>
+<td align="center">G</td>,        <td align="center">F# [Gb]</td>
+<td align="center">F</td>,        <td align="center">E</td>
+<td align="center">n/a</td>,        </tr>
+<tr>
+<td align="center" bgcolor="#ffffcc">B</td>
+<td align="center">A# [Bb]</td>,        <td align="center">A</td>
+<td align="center">n/a</td>,        <td align="center">G</td>
+<td align="center">F# [Gb]</td>,        <td align="center">F</td>
+<td align="center">E</td>,        </tr>
+<tr>
+<td align="center" bgcolor="#ffffcc">C</td>
+<td align="center">B</td>,        <td align="center">A# [Bb]</td>
+<td align="center">A</td>,        <td align="center">n/a</td>
+<td align="center">G</td>,        <td align="center">F# [Gb]</td>
+<td align="center">F</td>,        </tr>
+<tr>
+<td align="center" bgcolor="#ffffcc">C# [Db]</td>
+<td align="center">C</td>,        <td align="center">B</td>
+<td align="center">A# [Bb]</td>,        <td align="center">A</td>
+<td align="center">n/a</td>,        <td align="center">G</td>
+<td align="center">F# [Gb]</td>,        </tr>
+<tr>
+<td align="center" bgcolor="#ffffcc">D</td>
+<td align="center">n/a</td>,        <td align="center">C</td>
+<td align="center">B</td>,        <td align="center">A# [Bb]</td>
+<td align="center">A</td>,        <td align="center">n/a</td>
+<td align="center">G</td>,        </tr>
+<tr>
+<td align="center" bgcolor="#ffffcc">D# [Eb]</td>
+<td align="center">D</td>,        <td align="center">n/a</td>
+<td align="center">C</td>,        <td align="center">B</td>
+<td align="center">A# [Bb]</td>,        <td align="center">A</td>
+<td align="center">n/a</td>,        </tr>
+<tr>
+<td align="center" bgcolor="#ffffcc">E</td>
+<td align="center">n/a</td>,        <td align="center">D</td>
+<td align="center">n/a</td>,        <td align="center">C</td>
+<td align="center">B</td>,        <td align="center">A# [Bb]</td>
+<td align="center">A</td>,        </tr>
+<tr>
+<td align="center" bgcolor="#ffffcc">F</td>
+<td align="center">E</td>,        <td align="center">n/a</td>
+<td align="center">D</td>,        <td align="center">n/a</td>
+<td align="center">C</td>,        <td align="center">B</td>
+<td align="center">A# [Bb]</td>,        </tr>
+<tr>
+<td align="center" bgcolor="#ffffcc">F# [Gb]</td>
+<td align="center">F</td>,        <td align="center">E</td>
+<td align="center">n/a</td>,        <td align="center">D</td>
+<td align="center">n/a</td>,        <td align="center">C</td>
+<td align="center">B</td>,        </tr>
+<tr>
+<td style="text-align: center;" align="center" bgcolor="#ffffcc">G</td>
+<td style="text-align: center;" align="center">F# [Gb]</td>
+<td style="text-align: center;" align="center">F</td>
+<td style="text-align: center;" align="center">E</td>
+<td style="text-align: center;" align="center">n/a</td>
+<td style="text-align: center;" align="center">D</td>
+<td style="text-align: center;" align="center">C# [Db]</td>
+<td style="text-align: center;" align="center">C</td>
+</tr>,        <tr>
+<td align="center" bgcolor="#ffffcc">G# [Ab]</td>
+<td align="center">G</td>,        <td align="center">F# [Gb]</td>
+<td align="center">F</td>,        <td align="center">E</td>
+<td align="center">n/a</td>,        <td align="center">D</td>
+<td align="center">n/a</td>,        </tr>
+</tbody>,        </table>
+<table style="font-size: 120 percent; font-weight: bold; table-layout: fixed;" border="2" cellspacing="1" cellpadding="2" align="center" bgcolor="#ffffff">
+<tbody>
+<tr style="font-family: Georgia,'Times New Roman',serif;">
+<td style="text-align: center;" colspan="7" align="center">Chord Transposing Chart</td>
+</tr>
+<tr style="font-family: Arial,Helvetica,sans-serif; font-weight: normal;">
+<td colspan="7">Find the root key in
+
+the left column and jot down the numbers of the chords in the piece.
+
+Chords are shown by the number system, based on the scale. Now move
+
+to the key to which you wish to transpose and convert the numbers back
+
+to chords. Add modifications to the chord (i.e. major, minor, 7th, 9th,
+
+etc.) to match your source chords. Note: I've deliberately elected to
+
+go with whichever scale was least confusing, thus, Bb instead of C#
+
+(Same notes but Bb is less confusing than C#). </td>
+</tr>,        <tr>
+<td align="center" bgcolor="#ff99ff">Key (1)</td>
+<td align="center" bgcolor="#ff99ff">2</td>
+<td align="center" bgcolor="#ff99ff">3</td>
+<td align="center" bgcolor="#ff99ff">4</td>
+<td align="center" bgcolor="#ff99ff">5</td>
+<td align="center" bgcolor="#ff99ff">6</td>
+<td align="center" bgcolor="#ff99ff">7</td>
+</tr>,        <tr>
+<td align="center" bgcolor="#ffffcc">A</td>
+<td align="center">B</td>,        <td align="center">C#</td>
+<td align="center">D</td>,        <td align="center">E</td>
+<td align="center">F#</td>,        <td align="center">G</td>
+</tr>,        <tr>
+<td align="center" bgcolor="#ffffcc">Bb</td>
+<td align="center">C</td>,        <td align="center">D</td>
+<td align="center">Eb</td>,        <td align="center">F</td>
+<td align="center">G</td>,        <td align="center">Ab</td>
+</tr>,        <tr>
+<td align="center" bgcolor="#ffffcc">B</td>
+<td align="center">C#</td>,        <td align="center">D#</td>
+<td align="center">E</td>,        <td align="center">F#</td>
+<td align="center">G#</td>,        <td align="center">A</td>
+</tr>,        <tr>
+<td align="center" bgcolor="#ffffcc">C</td>
+<td align="center">D</td>,        <td align="center">E</td>
+<td align="center">F</td>,        <td align="center">G</td>
+<td align="center">A</td>,        <td align="center">Bb</td>
+</tr>,        <tr>
+<td align="center" bgcolor="#ffffcc">Db</td>
+<td align="center">Eb</td>,        <td align="center">F</td>
+<td align="center">Gb</td>,        <td align="center">Ab</td>
+<td align="center">Bb</td>,        <td align="center">C</td>
+</tr>,        <tr>
+<td align="center" bgcolor="#ffffcc">D</td>
+<td align="center">E</td>,        <td align="center">F#</td>
+<td align="center">G</td>,        <td align="center">A</td>
+<td align="center">B</td>,        <td align="center">C</td>
+</tr>,        <tr>
+<td align="center" bgcolor="#ffffcc">Eb</td>
+<td align="center">F</td>,        <td align="center">G</td>
+<td align="center">Ab</td>,        <td align="center">Bb</td>
+<td align="center">C</td>,        <td align="center">Db</td>
+</tr>,        <tr>
+<td align="center" bgcolor="#ffffcc">E</td>
+<td align="center">F#</td>,        <td align="center">G#</td>
+<td align="center">A</td>,        <td align="center">B</td>
+<td align="center">C#</td>,        <td align="center">D</td>
+</tr>,        <tr>
+<td align="center" bgcolor="#ffffcc">F</td>
+<td align="center">G</td>,        <td align="center">A</td>
+<td align="center">Bb</td>,        <td align="center">C</td>
+<td align="center">D</td>,        <td align="center">Eb</td>
+</tr>,        <tr>
+<td align="center" bgcolor="#ffffcc">F#</td>
+<td align="center">G#</td>,        <td align="center">A#</td>
+<td align="center">B</td>,        <td align="center">C#</td>
+<td align="center">D#</td>,        <td align="center">E</td>
+</tr>,        <tr>
+<td align="center" bgcolor="#ffffcc">G</td>
+<td align="center">A</td>,        <td align="center">B</td>
+<td align="center">C</td>,        <td align="center">D</td>
+<td align="center">E</td>,        <td align="center">F</td>
+</tr>,        <tr>
+<td align="center" bgcolor="#ffffcc">Ab</td>
+<td align="center">Bb</td>,        <td align="center">C</td>
+<td align="center">Db</td>,        <td align="center">Eb</td>
+<td align="center">F</td>,        <td align="center">Gb</td>
+</tr>
+<tr style="font-family: Arial,Helvetica,sans-serif; font-weight: normal;">
+<td style="text-align: justify;" colspan="7">Note:
+
+Composers aren't restricted to any particular structure, they can use any chord
+
+they like, anywhere they like. If the composer uses natural sequence
+
+chords (all notes remaining within the scale of the key) the 1, 4, and 5
+
+chords will be major, while the 2, 3, and 6 chords will be minor. The
+
+7 chord is based on a flat 7th rather than the actual 7th note of the
+
+scale. This chart isn't intended to cover every piece of music, but it
+
+should be effective for most songs.</td>,        </tr>
+</tbody>,        </table>

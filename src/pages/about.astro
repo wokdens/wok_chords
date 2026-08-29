@@ -1,0 +1,102 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+export const prerender = true;
+---
+
+<BaseLayout
+  title="About Us — WokChords (Powered by Wokdens)"
+  description="Learn about WokChords — the fast, distraction-free chord platform built for musicians, guitarists, pianists, and ukulele players worldwide."
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+    <!-- Header -->
+    <header class="mb-12 text-center">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-wok-accent/10 text-wok-accent text-xs font-bold uppercase tracking-wider mb-4">
+        Powered by Wokdens
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-wok-text mb-4">
+        About <span class="text-wok-accent">WokChords</span>
+      </h1>
+      <p class="text-base sm:text-lg text-wok-muted max-w-2xl mx-auto leading-relaxed">
+        Built by musicians, for musicians. Our mission is to deliver the cleanest, fastest, and most accurate chord and lyric sheets on the web without clutter or paywalls.
+      </p>
+    </header>
+
+    <!-- Mission & Story -->
+    <div class="space-y-10 text-sm sm:text-base text-wok-text/90 leading-relaxed">
+      <section class="rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/40 p-6 sm:p-8 shadow-sm">
+        <h2 class="text-xl sm:text-2xl font-bold text-wok-text mb-3">Our Mission</h2>
+        <p class="mb-4">
+          Finding accurate guitar and piano chords online is often frustrating — platforms are cluttered with intrusive advertisements, slow loading times, popups, and paywalled tools.
+        </p>
+        <p>
+          <strong>WokChords</strong> was created to change that. We combine static-first performance with intelligent musical tooling to give you an instant, distraction-free playing experience on any device — whether you are practicing at home, playing around a campfire, or performing on stage.
+        </p>
+      </section>
+
+      <!-- Key Features Grid -->
+      <section>
+        <h2 class="text-xl sm:text-2xl font-bold text-wok-text mb-6">Why Musicians Love WokChords</h2>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="p-5 rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/30">
+            <div class="text-2xl mb-2">⚡</div>
+            <h3 class="font-bold text-base text-wok-text mb-1">Instant Transposition</h3>
+            <p class="text-xs sm:text-sm text-wok-muted">
+              Shift song keys up or down with 1 click to fit your vocal range or fingerstyle preferences.
+            </p>
+          </div>
+
+          <div class="p-5 rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/30">
+            <div class="text-2xl mb-2">🎸</div>
+            <h3 class="font-bold text-base text-wok-text mb-1">Interactive Chord Diagrams</h3>
+            <p class="text-xs sm:text-sm text-wok-muted">
+              Visual SVG fretboard diagrams for both Guitar (Standard Tuning) and Ukulele (GCEA) on every single song.
+            </p>
+          </div>
+
+          <div class="p-5 rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/30">
+            <div class="text-2xl mb-2">🧮</div>
+            <h3 class="font-bold text-base text-wok-text mb-1">Capo Position Calculator</h3>
+            <p class="text-xs sm:text-sm text-wok-muted">
+              Instantly calculate simpler chord shapes (e.g. play open G shapes with Capo on 2nd fret instead of barre chords).
+            </p>
+          </div>
+
+          <div class="p-5 rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/30">
+            <div class="text-2xl mb-2">📜</div>
+            <h3 class="font-bold text-base text-wok-text mb-1">Hands-Free Auto-Scroll</h3>
+            <p class="text-xs sm:text-sm text-wok-muted">
+              Smooth variable-speed auto-scroller with memory so you never have to take your hands off your guitar while playing.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- The Wokdens Ecosystem -->
+      <section class="rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/40 p-6 sm:p-8">
+        <h2 class="text-xl sm:text-2xl font-bold text-wok-text mb-3">Powered by Wokdens</h2>
+        <p class="mb-4">
+          WokChords is an official digital initiative by <strong>Wokdens</strong> (<a href="https://wokdens.com" target="_blank" rel="noopener" class="text-wok-accent underline">wokdens.com</a>), dedicated to building high-speed, utility-focused web applications that put user experience and accessibility first.
+        </p>
+        <p>
+          Our chord catalog spans thousands of songs across Bollywood, Indie Pop, Western Classics, Punjabi, Bengali, Marathi, Tamil, and Spanish hits, continuously refined by a community of passionate players.
+        </p>
+      </section>
+
+      <!-- Contact & Feedback -->
+      <section id="contact" class="rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/20 p-6 sm:p-8 text-center">
+        <h2 class="text-xl sm:text-2xl font-bold text-wok-text mb-2">Get in Touch</h2>
+        <p class="text-xs sm:text-sm text-wok-muted mb-4 max-w-md mx-auto">
+          Have a song suggestion, chord correction, or feature request? We would love to hear from you.
+        </p>
+        <a
+          href="mailto:contact@wokdens.com"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-wok-accent text-white font-semibold text-sm hover:opacity-90 transition-opacity shadow-md"
+        >
+          <span>✉️</span>
+          <span>Contact the WokChords Team</span>
+        </a>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
