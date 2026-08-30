@@ -2,8 +2,20 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const SONGS_DIR = path.resolve(__dirname, '../content/songs');
+function getSongsDir(): string {
+  const cwdPath = path.resolve(process.cwd(), 'src/content/songs');
+  if (fs.existsSync(cwdPath)) return cwdPath;
+
+  try {
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const relPath = path.resolve(__dirname, '../content/songs');
+    if (fs.existsSync(relPath)) return relPath;
+    const relParent = path.resolve(__dirname, '../../src/content/songs');
+    if (fs.existsSync(relParent)) return relParent;
+  } catch {}
+
+  return cwdPath;
+}
 
 export interface SongItem {
   slug: string;
@@ -53,17 +65,18 @@ function parseFrontmatter(raw: string): Record<string, any> {
 
 export function getAllSongs(): SongItem[] {
   const now = Date.now();
-  if (cachedSongs && now - cacheTime < 5000) {
+  if (cachedSongs && cachedSongs.length > 0 && now - cacheTime < 5000) {
     return cachedSongs;
   }
 
-  if (!fs.existsSync(SONGS_DIR)) return [];
+  const songsDir = getSongsDir();
+  if (!fs.existsSync(songsDir)) return [];
 
-  const files = fs.readdirSync(SONGS_DIR).filter((f) => f.endsWith('.chopro'));
+  const files = fs.readdirSync(songsDir).filter((f) => f.endsWith('.chopro'));
   const songs: SongItem[] = [];
 
   for (const file of files) {
-    const filePath = path.join(SONGS_DIR, file);
+    const filePath = path.join(songsDir, file);
     const rawBody = fs.readFileSync(filePath, 'utf8');
     const slug = file.replace(/\.chopro$/, '');
     const data = parseFrontmatter(rawBody);
@@ -81,15 +94,14 @@ export function getAllSongs(): SongItem[] {
       .map((l) => l.trim())
       .filter((l) => l.length > 0)
       .slice(0, 2)
-      .join(' ')
-      .slice(0, 120);
+      .join(' / ');
 
     songs.push({
       slug,
-      title: data.title || 'Untitled',
+      title: data.title || slug,
       artist: data.artist || 'Unknown Artist',
-      movie: data.movie || undefined,
-      movieSlug: data.movieSlug || undefined,
+      movie: data.movie,
+      movieSlug: data.movieSlug,
       key: data.key,
       tempo: data.tempo,
       tags: Array.isArray(data.tags) ? data.tags : [],
@@ -99,9 +111,19 @@ export function getAllSongs(): SongItem[] {
     });
   }
 
-  songs.sort((a, b) => a.title.localeCompare(b.title));
-
   cachedSongs = songs;
   cacheTime = now;
   return songs;
+}
+
+export function getSongBySlug(slug: string): SongItem | null {
+  const songs = getAllSongs();
+  return songs.find((s) => s.slug === slug) || null;
+}
+
+export function saveSong(slug: string, content: string): void {
+  const songsDir = getSongsDir();
+  const filePath = path.join(songsDir, `${slug}.chopro`);
+  fs.writeFileSync(filePath, content, 'utf8');
+  cachedSongs = null;
 }
