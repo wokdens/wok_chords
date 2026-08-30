@@ -49,42 +49,6 @@ function normalize(s: string): string {
   return s.toLowerCase().trim();
 }
 
-interface IndexedSong {
-  slug: string;
-  title: string;
-  artist: string;
-  movie?: string;
-  tags: string[];
-}
-
-function scoreRelated(curr: SongFile, cand: IndexedSong): number {
-  if (cand.slug === curr.slug) return -1;
-  let score = 0;
-
-  if (curr.data.movie && cand.movie && normalize(curr.data.movie) === normalize(cand.movie)) {
-    score += 20;
-  }
-
-  const curArtist = normalize(curr.data.artist);
-  const candArtist = normalize(cand.artist);
-  if (curArtist && candArtist && curArtist === candArtist) score += 10;
-  else if (curArtist && candArtist && (curArtist.includes(candArtist) || candArtist.includes(curArtist))) score += 4;
-
-  const currTags = (curr.data.tags ?? []).map(normalize).filter(Boolean);
-  const candTags = (cand.tags ?? []).map(normalize).filter(Boolean);
-  for (const t of currTags) {
-    if (candTags.includes(t)) score += 3;
-    else if (candTags.some((x) => x.includes(t) || t.includes(x))) score += 1;
-  }
-
-  const currTitleTok = normalize(curr.data.title).split(/\s+/).filter((w) => w.length >= 3);
-  const candTitleTok = normalize(cand.title).split(/\s+/).filter((w) => w.length >= 3);
-  for (const w of currTitleTok) {
-    if (candTitleTok.includes(w)) score += 0.5;
-  }
-  return score;
-}
-
 type Props = { song: SongFile };
 const { song } = Astro.props;
 if (!song) {
@@ -93,12 +57,12 @@ if (!song) {
 const rawBody = song.rawBody;
 
 const initial = parseAndTranspose(rawBody, 0);
-const title = initial.metadata.title;
-const artist = initial.metadata.artist;
+const title = song.data.title || initial.metadata.title || 'Untitled';
+const artist = song.data.artist || initial.metadata.artist || 'Unknown Artist';
 const movie = song.data.movie;
-const movieSlug = song.data.movieSlug;
-const originalKey = initial.metadata.key ?? initial.key;
-const tempo = initial.metadata.tempo;
+const movieSlug = song.data.movieSlug || (movie ? slugify(movie) : undefined);
+const originalKey = song.data.key || initial.metadata.key || initial.key;
+const tempo = song.data.tempo || initial.metadata.tempo;
 const timeSig = initial.metadata.time;
 const lyricsText = extractLyricsText(rawBody);
 const pageUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
@@ -162,26 +126,42 @@ const jsonLd = [
   },
 ];
 
-const allSongs = getAllSongs().map((s) => ({
-  slug: s.slug,
-  title: s.title,
-  artist: s.artist,
-  movie: s.movie,
-  tags: s.tags,
-}));
+const curArtistNorm = normalize(artist);
+const curMovieNorm = movie ? normalize(movie) : '';
+const curTagNorm = song.data.tags?.[0] ? normalize(song.data.tags[0]) : '';
 
-const related = allSongs
-  .map((s) => ({ s, score: scoreRelated(song, s) }))
-  .filter((x) => x.score >= 0)
-  .sort((a, b) => b.score - a.score || a.s.title.localeCompare(b.s.title))
-  .slice(0, 6)
-  .map((x) => x.s);
+const allSongs = getAllSongs();
+const related: Array<{ slug: string; title: string; artist: string; movie?: string }> = [];
 
-const fallback = allSongs
-  .filter((s) => s.slug !== song.slug)
-  .sort(() => Math.random() - 0.5)
-  .slice(0, Math.max(0, 6 - related.length));
-const relatedSongs = [...related, ...fallback].slice(0, 6);
+for (const s of allSongs) {
+  if (s.slug === song.slug) continue;
+  if (curMovieNorm && s.movie && normalize(s.movie) === curMovieNorm) {
+    related.push({ slug: s.slug, title: s.title, artist: s.artist, movie: s.movie });
+    if (related.length >= 6) break;
+  }
+}
+
+if (related.length < 6) {
+  for (const s of allSongs) {
+    if (s.slug === song.slug || related.some((r) => r.slug === s.slug)) continue;
+    if (curArtistNorm && s.artist && normalize(s.artist) === curArtistNorm) {
+      related.push({ slug: s.slug, title: s.title, artist: s.artist, movie: s.movie });
+      if (related.length >= 6) break;
+    }
+  }
+}
+
+if (related.length < 6) {
+  for (const s of allSongs) {
+    if (s.slug === song.slug || related.some((r) => r.slug === s.slug)) continue;
+    if (curTagNorm && s.tags && s.tags.map(normalize).includes(curTagNorm)) {
+      related.push({ slug: s.slug, title: s.title, artist: s.artist, movie: s.movie });
+      if (related.length >= 6) break;
+    }
+  }
+}
+
+const relatedSongs = related.length > 0 ? related : allSongs.slice(0, 6);
 ---
 
 <BaseLayout title={pageTitle} description={description}>

@@ -21,6 +21,7 @@ export interface SongItem {
   slug: string;
   title: string;
   artist: string;
+  artistSlug?: string;
   movie?: string;
   movieSlug?: string;
   key?: string;
@@ -34,12 +35,12 @@ export interface SongItem {
 let cachedSongs: SongItem[] | null = null;
 let cacheTime = 0;
 
-function parseFrontmatter(raw: string): Record<string, any> {
-  const m = raw.match(/^---\n([\s\S]*?)\n---\n?/);
+export function parseFrontmatter(raw: string): Record<string, any> {
+  const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
   if (!m) return {};
   const fm = m[1];
   const data: Record<string, any> = {};
-  for (const line of fm.split('\n')) {
+  for (const line of fm.split(/\r?\n/)) {
     const lm = line.match(/^(\w+):\s*(.*)$/);
     if (!lm) continue;
     const [, k, vRaw] = lm;
@@ -63,6 +64,15 @@ function parseFrontmatter(raw: string): Record<string, any> {
   return data;
 }
 
+function slugifyName(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 export function getAllSongs(): SongItem[] {
   const now = Date.now();
   if (cachedSongs && cachedSongs.length > 0 && now - cacheTime < 5000) {
@@ -84,24 +94,28 @@ export function getAllSongs(): SongItem[] {
     if (data.draft === true) continue;
 
     const lyricsOnly = rawBody
-      .replace(/^---[\s\S]*?---\n?/, '')
+      .replace(/^---[\s\S]*?---\r?\n?/, '')
       .replace(/\{[^}]*\}/g, '')
       .replace(/\[[^\]]*\]/g, '')
       .trim();
 
     const snippet = lyricsOnly
-      .split('\n')
+      .split(/\r?\n/)
       .map((l) => l.trim())
       .filter((l) => l.length > 0)
       .slice(0, 2)
       .join(' / ');
 
+    const artistName = data.artist || 'Unknown Artist';
+    const artistSlug = data.artistSlug || slugifyName(artistName);
+
     songs.push({
       slug,
       title: data.title || slug,
-      artist: data.artist || 'Unknown Artist',
+      artist: artistName,
+      artistSlug,
       movie: data.movie,
-      movieSlug: data.movieSlug,
+      movieSlug: data.movieSlug || (data.movie ? slugifyName(data.movie) : undefined),
       key: data.key,
       tempo: data.tempo,
       tags: Array.isArray(data.tags) ? data.tags : [],

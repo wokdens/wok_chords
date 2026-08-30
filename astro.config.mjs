@@ -7,5 +7,5 @@ export default defineConfig({
   integrations: [react(), tailwind()],
   output: 'server',
   adapter: node({ mode: 'standalone' }),
-  site: 'https://wokchords.example.com',
+  site: 'https://wokchords.pages.dev',
 });

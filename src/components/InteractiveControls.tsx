@@ -66,12 +66,16 @@ interface RenderedResult {
 function renderChordHtml(rawText: string, semitones: number): RenderedResult {
   if (!rawText) return { html: '', chords: [] };
   const parser = new ChordProParser();
-  const normalized = rawText.replace(/^---[\s\S]*?---\n?/, '').trim();
+  const normalized = rawText
+    .replace(/^---[\s\S]*?---\r?\n?/, '')
+    .replace(/,[ \t]+/g, ', ')
+    .replace(/[ \t]{2,}/g, ' ')
+    .trim();
   const sheet: Song = parser.parse(normalized);
 
-  const frontmatterBlock = rawText.match(/^---\n([\s\S]*?)\n---/)?.[1] ?? '';
+  const frontmatterBlock = rawText.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
   let fmKey: string | undefined;
-  for (const line of frontmatterBlock.split('\n')) {
+  for (const line of frontmatterBlock.split(/\r?\n/)) {
     const m = line.match(/^(\w+):\s*(.*)$/);
     if (!m) continue;
     const [, k, v] = m;

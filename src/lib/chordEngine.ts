@@ -78,8 +78,13 @@ function getMetadataFromSheet(sheet: any, frontmatter?: Partial<SongMetadata>): 
 export function parseAndTranspose(rawText: string, semitones: number): ParsedSong {
   const parser = new ChordProParser();
   let normalized = rawText
-    .replace(/^---[\s\S]*?---\n?/, '')
+    .replace(/^---[\s\S]*?---\r?\n?/, '')
     .trim();
+
+  // Sanitize multiple consecutive spaces to prevent chordsheetjs from inserting extra commas
+  normalized = normalized
+    .replace(/,[ \t]+/g, ', ')
+    .replace(/[ \t]{2,}/g, ' ');
 
   // Sanitize common ChordPro parsing edge cases
   normalized = normalized
@@ -106,9 +111,9 @@ export function parseAndTranspose(rawText: string, semitones: number): ParsedSon
     }
   }
 
-  const frontmatterBlock = rawText.match(/^---\n([\s\S]*?)\n---/)?.[1] ?? '';
+  const frontmatterBlock = rawText.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
   const frontmatter: Partial<SongMetadata> = {};
-  for (const line of frontmatterBlock.split('\n')) {
+  for (const line of frontmatterBlock.split(/\r?\n/)) {
     const m = line.match(/^(\w+):\s*(.*)$/);
     if (!m) continue;
     const [, k, v] = m;
@@ -227,12 +232,11 @@ function extractTransposedKey(_allChords: string[], originalKey: string, semiton
 }
 
 export function extractLyricsText(rawText: string): string {
-  try {
-    const { text } = parseAndTranspose(rawText, 0);
-    return text;
-  } catch {
-    return rawText.replace(/\[.*?\]/g, '').replace(/\{.*?\}/g, '');
-  }
+  return rawText
+    .replace(/^---[\s\S]*?---\r?\n?/, '')
+    .replace(/\{[^{}]*\}/g, '')
+    .replace(/\[[^\]]*\]/g, '')
+    .trim();
 }
 
 export function extractLyricsSnippet(rawText: string, maxLen = 80): string {
