@@ -106,3 +106,27 @@
     @apply relative overflow-hidden rounded-2xl bg-white/70 dark:bg-slate-900/60 backdrop-blur-md border border-black/5 dark:border-white/5 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-500/10 hover:border-orange-500/30;
   }
 }
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  header, footer, nav, aside, .sticky, button, select, input, .no-print {
+    display: none !important;
+  }
+  #chord-sheet {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  #chord-sheet-mount .chord {
+    color: #c2410c !important;
+    font-weight: bold !important;
+  }
+  #chord-sheet-mount .lyrics, #chord-sheet-mount .lyric {
+    color: #0f172a !important;
+  }
+}

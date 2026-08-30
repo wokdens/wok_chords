@@ -138,7 +138,7 @@ export function parseAndTranspose(rawText: string, semitones: number): ParsedSon
     try {
       transposed = parser.parse(normalized);
       if (typeof transposed.transpose === 'function') {
-        transposed.transpose(semitones);
+        transposed = transposed.transpose(semitones) || transposed;
       }
       if (useFlats && originalKey) {
         const newKeyName = transposeKeyName(originalKey, semitones, true);

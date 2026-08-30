@@ -14,6 +14,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Music,
+  Share2,
+  Check,
+  Printer,
 } from 'lucide-react';
 import { generateChordSvg } from '../lib/chordDiagrams';
 
@@ -86,9 +89,9 @@ function renderChordHtml(rawText: string, semitones: number): RenderedResult {
 
   let final: Song = sheet;
   if (semitones !== 0) {
-    const t = parser.parse(normalized);
+    let t = parser.parse(normalized);
     try {
-      (t as any).transpose(semitones);
+      t = (t as any).transpose(semitones) || t;
     } catch {
       /* no-op */
     }
@@ -96,7 +99,7 @@ function renderChordHtml(rawText: string, semitones: number): RenderedResult {
       const nk = transposeKeyName(originalKey, semitones, true);
       if (nk) {
         try {
-          (t as any).setKey(nk);
+          (t as any).setKey?.(nk);
         } catch {
           /* no-op */
         }
@@ -169,6 +172,7 @@ export default function InteractiveControls({
 
   const [transpose, setTranspose] = useState(0);
   const [capoFret, setCapoFret] = useState(0);
+  const [copied, setCopied] = useState(false);
   const [instrument, setInstrument] = useState<'guitar' | 'ukulele'>('guitar');
   const [displayKey, setDisplayKey] = useState<string | undefined>(initialKey);
   const [currentChords, setCurrentChords] = useState<string[]>([]);
@@ -194,7 +198,56 @@ export default function InteractiveControls({
     setShowChordModal(true);
   }, []);
 
-  // Initialize
+  const handleShare = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      const url = window.location.href;
+      navigator.clipboard?.writeText(url).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
+    }
+  }, []);
+
+  const handlePrint = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      window.print();
+    }
+  }, []);
+
+  // Initialize from URL params if present
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const urlTranspose = parseInt(params.get('transpose') || '0', 10);
+      const urlCapo = parseInt(params.get('capo') || '0', 10);
+      if (!isNaN(urlTranspose) && urlTranspose >= -12 && urlTranspose <= 12) {
+        setTranspose(urlTranspose);
+      }
+      if (!isNaN(urlCapo) && urlCapo >= 0 && urlCapo <= 12) {
+        setCapoFret(urlCapo);
+      }
+    }
+  }, []);
+
+  // Sync URL search params
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      if (transpose !== 0) {
+        url.searchParams.set('transpose', String(transpose));
+      } else {
+        url.searchParams.delete('transpose');
+      }
+      if (capoFret !== 0) {
+        url.searchParams.set('capo', String(capoFret));
+      } else {
+        url.searchParams.delete('capo');
+      }
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, [transpose, capoFret]);
+
+  // Initialize DOM bindings
   useEffect(() => {
     if (typeof document !== 'undefined') {
       if (scrollTargetSelector) {
@@ -209,7 +262,7 @@ export default function InteractiveControls({
     setWakeLockSupported(supported);
 
     // Initial extraction of chords
-    const initial = renderChordHtml(contentText, 0);
+    const initial = renderChordHtml(contentText, effectiveSemitones);
     setCurrentChords(initial.chords);
   }, [scrollTargetSelector, mountId, contentText, handleOpenChordDiagram]);
 
@@ -436,6 +489,35 @@ export default function InteractiveControls({
             >
               {wakeLockActive ? <BatteryFull size={14} /> : <Battery size={14} />}
               <span className="hidden sm:inline">{wakeLockActive ? 'Screen Locked' : 'Keep Awake'}</span>
+            </button>
+          </div>
+
+          {/* 5. Share Transposed Key & Print/PDF */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onClick={handleShare}
+              title="Copy link with active key & capo settings"
+              aria-label="Share transposed chords"
+              className={`h-8 px-2 sm:px-2.5 inline-flex items-center gap-1 rounded-lg border text-xs font-semibold transition active:scale-95 ${
+                copied
+                  ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
+                  : 'bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border-black/5 dark:border-white/5 text-wok-muted hover:text-wok-accent'
+              }`}
+            >
+              {copied ? <Check size={14} /> : <Share2 size={14} />}
+              <span className="hidden sm:inline">{copied ? 'Copied!' : 'Share'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handlePrint}
+              title="Print clean chord sheet or save as PDF"
+              aria-label="Print chord sheet"
+              className="h-8 px-2 sm:px-2.5 inline-flex items-center gap-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/5 dark:border-white/5 text-wok-muted hover:text-wok-text text-xs font-semibold transition active:scale-95"
+            >
+              <Printer size={14} />
+              <span className="hidden sm:inline">Print</span>
             </button>
           </div>
         </div>
