@@ -58,25 +58,24 @@ function scoreSong(song: SongSearchEntry, q: string): number {
 
 async function loadIndex(url: string): Promise<SongSearchEntry[]> {
   try {
-    const res = await fetch(url, { cache: 'no-cache' });
+    const res = await fetch(url);
     if (!res.ok) throw new Error('bad status');
     const data = await res.json();
     if (Array.isArray(data)) {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      } catch {
-        /* ignore */
+      if (data.length > 0 && Array.isArray(data[0])) {
+        return (data as any[]).map((item) => ({
+          slug: item[0],
+          title: item[1],
+          artist: item[2],
+          movie: item[3] || undefined,
+          key: item[4] || undefined,
+          tags: item[5] || [],
+        }));
       }
       return data as SongSearchEntry[];
     }
   } catch {
     /* fallthrough */
-  }
-  try {
-    const cached = localStorage.getItem(STORAGE_KEY);
-    if (cached) return JSON.parse(cached) as SongSearchEntry[];
-  } catch {
-    /* ignore */
   }
   return [];
 }
@@ -86,18 +85,17 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
   const [index, setIndex] = useState<SongSearchEntry[]>([]);
   const [open, setOpen] = useState(false);
   const [focusedIdx, setFocusedIdx] = useState(-1);
+  const [hasRequestedIndex, setHasRequestedIndex] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    let alive = true;
+  const ensureIndexLoaded = () => {
+    if (hasRequestedIndex) return;
+    setHasRequestedIndex(true);
     loadIndex(indexUrl).then((arr) => {
-      if (alive) setIndex(arr);
+      setIndex(arr);
     });
-    return () => {
-      alive = false;
-    };
-  }, [indexUrl]);
+  };
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -114,6 +112,7 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
     function onKey(e: KeyboardEvent) {
       if (e.key === '/' && document.activeElement !== inputRef.current) {
         e.preventDefault();
+        ensureIndexLoaded();
         inputRef.current?.focus();
         setOpen(true);
       }
@@ -124,7 +123,7 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  }, [hasRequestedIndex]);
 
   const results = useMemo(() => {
     if (!query.trim()) return [];
@@ -172,7 +171,11 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
             setOpen(true);
             setFocusedIdx(-1);
           }}
-          onFocus={() => setOpen(true)}
+          onMouseEnter={ensureIndexLoaded}
+          onFocus={() => {
+            ensureIndexLoaded();
+            setOpen(true);
+          }}
           onKeyDown={onKeyDown}
           placeholder="Search songs, artists, movies… (press /)"
           className="w-full rounded-xl border py-1.5 pl-8 pr-8 text-sm outline-none transition focus:ring-2 input-surface"

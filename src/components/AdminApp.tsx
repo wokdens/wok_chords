@@ -100,33 +100,33 @@ export default function AdminApp({ initialAuthed, usingDefault }: Props) {
 
   if (!authed) {
     return (
-      <div class="max-w-md mx-auto mt-6 rounded-2xl border border-black/10 dark:border-white/10 bg-wok-panel/60 backdrop-blur p-6">
-        <h2 class="text-lg font-bold mb-1 flex items-center gap-2">
+      <div className="max-w-md mx-auto mt-6 rounded-2xl border border-black/10 dark:border-white/10 bg-wok-panel/60 backdrop-blur p-6">
+        <h2 className="text-lg font-bold mb-1 flex items-center gap-2">
           <ListMusic size={18} /> Admin login
         </h2>
-        <p class="text-wok-muted text-sm mb-4">
+        <p className="text-wok-muted text-sm mb-4">
           Enter your administrative credentials to manage songs.
         </p>
-        <form class="flex flex-col gap-3" onSubmit={handleLogin}>
-          <label class="flex flex-col gap-1 text-sm">
-            <span class="font-medium">Password</span>
+        <form className="flex flex-col gap-3" onSubmit={handleLogin}>
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="font-medium">Password</span>
             <input
               type="password"
               autoComplete="current-password"
               required
               value={password}
               onChange={(e) => setPassword((e.target as HTMLInputElement).value)}
-              class="rounded-lg border py-2 px-3 outline-none input-surface"
+              className="rounded-lg border py-2 px-3 outline-none input-surface"
               placeholder="Enter admin password"
             />
           </label>
-          <div class="text-red-600 dark:text-red-400 text-sm min-h-[1.25rem]">
+          <div className="text-red-600 dark:text-red-400 text-sm min-h-[1.25rem]">
             {loginErr}
           </div>
           <button
             type="submit"
             disabled={loggingIn}
-            class="h-10 rounded-lg bg-wok-accent text-white font-semibold hover:opacity-90 transition disabled:opacity-60 flex items-center justify-center gap-2"
+            className="h-10 rounded-lg bg-wok-accent text-white font-semibold hover:opacity-90 transition disabled:opacity-60 flex items-center justify-center gap-2"
           >
             {loggingIn ? 'Signing in…' : 'Sign in'}
           </button>
@@ -148,22 +148,22 @@ export default function AdminApp({ initialAuthed, usingDefault }: Props) {
 
   return (
     <div>
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <div class="relative max-w-md w-full md:max-w-md">
-          <Search class="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-wok-muted" />
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div className="relative max-w-md w-full md:max-w-md">
+          <Search className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-wok-muted" />
           <input
             type="search"
             value={query}
             onChange={(e) => setQuery((e.target as HTMLInputElement).value)}
             placeholder="Filter by title, artist, slug, or tag…"
-            class="w-full rounded-lg border py-1.5 pl-8 pr-3 text-sm outline-none input-surface"
+            className="w-full rounded-lg border py-1.5 pl-8 pr-3 text-sm outline-none input-surface"
           />
         </div>
-        <div class="flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={loadList}
-            class="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 hover:bg-wok-accent/15 hover:text-wok-accent text-sm text-wok-muted transition"
+            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 hover:bg-wok-accent/15 hover:text-wok-accent text-sm text-wok-muted transition"
             title="Refresh list"
           >
             <RefreshCcw size={14} /> Refresh
@@ -171,7 +171,7 @@ export default function AdminApp({ initialAuthed, usingDefault }: Props) {
           <button
             type="button"
             onClick={handleLogout}
-            class="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 hover:bg-red-500/15 hover:text-red-700 dark:hover:text-red-300 text-sm text-wok-muted transition"
+            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 hover:bg-red-500/15 hover:text-red-700 dark:hover:text-red-300 text-sm text-wok-muted transition"
           >
             <LogOut size={14} /> Logout
           </button>
@@ -179,74 +179,74 @@ export default function AdminApp({ initialAuthed, usingDefault }: Props) {
       </div>
 
       {songsError && (
-        <div class="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300 px-3 py-2 text-sm">
+        <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300 px-3 py-2 text-sm">
           {songsError}
         </div>
       )}
 
-      <div class="rounded-2xl border border-black/10 dark:border-white/10 overflow-hidden">
+      <div className="rounded-2xl border border-black/10 dark:border-white/10 overflow-hidden">
         {songs === null ? (
-          <div class="p-8 text-sm text-wok-muted text-center">Loading songs…</div>
+          <div className="p-8 text-sm text-wok-muted text-center">Loading songs…</div>
         ) : filtered.length === 0 ? (
-          <div class="p-8 text-sm text-wok-muted text-center">No songs match your filter.</div>
+          <div className="p-8 text-sm text-wok-muted text-center">No songs match your filter.</div>
         ) : (
-          <div class="max-h-[65vh] overflow-auto">
-            <table class="w-full text-sm">
-              <thead class="sticky top-0 z-10 bg-wok-panel text-wok-muted uppercase text-[11px] tracking-wider">
+          <div className="max-h-[65vh] overflow-auto">
+            <table className="w-full text-sm">
+              <thead className="sticky top-0 z-10 bg-wok-panel text-wok-muted uppercase text-[11px] tracking-wider">
                 <tr>
-                  <th class="text-left font-semibold px-3 py-2">Title</th>
-                  <th class="text-left font-semibold px-3 py-2 hidden md:table-cell">Artist</th>
-                  <th class="text-left font-semibold px-3 py-2 hidden lg:table-cell">Key</th>
-                  <th class="text-left font-semibold px-3 py-2 hidden lg:table-cell">Tags</th>
-                  <th class="text-right font-semibold px-3 py-2"></th>
+                  <th className="text-left font-semibold px-3 py-2">Title</th>
+                  <th className="text-left font-semibold px-3 py-2 hidden md:table-cell">Artist</th>
+                  <th className="text-left font-semibold px-3 py-2 hidden lg:table-cell">Key</th>
+                  <th className="text-left font-semibold px-3 py-2 hidden lg:table-cell">Tags</th>
+                  <th className="text-right font-semibold px-3 py-2"></th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-black/5 dark:divide-white/5">
+              <tbody className="divide-y divide-black/5 dark:divide-white/5">
                 {filtered.map((s) => (
                   <tr
                     key={s.slug}
-                    class="hover:bg-black/5 dark:hover:bg-white/5 transition"
+                    className="hover:bg-black/5 dark:hover:bg-white/5 transition"
                   >
-                    <td class="px-3 py-2 font-semibold text-wok-text">
-                      <div class="flex items-center gap-2 min-w-0">
-                        <FileText size={14} class="text-wok-muted shrink-0" />
-                        <div class="min-w-0">
-                          <div class="truncate">{s.title}</div>
-                          <div class="text-[11px] text-wok-muted md:hidden truncate">
+                    <td className="px-3 py-2 font-semibold text-wok-text">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <FileText size={14} className="text-wok-muted shrink-0" />
+                        <div className="min-w-0">
+                          <div className="truncate">{s.title}</div>
+                          <div className="text-[11px] text-wok-muted md:hidden truncate">
                             {s.artist}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td class="px-3 py-2 text-wok-muted hidden md:table-cell truncate max-w-[22ch]">
+                    <td className="px-3 py-2 text-wok-muted hidden md:table-cell truncate max-w-[22ch]">
                       {s.artist}
                     </td>
-                    <td class="px-3 py-2 hidden lg:table-cell">
+                    <td className="px-3 py-2 hidden lg:table-cell">
                       {s.key ? (
-                        <span class="font-mono text-xs font-bold text-wok-chord bg-wok-chord/10 rounded px-1.5 py-0.5">
+                        <span className="font-mono text-xs font-bold text-wok-chord bg-wok-chord/10 rounded px-1.5 py-0.5">
                           {s.key}
                         </span>
                       ) : (
-                        <span class="text-wok-muted text-xs">—</span>
+                        <span className="text-wok-muted text-xs">—</span>
                       )}
                     </td>
-                    <td class="px-3 py-2 hidden lg:table-cell">
-                      <div class="flex flex-wrap gap-1">
+                    <td className="px-3 py-2 hidden lg:table-cell">
+                      <div className="flex flex-wrap gap-1">
                         {(s.tags ?? []).slice(0, 3).map((t) => (
                           <span
                             key={t}
-                            class="rounded bg-black/5 dark:bg-white/5 px-1.5 py-0.5 text-[11px] capitalize text-wok-muted"
+                            className="rounded bg-black/5 dark:bg-white/5 px-1.5 py-0.5 text-[11px] capitalize text-wok-muted"
                           >
                             #{t}
                           </span>
                         ))}
                       </div>
                     </td>
-                    <td class="px-3 py-2 text-right">
+                    <td className="px-3 py-2 text-right">
                       <button
                         type="button"
                         onClick={() => setView({ kind: 'edit', slug: s.slug })}
-                        class="inline-flex items-center gap-1 h-8 px-3 rounded-md bg-wok-accent/15 text-wok-accent text-xs font-semibold hover:bg-wok-accent/25 transition"
+                        className="inline-flex items-center gap-1 h-8 px-3 rounded-md bg-wok-accent/15 text-wok-accent text-xs font-semibold hover:bg-wok-accent/25 transition"
                       >
                         Edit
                       </button>
@@ -331,19 +331,19 @@ function SongEditor(props: {
   const dirty = raw !== initial;
 
   return (
-    <div class="flex flex-col gap-4">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-2 min-w-0">
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2 min-w-0">
           <button
             type="button"
             onClick={onBack}
-            class="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 hover:bg-wok-accent/15 hover:text-wok-accent text-sm text-wok-muted transition shrink-0"
+            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 hover:bg-wok-accent/15 hover:text-wok-accent text-sm text-wok-muted transition shrink-0"
           >
             <ArrowLeft size={14} /> Back to list
           </button>
-          <div class="min-w-0">
-            <div class="font-bold truncate">{slug}</div>
-            <div class="text-[11px] text-wok-muted truncate">
+          <div className="min-w-0">
+            <div className="font-bold truncate">{slug}</div>
+            <div className="text-[11px] text-wok-muted truncate">
               {loading
                 ? 'Loading…'
                 : dirty
@@ -353,11 +353,11 @@ function SongEditor(props: {
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setShowPreview((v) => !v)}
-            class="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 hover:bg-wok-accent/15 hover:text-wok-accent text-sm text-wok-muted transition"
+            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 hover:bg-wok-accent/15 hover:text-wok-accent text-sm text-wok-muted transition"
           >
             {showPreview ? <X size={14} /> : <FileText size={14} />}
             {showPreview ? 'Hide preview' : 'Show preview'}
@@ -366,7 +366,7 @@ function SongEditor(props: {
             type="button"
             onClick={handleSave}
             disabled={saving || loading || !raw.trim()}
-            class="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-wok-accent text-white font-semibold hover:opacity-90 transition disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-wok-accent text-white font-semibold hover:opacity-90 transition disabled:opacity-50"
           >
             <Save size={14} />
             {saving ? 'Saving…' : 'Save song'}
@@ -376,7 +376,7 @@ function SongEditor(props: {
 
       {saveMsg && (
         <div
-          class={`rounded-lg border px-3 py-2 text-sm ${
+          className={`rounded-lg border px-3 py-2 text-sm ${
             saveMsg.kind === 'ok'
               ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
               : 'border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300'
@@ -386,14 +386,14 @@ function SongEditor(props: {
         </div>
       )}
       {loadErr && (
-        <div class="rounded-lg border border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300 px-3 py-2 text-sm">
+        <div className="rounded-lg border border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300 px-3 py-2 text-sm">
           {loadErr}
         </div>
       )}
 
-      <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        <div class="flex flex-col gap-2">
-          <label class="text-xs uppercase tracking-wider text-wok-muted font-semibold">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-2">
+          <label className="text-xs uppercase tracking-wider text-wok-muted font-semibold">
             Raw ChordPro source (.chopro file)
           </label>
           <textarea
@@ -401,16 +401,16 @@ function SongEditor(props: {
             onChange={(e) => setRaw((e.target as HTMLTextAreaElement).value)}
             spellCheck={false}
             disabled={loading}
-            class="w-full min-h-[70vh] h-[70vh] rounded-xl border p-3 text-xs md:text-sm font-mono leading-relaxed outline-none transition input-surface disabled:opacity-70"
+            className="w-full min-h-[70vh] h-[70vh] rounded-xl border p-3 text-xs md:text-sm font-mono leading-relaxed outline-none transition input-surface disabled:opacity-70"
             placeholder="Loading song…"
           />
         </div>
         {showPreview && (
-          <div class="flex flex-col gap-2">
-            <label class="text-xs uppercase tracking-wider text-wok-muted font-semibold">
+          <div className="flex flex-col gap-2">
+            <label className="text-xs uppercase tracking-wider text-wok-muted font-semibold">
               Live preview · Tip: add spaces between words by editing source directly
             </label>
-            <div class="w-full min-h-[70vh] h-[70vh] overflow-auto rounded-xl border border-black/10 dark:border-white/10 bg-wok-panel/40 p-4 md:p-6">
+            <div className="w-full min-h-[70vh] h-[70vh] overflow-auto rounded-xl border border-black/10 dark:border-white/10 bg-wok-panel/40 p-4 md:p-6">
               <SourcePreview raw={raw} />
             </div>
           </div>
@@ -440,33 +440,33 @@ function SourcePreview({ raw }: { raw: string }) {
           continue;
         }
         if (inFm) {
-          out.push(`<span class="text-wok-muted">${esc(line)}</span>`);
+          out.push(`<span className="text-wok-muted">${esc(line)}</span>`);
           continue;
         }
         const directive = /^\s*\{([^{}]*)\}\s*$/.exec(line);
         if (directive) {
           out.push(
-            `<div class="text-xs md:text-sm mt-4 mb-2 uppercase tracking-widest font-semibold text-wok-muted border-l-2 border-wok-accent pl-2">${esc(
+            `<div className="text-xs md:text-sm mt-4 mb-2 uppercase tracking-widest font-semibold text-wok-muted border-l-2 border-wok-accent pl-2">${esc(
               directive[1],
             )}</div>`,
           );
           continue;
         }
         if (line.trim() === '') {
-          out.push('<div class="h-3"></div>');
+          out.push('<div className="h-3"></div>');
           continue;
         }
         out.push(renderChordLine(line));
       }
       return out.join('\n');
     } catch {
-      return `<pre class="whitespace-pre-wrap text-xs">${esc(raw)}</pre>`;
+      return `<pre className="whitespace-pre-wrap text-xs">${esc(raw)}</pre>`;
     }
   }, [raw]);
 
   return (
     <div
-      class="space-y-0.5 text-wok-text"
+      className="space-y-0.5 text-wok-text"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
@@ -520,11 +520,11 @@ function renderChordLine(line: string): string {
   const cells = parts.map((p) => {
     const txt = esc(p.text === '' ? '\u00A0' : p.text);
     if (p.chord) {
-      return `<span class="inline-flex flex-col leading-none align-bottom mr-2"><span class="font-mono text-wok-chord font-bold text-sm md:text-base">${esc(
+      return `<span className="inline-flex flex-col leading-none align-bottom mr-2"><span className="font-mono text-wok-chord font-bold text-sm md:text-base">${esc(
         p.chord,
-      )}</span><span class="text-base md:text-lg leading-relaxed">${txt}</span></span>`;
+      )}</span><span className="text-base md:text-lg leading-relaxed">${txt}</span></span>`;
     }
-    return `<span class="text-base md:text-lg leading-relaxed">${txt}</span>`;
+    return `<span className="text-base md:text-lg leading-relaxed">${txt}</span>`;
   });
-  return `<div class="flex flex-wrap items-end gap-x-1 mb-1.5">${cells.join('')}</div>`;
+  return `<div className="flex flex-wrap items-end gap-x-1 mb-1.5">${cells.join('')}</div>`;
 }

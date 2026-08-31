@@ -1,12 +1,11 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getAllSongs, type SongItem } from '../../lib/songStore';
+import { getAllSongs } from '../../lib/songStore';
 
 export const prerender = true;
 
 export async function getStaticPaths() {
   const songs = getAllSongs();
-  const movieMap = new Map<string, { title: string; slug: string; songs: SongItem[] }>();
+  const movieMap = new Map<string, { title: string; slug: string }>();
 
   for (const song of songs) {
     if (song.movie && song.movieSlug) {
@@ -14,10 +13,8 @@ export async function getStaticPaths() {
         movieMap.set(song.movieSlug, {
           title: song.movie,
           slug: song.movieSlug,
-          songs: [],
         });
       }
-      movieMap.get(song.movieSlug)!.songs.push(song);
     }
   }
 
@@ -26,7 +23,6 @@ export async function getStaticPaths() {
     props: {
       title: movie.title,
       slug: movie.slug,
-      songs: movie.songs,
     },
   }));
 }
@@ -34,87 +30,25 @@ export async function getStaticPaths() {
 interface Props {
   title: string;
   slug: string;
-  songs: SongItem[];
 }
 
-const { title, slug, songs } = Astro.props;
-const artists = Array.from(new Set(songs.map((s) => s.artist).filter(Boolean)));
+const { title, slug } = Astro.props;
+const targetUrl = `/movie/${slug}/`;
 ---
 
-<BaseLayout
-  title={`${title} Album Guitar Chords & Lyrics`}
-  description={`Play all guitar, piano, and ukulele chords for ${title} album (${songs.length} songs) with transpose and auto-scroll on WokChords.`}
->
-  <section class="max-w-5xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 pb-16 sm:pb-24">
-    <nav class="flex items-center gap-2 text-xs text-wok-muted mb-6">
-      <a href="/" class="hover:text-wok-accent">Home</a>
-      <span>/</span>
-      <a href="/movies/" class="hover:text-wok-accent">Albums</a>
-      <span>/</span>
-      <span class="text-wok-text font-semibold">{title}</span>
-    </nav>
-
-    <header class="rounded-3xl border border-black/10 dark:border-white/10 bg-wok-panel/50 p-6 sm:p-10 mb-10 shadow-sm relative overflow-hidden">
-      <div class="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-wok-accent/10 blur-3xl pointer-events-none"></div>
-      <div class="relative z-10">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-wok-accent/10 text-wok-accent text-xs font-bold uppercase tracking-wider mb-3">
-          🎬 Soundtrack Album
-        </div>
-        <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-wok-text mb-3">
-          {title}
-        </h1>
-        <p class="text-xs sm:text-sm text-wok-muted max-w-2xl leading-relaxed mb-4">
-          Featuring chords and lyrics for all {songs.length} tracks by {artists.slice(0, 4).join(', ')}{artists.length > 4 ? ', and more' : ''}.
-        </p>
-        <div class="flex flex-wrap items-center gap-3 text-xs">
-          <span class="px-3 py-1 rounded-xl bg-black/5 dark:bg-white/5 font-semibold text-wok-text">
-            🎵 {songs.length} {songs.length === 1 ? 'Track' : 'Tracks'}
-          </span>
-          <span class="px-3 py-1 rounded-xl bg-black/5 dark:bg-white/5 font-semibold text-wok-text">
-            ⚡ 1-Click Transpose Available
-          </span>
-        </div>
-      </div>
-    </header>
-
-    <div>
-      <h2 class="text-xl sm:text-2xl font-bold text-wok-text mb-4">
-        Songs in {title}
-      </h2>
-
-      <div class="grid gap-3 sm:grid-cols-2">
-        {songs.map((s, index) => (
-          <a
-            href={`/song/${s.slug}/`}
-            class="group flex items-center justify-between p-4 rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/30 hover:bg-wok-panel/90 hover:border-wok-accent/40 hover:-translate-y-0.5 transition-all shadow-sm duration-150"
-          >
-            <div class="flex items-center gap-3.5 min-w-0 pr-2">
-              <span class="w-8 h-8 rounded-xl bg-black/5 dark:border-white/5 text-wok-muted group-hover:bg-wok-accent group-hover:text-white font-bold text-xs flex items-center justify-center shrink-0 transition-colors">
-                {index + 1}
-              </span>
-              <div class="min-w-0">
-                <h3 class="font-bold text-sm text-wok-text group-hover:text-wok-accent transition-colors truncate">
-                  {s.title}
-                </h3>
-                <p class="text-xs text-wok-muted truncate">
-                  {s.artist}
-                </p>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-2 shrink-0">
-              {s.key && (
-                <span class="px-2 py-0.5 rounded bg-wok-chord/10 text-wok-chord border border-wok-chord/20 text-[10px] font-mono font-bold">
-                  Key {s.key}
-                </span>
-              )}
-              <span class="text-wok-muted group-hover:text-wok-accent font-semibold text-xs ml-1">
-                Play →
-              </span>
-            </div>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
-</BaseLayout>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Redirecting to {title} Soundtrack — WokChords</title>
+    <link rel="canonical" href={`https://wokchords.wokdens.com${targetUrl}`} />
+    <meta http-equiv="refresh" content={`0;url=${targetUrl}`} />
+    <meta name="robots" content="noindex,follow" />
+  </head>
+  <body style="font-family: system-ui, sans-serif; text-align: center; padding: 40px;">
+    <p>Redirecting to <a href={targetUrl}>{title} Soundtrack Chords</a>...</p>
+    <script define:vars={{ targetUrl }}>
+      window.location.replace(targetUrl);
+    </script>
+  </body>
+</html>

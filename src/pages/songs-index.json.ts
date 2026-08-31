@@ -5,15 +5,15 @@ import { getAllSongs } from '../lib/songStore';
 export async function GET() {
   const songs = getAllSongs();
 
-  const rows = songs.map((s) => ({
-    slug: s.slug,
-    title: s.title,
-    artist: s.artist,
-    movie: s.movie || undefined,
-    key: s.key || undefined,
-    tags: s.tags?.length > 0 ? s.tags.slice(0, 2) : undefined,
-    snippet: s.snippet ? s.snippet.slice(0, 60).trim() : undefined,
-  }));
+  // Compact tuple format: [slug, title, artist, movie, key, tags]
+  const rows = songs.map((s) => [
+    s.slug,
+    s.title,
+    s.artist,
+    s.movie || '',
+    s.key || '',
+    s.tags && s.tags.length > 0 ? s.tags.slice(0, 2) : [],
+  ]);
 
   return Response.json(rows, {
     headers: {

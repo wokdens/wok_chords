@@ -29,13 +29,7 @@ const ChordProParser = cs.ChordProParser;
 const HtmlDivFormatter = cs.HtmlDivFormatter;
 type Song = SongType;
 
-declare global {
-  interface Navigator {
-    wakeLock?: {
-      request: (type: 'screen') => Promise<any>;
-    };
-  }
-}
+// Wake lock helper
 
 const ORDER_SHARPS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const ORDER_FLATS = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
@@ -173,7 +167,8 @@ export default function InteractiveControls({
   const [transpose, setTranspose] = useState(0);
   const [capoFret, setCapoFret] = useState(0);
   const [copied, setCopied] = useState(false);
-  const [instrument, setInstrument] = useState<'guitar' | 'ukulele'>('guitar');
+  const [fontSize, setFontSize] = useState(100);
+  const [instrument, setInstrument] = useState<'guitar' | 'ukulele' | 'piano'>('guitar');
   const [displayKey, setDisplayKey] = useState<string | undefined>(initialKey);
   const [currentChords, setCurrentChords] = useState<string[]>([]);
   const [selectedChord, setSelectedChord] = useState<string | null>(null);
@@ -213,6 +208,14 @@ export default function InteractiveControls({
       window.print();
     }
   }, []);
+
+  // Update lyrics font size on zoom change
+  useEffect(() => {
+    const mount = mountRef.current ?? document.getElementById(mountId);
+    if (mount) {
+      mount.style.fontSize = `${fontSize}%`;
+    }
+  }, [fontSize, mountId]);
 
   // Initialize from URL params if present
   useEffect(() => {
@@ -420,8 +423,9 @@ export default function InteractiveControls({
 
           {/* 2. Capo Position */}
           <div className="flex items-center gap-1.5 shrink-0">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-wok-muted">Capo:</span>
+            <label htmlFor="capo-select" className="text-[11px] font-bold uppercase tracking-wider text-wok-muted">Capo:</label>
             <select
+              id="capo-select"
               value={capoFret}
               onChange={(e) => setCapoFret(Number(e.target.value))}
               aria-label="Select Capo Position"
@@ -461,13 +465,38 @@ export default function InteractiveControls({
                 step={0.1}
                 value={scrollSpeed}
                 onChange={(e) => setScrollSpeed(Number(e.target.value))}
+                aria-label="Auto-scroll speed"
+                aria-valuetext={`${scrollSpeed.toFixed(1)}x speed`}
                 className="w-20 lg:w-24 accent-wok-accent wok-range"
               />
               <span className="text-[10px] font-mono text-wok-muted w-6 text-right">{scrollSpeed.toFixed(1)}x</span>
             </div>
           </div>
 
-          {/* 4. Screen Wake Lock */}
+          {/* 4. Font Zoom */}
+          <div className="hidden xl:flex items-center gap-1 shrink-0 bg-black/5 dark:bg-white/5 p-0.5 rounded-lg border border-black/5 dark:border-white/5">
+            <button
+              type="button"
+              onClick={() => setFontSize((s) => Math.max(80, s - 10))}
+              title="Decrease lyrics font size"
+              aria-label="Decrease font size"
+              className="w-6 h-7 inline-flex items-center justify-center text-xs font-bold text-wok-muted hover:text-wok-text"
+            >
+              A-
+            </button>
+            <span className="text-[10px] font-mono text-wok-muted px-1">{fontSize}%</span>
+            <button
+              type="button"
+              onClick={() => setFontSize((s) => Math.min(130, s + 10))}
+              title="Increase lyrics font size"
+              aria-label="Increase font size"
+              className="w-6 h-7 inline-flex items-center justify-center text-xs font-bold text-wok-muted hover:text-wok-text"
+            >
+              A+
+            </button>
+          </div>
+
+          {/* 5. Screen Wake Lock */}
           <div className="flex items-center shrink-0">
             <button
               type="button"
@@ -492,7 +521,7 @@ export default function InteractiveControls({
             </button>
           </div>
 
-          {/* 5. Share Transposed Key & Print/PDF */}
+          {/* 6. Share Transposed Key & Print/PDF */}
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               type="button"
@@ -570,6 +599,17 @@ export default function InteractiveControls({
               }`}
             >
               Ukulele
+            </button>
+            <button
+              type="button"
+              onClick={() => setInstrument('piano')}
+              className={`px-2 py-0.5 rounded text-[11px] font-semibold transition ${
+                instrument === 'piano'
+                  ? 'bg-wok-accent text-white'
+                  : 'bg-black/5 dark:bg-white/5 text-wok-muted hover:text-wok-text'
+              }`}
+            >
+              Piano
             </button>
           </div>
         </div>
@@ -660,6 +700,17 @@ export default function InteractiveControls({
                   }`}
                 >
                   Uke
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInstrument('piano')}
+                  className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase transition ${
+                    instrument === 'piano'
+                      ? 'bg-wok-accent text-white'
+                      : 'text-wok-muted hover:text-wok-text'
+                  }`}
+                >
+                  Piano
                 </button>
               </div>
 

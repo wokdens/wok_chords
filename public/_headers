@@ -1,0 +1,13 @@
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+/songs-index.json
+  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400
+  Content-Type: application/json; charset=utf-8
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable

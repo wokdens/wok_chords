@@ -195,11 +195,95 @@ export function getChordShape(chord: string, instrument: 'guitar' | 'ukulele' = 
   return undefined;
 }
 
+export function generatePianoChordSvg(chordName: string): string {
+  const clean = normalizeChordName(chordName);
+  const ROOT_NOTES: { [n: string]: number } = {
+    'C': 0, 'C#': 1, 'Db': 1, 'D': 2, 'D#': 3, 'Eb': 3, 'E': 4,
+    'F': 5, 'F#': 6, 'Gb': 6, 'G': 7, 'G#': 8, 'Ab': 8, 'A': 9, 'A#': 10, 'Bb': 10, 'B': 11
+  };
+
+  const rootMatch = clean.match(/^([A-G][#b]?)/);
+  if (!rootMatch) {
+    return `<svg viewBox="0 0 160 80" class="w-full h-auto max-w-[160px] select-none"><text x="80" y="40" text-anchor="middle" font-size="11" fill="currentColor" class="text-wok-muted">Diagram pending</text></svg>`;
+  }
+
+  const rootNote = rootMatch[1];
+  const rootPitch = ROOT_NOTES[rootNote] ?? 0;
+  const suffix = clean.slice(rootNote.length);
+
+  let intervals = [0, 4, 7]; // Major
+  if (suffix === 'm' || suffix === 'min') intervals = [0, 3, 7];
+  else if (suffix === '7' || suffix === 'dom7') intervals = [0, 4, 7, 10];
+  else if (suffix === 'maj7') intervals = [0, 4, 7, 11];
+  else if (suffix === 'm7' || suffix === 'min7') intervals = [0, 3, 7, 10];
+  else if (suffix === 'sus2') intervals = [0, 2, 7];
+  else if (suffix === 'sus4') intervals = [0, 5, 7];
+  else if (suffix === 'dim') intervals = [0, 3, 6];
+  else if (suffix === 'aug') intervals = [0, 4, 8];
+  else if (suffix === 'add9') intervals = [0, 4, 7, 14];
+
+  const activePitches = new Set(intervals.map((i) => (rootPitch + i) % 12));
+
+  const whiteKeyPitches = [0, 2, 4, 5, 7, 9, 11, 0, 2, 4, 5, 7, 9, 11]; // 2 octaves C to B
+  const blackKeys = [
+    { pitch: 1, pos: 0 },
+    { pitch: 3, pos: 1 },
+    { pitch: 6, pos: 3 },
+    { pitch: 8, pos: 4 },
+    { pitch: 10, pos: 5 },
+    { pitch: 1, pos: 7 },
+    { pitch: 3, pos: 8 },
+    { pitch: 6, pos: 10 },
+    { pitch: 8, pos: 11 },
+    { pitch: 10, pos: 12 },
+  ];
+
+  const keyWidth = 14;
+  const keyHeight = 50;
+  const blackKeyWidth = 9;
+  const blackKeyHeight = 30;
+  const totalWidth = whiteKeyPitches.length * keyWidth;
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalWidth + 10} 78" class="w-full h-auto max-w-[200px] select-none">`;
+  svg += `<text x="${(totalWidth + 10) / 2}" y="14" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="currentColor" class="text-wok-chord">${chordName} (Piano)</text>`;
+  svg += `<g transform="translate(5, 20)">`;
+
+  // White keys
+  whiteKeyPitches.forEach((pitch, i) => {
+    const x = i * keyWidth;
+    const isActive = activePitches.has(pitch);
+    const fill = isActive ? 'rgb(249 115 22)' : 'rgb(248 250 252)';
+    const stroke = 'rgb(148 163 184 / 0.4)';
+    svg += `<rect x="${x}" y="0" width="${keyWidth}" height="${keyHeight}" fill="${fill}" stroke="${stroke}" stroke-width="1" rx="1.5"/>`;
+    if (isActive) {
+      svg += `<circle cx="${x + keyWidth / 2}" cy="${keyHeight - 7}" r="2.5" fill="white"/>`;
+    }
+  });
+
+  // Black keys
+  blackKeys.forEach(({ pitch, pos }) => {
+    const x = pos * keyWidth + keyWidth - blackKeyWidth / 2;
+    const isActive = activePitches.has(pitch);
+    const fill = isActive ? 'rgb(249 115 22)' : 'rgb(30 41 59)';
+    svg += `<rect x="${x}" y="0" width="${blackKeyWidth}" height="${blackKeyHeight}" fill="${fill}" rx="1"/>`;
+    if (isActive) {
+      svg += `<circle cx="${x + blackKeyWidth / 2}" cy="${blackKeyHeight - 5}" r="1.8" fill="white"/>`;
+    }
+  });
+
+  svg += `</g></svg>`;
+  return svg;
+}
+
 export function generateChordSvg(
   chordName: string,
-  instrument: 'guitar' | 'ukulele' = 'guitar',
+  instrument: 'guitar' | 'ukulele' | 'piano' = 'guitar',
   options?: { width?: number; height?: number; theme?: 'dark' | 'light' }
 ): string {
+  if (instrument === 'piano') {
+    return generatePianoChordSvg(chordName);
+  }
+
   const shape = getChordShape(chordName, instrument);
   const numStrings = instrument === 'ukulele' ? 4 : 6;
   const numFrets = 4;
