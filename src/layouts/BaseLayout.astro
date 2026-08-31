@@ -2,6 +2,8 @@
 import '../styles/global.css';
 import SearchBar from '../components/SearchBar.tsx';
 import ThemeToggle from '../components/ThemeToggle.tsx';
+import SetlistHeaderButton from '../components/SetlistHeaderButton.tsx';
+import SetlistDrawer from '../components/SetlistDrawer.tsx';
 
 interface Props {
   title: string;
@@ -151,6 +153,7 @@ const languages = [
         {hideSearch && <div class="flex-1" />}
 
         <div class="flex items-center gap-1.5 md:gap-2 shrink-0">
+          <SetlistHeaderButton client:load />
           <ThemeToggle client:idle />
           <nav class="hidden md:flex items-center gap-1.5 text-xs font-bold text-wok-muted">
             <a href="/songs/" class="px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:text-wok-accent transition-colors">
@@ -170,6 +173,9 @@ const languages = [
     <main class="flex-1">
       <slot />
     </main>
+
+    <!-- Global Floating Setlist Drawer -->
+    <SetlistDrawer client:idle />
 
     <!-- Comprehensive Footer -->
     <footer class="mt-14 md:mt-20 border-t border-black/10 dark:border-white/10 bg-wok-panel/30 py-10 md:py-14">
@@ -209,7 +215,8 @@ const languages = [
           <div>
             <h4 class="text-xs font-bold uppercase tracking-wider text-wok-text mb-3">Explore</h4>
             <ul class="space-y-2 text-xs text-wok-muted">
-              <li><a href="/songs/" class="hover:text-wok-accent transition-colors">All 4,000+ Songs</a></li>
+              <li><a href="/setlist/" class="text-rose-500 font-semibold hover:underline">❤️ My Practice Setlist</a></li>
+              <li><a href="/songs/" class="hover:text-wok-accent transition-colors">All 3,900+ Songs</a></li>
               <li><a href="/artists/" class="hover:text-wok-accent transition-colors">Artist Directory</a></li>
               <li><a href="/movies/" class="hover:text-wok-accent transition-colors">Movie Soundtracks</a></li>
             </ul>

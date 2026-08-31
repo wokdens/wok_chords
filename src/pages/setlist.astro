@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SetlistPageApp from '../components/SetlistPageApp';
+
+export const prerender = true;
+---
+
+<BaseLayout
+  title="My Performance & Practice Setlist — WokChords"
+  description="Manage your custom live performance and band rehearsal setlists. Reorder songs, save customized Key and Capo settings, and export clean lists for WhatsApp."
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-bold uppercase tracking-wider mb-3">
+        <span>❤️ Stage & Rehearsal</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black text-wok-text tracking-tight mb-2">
+        My Live Setlist & Favorites
+      </h1>
+      <p class="text-sm md:text-base text-wok-muted max-w-2xl leading-relaxed">
+        Save songs with your preferred pitch transpose and capo settings. Reorder for live gigs, export for band members on WhatsApp, or print a stage cheat sheet.
+      </p>
+    </div>
+
+    <!-- Client-side Interactive Setlist App -->
+    <SetlistPageApp client:load />
+  </div>
+</BaseLayout>

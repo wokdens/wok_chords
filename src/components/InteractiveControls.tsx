@@ -17,8 +17,10 @@ import {
   Share2,
   Check,
   Printer,
+  Heart,
 } from 'lucide-react';
 import { generateChordSvg } from '../lib/chordDiagrams';
+import { isSongInSetlist, toggleSetlist, subscribeToSetlist } from '../lib/setlistStore';
 
 const cs: any =
   (chordsheetjs as any)?.ChordProParser
@@ -192,6 +194,46 @@ export default function InteractiveControls({
     setSelectedChord(chord);
     setShowChordModal(true);
   }, []);
+
+  const [inSetlist, setInSetlist] = useState(false);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const slugMatch = window.location.pathname.match(/\/song\/([^/]+)/);
+      const slug = slugMatch ? slugMatch[1] : '';
+      setInSetlist(isSongInSetlist(slug));
+    }
+    const unsubscribe = subscribeToSetlist((list) => {
+      if (typeof window !== 'undefined') {
+        const slugMatch = window.location.pathname.match(/\/song\/([^/]+)/);
+        const slug = slugMatch ? slugMatch[1] : '';
+        setInSetlist(list.some((s) => s.slug === slug));
+      }
+    });
+    return unsubscribe;
+  }, []);
+
+  const handleToggleSetlist = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      const slugMatch = window.location.pathname.match(/\/song\/([^/]+)/);
+      const slug = slugMatch ? slugMatch[1] : '';
+      if (!slug) return;
+
+      const artistMatch = contentText.match(/artist:\s*(.*)/i)?.[1]?.trim()?.replace(/^["']|["']$/g, '');
+      const { added } = toggleSetlist({
+        slug,
+        title: title || slug,
+        artist: artistMatch || 'Artist',
+        key: displayKey,
+        capo: capoFret,
+        transpose,
+      });
+      setInSetlist(added);
+      setToastMsg(added ? `❤️ Saved to Setlist (Key ${displayKey ?? '—'})` : 'Removed from Setlist');
+      setTimeout(() => setToastMsg(null), 2500);
+    }
+  }, [title, contentText, displayKey, capoFret, transpose]);
 
   const handleShare = useCallback(() => {
     if (typeof window !== 'undefined') {
@@ -521,8 +563,23 @@ export default function InteractiveControls({
             </button>
           </div>
 
-          {/* 6. Share Transposed Key & Print/PDF */}
+          {/* 6. Setlist, Share Transposed Key & Print/PDF */}
           <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onClick={handleToggleSetlist}
+              title={inSetlist ? 'In your Setlist (Click to remove)' : 'Add to your Setlist with active key/capo'}
+              aria-label={inSetlist ? 'Remove from Setlist' : 'Add to Setlist'}
+              className={`h-8 px-2 sm:px-2.5 inline-flex items-center gap-1 rounded-lg border text-xs font-semibold transition active:scale-95 ${
+                inSetlist
+                  ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/40 shadow-sm'
+                  : 'bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border-black/5 dark:border-white/5 text-wok-muted hover:text-rose-500'
+              }`}
+            >
+              <Heart size={14} className={inSetlist ? 'fill-rose-500 text-rose-500' : ''} />
+              <span className="hidden sm:inline">{inSetlist ? 'In Setlist' : 'Setlist'}</span>
+            </button>
+
             <button
               type="button"
               onClick={handleShare}
@@ -551,6 +608,23 @@ export default function InteractiveControls({
           </div>
         </div>
       </div>
+
+      {/* Setlist Toast Notification */}
+      {toastMsg && (
+        <div className="px-3.5 py-2 rounded-xl bg-rose-600 text-white text-xs font-bold shadow-lg flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-150">
+          <span>{toastMsg}</span>
+          <button
+            type="button"
+            onClick={() => {
+              setToastMsg(null);
+              window.dispatchEvent(new CustomEvent('wokchords:open-setlist'));
+            }}
+            className="text-[11px] underline opacity-90 hover:opacity-100 ml-2"
+          >
+            Open Setlist Drawer →
+          </button>
+        </div>
+      )}
 
       {/* Chords Summary Bar (Click chord to view fingering) */}
       {currentChords.length > 0 && (
