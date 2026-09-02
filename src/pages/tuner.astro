@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import GuitarTuner from '../components/GuitarTuner.tsx';
+
+export const prerender = true;
+
+const title = "Free Online Guitar & Ukulele Tuner — Mic & Reference Tones | WokChords";
+const description = "Tune your guitar or ukulele with WokChords free online tuner. Features live microphone pitch detection needle, acoustic reference string tones for Standard EADGBE, Drop D, and Ukulele GCEA.";
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'WokChords Free Online Guitar & Ukulele Tuner',
+  applicationCategory: 'MusicApplication',
+  operatingSystem: 'Any',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  description: description,
+  url: 'https://wokchords.wokdens.com/tuner/',
+};
+---
+
+<BaseLayout title={title} description={description}>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+    <!-- Breadcrumbs -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 mb-6" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-brand-orange transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-slate-900 dark:text-white font-medium">Tuner</span>
+    </nav>
+
+    <div class="text-center max-w-xl mx-auto mb-8">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-3">
+        Online Guitar & Ukulele Tuner
+      </h1>
+      <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300">
+        Tune your instrument with high precision. Use your device's microphone for real-time auto-tuning or tune by ear using clean acoustic reference tones.
+      </p>
+    </div>
+
+    <!-- Interactive Tuner Island -->
+    <div class="mb-14">
+      <GuitarTuner standalone client:load />
+    </div>
+
+    <!-- Educational & Reference Section for SEO -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-black/10 dark:border-white/10">
+      <div class="space-y-4">
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white">
+          Standard Guitar Tuning (E A D G B E)
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+          Standard guitar tuning tunes the strings from lowest pitch (thickest 6th string) to highest pitch (thinnest 1st string):
+        </p>
+        <ul class="text-xs sm:text-sm space-y-1.5 font-mono text-slate-700 dark:text-slate-300">
+          <li><strong>6th String (Low E):</strong> E2 — 82.41 Hz</li>
+          <li><strong>5th String (A):</strong> A2 — 110.00 Hz</li>
+          <li><strong>4th String (D):</strong> D3 — 146.83 Hz</li>
+          <li><strong>3rd String (G):</strong> G3 — 196.00 Hz</li>
+          <li><strong>2nd String (B):</strong> B3 — 246.94 Hz</li>
+          <li><strong>1st String (High E):</strong> E4 — 329.63 Hz</li>
+        </ul>
+      </div>
+
+      <div class="space-y-4">
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white">
+          Standard Ukulele Tuning (G C E A)
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+          Standard Soprano, Concert, and Tenor ukuleles use re-entrant tuning where the 4th string (G4) is tuned higher than the 3rd and 2nd strings:
+        </p>
+        <ul class="text-xs sm:text-sm space-y-1.5 font-mono text-slate-700 dark:text-slate-300">
+          <li><strong>4th String (G):</strong> G4 — 392.00 Hz</li>
+          <li><strong>3rd String (C):</strong> C4 — 261.63 Hz</li>
+          <li><strong>2nd String (E):</strong> E4 — 329.63 Hz</li>
+          <li><strong>1st String (A):</strong> A4 — 440.00 Hz</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

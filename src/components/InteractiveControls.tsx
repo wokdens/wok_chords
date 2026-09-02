@@ -18,9 +18,16 @@ import {
   Check,
   Printer,
   Heart,
+  Sparkles,
+  Timer,
+  Radio,
 } from 'lucide-react';
 import { generateChordSvg } from '../lib/chordDiagrams';
 import { isSongInSetlist, toggleSetlist, subscribeToSetlist } from '../lib/setlistStore';
+import { findOptimalEasyChords } from '../lib/simplifyChordEngine';
+import Metronome from './Metronome';
+import GuitarTuner from './GuitarTuner';
+import ShortcutsModal from './ShortcutsModal';
 
 const cs: any =
   (chordsheetjs as any)?.ChordProParser
@@ -198,6 +205,24 @@ export default function InteractiveControls({
   const [inSetlist, setInSetlist] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
+  // New Music Standard Features State
+  const [showMetronomePopover, setShowMetronomePopover] = useState(false);
+  const [showTunerModal, setShowTunerModal] = useState(false);
+  const [showShortcutsModal, setShowShortcutsModal] = useState(false);
+
+  // Calculate Simplify (Easy Open Chords & Capo)
+  const simplifyRecommendation = useMemo(() => {
+    return findOptimalEasyChords(currentChords);
+  }, [currentChords]);
+
+  const handleApplySimplify = useCallback(() => {
+    if (!simplifyRecommendation) return;
+    setTranspose(simplifyRecommendation.semitones);
+    setCapoFret(simplifyRecommendation.capoFret);
+    setToastMsg(`💡 Applied Capo ${simplifyRecommendation.capoFret} for easy open chords!`);
+    setTimeout(() => setToastMsg(null), 3500);
+  }, [simplifyRecommendation]);
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const slugMatch = window.location.pathname.match(/\/song\/([^/]+)/);
@@ -249,6 +274,55 @@ export default function InteractiveControls({
     if (typeof window !== 'undefined') {
       window.print();
     }
+  }, []);
+
+  // Global Musician Stage Hotkeys
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept when user is typing in an input, textarea, or search field
+      const activeTag = (document.activeElement?.tagName || '').toLowerCase();
+      if (activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select') return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        setScrollActive((prev) => !prev);
+      } else if (e.key === '+' || e.key === '=') {
+        e.preventDefault();
+        setTranspose((t) => Math.min(11, t + 1));
+      } else if (e.key === '-' || e.key === '_') {
+        e.preventDefault();
+        setTranspose((t) => Math.max(-11, t - 1));
+      } else if (e.key === '0') {
+        e.preventDefault();
+        setTranspose(0);
+        setCapoFret(0);
+      } else if (e.key === ']') {
+        e.preventDefault();
+        setScrollSpeed((s) => Math.min(1.5, Math.round((s + 0.1) * 10) / 10));
+      } else if (e.key === '[') {
+        e.preventDefault();
+        setScrollSpeed((s) => Math.max(0.5, Math.round((s - 0.1) * 10) / 10));
+      } else if (e.key.toLowerCase() === 'm') {
+        e.preventDefault();
+        setShowMetronomePopover((prev) => !prev);
+      } else if (e.key.toLowerCase() === 't') {
+        e.preventDefault();
+        setShowTunerModal((prev) => !prev);
+      } else if (e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen?.().catch(() => {});
+        } else {
+          document.exitFullscreen?.().catch(() => {});
+        }
+      } else if (e.key === '?') {
+        e.preventDefault();
+        setShowShortcutsModal((prev) => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   // Update lyrics font size on zoom change
@@ -463,7 +537,7 @@ export default function InteractiveControls({
             )}
           </div>
 
-          {/* 2. Capo Position */}
+          {/* 2. Capo Position & Simplify */}
           <div className="flex items-center gap-1.5 shrink-0">
             <label htmlFor="capo-select" className="text-[11px] font-bold uppercase tracking-wider text-wok-muted">Capo:</label>
             <select
@@ -480,6 +554,18 @@ export default function InteractiveControls({
                 </option>
               ))}
             </select>
+
+            {simplifyRecommendation && (
+              <button
+                type="button"
+                onClick={handleApplySimplify}
+                title={`Simplify to easy open chords with Capo at fret ${simplifyRecommendation.capoFret}`}
+                className="h-8 px-2.5 inline-flex items-center gap-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-600 dark:text-amber-400 border border-amber-500/35 text-xs font-bold transition active:scale-95 shadow-sm"
+              >
+                <Sparkles size={13} className="text-amber-500 animate-pulse" />
+                <span>Simplify (Capo {simplifyRecommendation.capoFret})</span>
+              </button>
+            )}
           </div>
 
           {/* 3. Auto Scroll & Speed */}
@@ -605,9 +691,57 @@ export default function InteractiveControls({
               <Printer size={14} />
               <span className="hidden sm:inline">Print</span>
             </button>
+
+            {/* Metronome Toggle */}
+            <button
+              type="button"
+              onClick={() => setShowMetronomePopover((v) => !v)}
+              title="Practice Metronome & Rhythm Clicker (Hotkey: M)"
+              aria-label="Toggle Metronome"
+              className={`h-8 px-2 sm:px-2.5 inline-flex items-center gap-1 rounded-lg border text-xs font-semibold transition active:scale-95 ${
+                showMetronomePopover
+                  ? 'bg-brand-orange text-white border-brand-orange shadow-md'
+                  : 'bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border-black/5 dark:border-white/5 text-wok-muted hover:text-brand-orange'
+              }`}
+            >
+              <Timer size={14} />
+              <span className="hidden sm:inline">Metronome</span>
+            </button>
+
+            {/* Tuner Modal Trigger */}
+            <button
+              type="button"
+              onClick={() => setShowTunerModal(true)}
+              title="Online Guitar & Ukulele Tuner (Hotkey: T)"
+              aria-label="Open Tuner"
+              className="h-8 px-2 sm:px-2.5 inline-flex items-center gap-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/5 dark:border-white/5 text-wok-muted hover:text-brand-orange text-xs font-semibold transition active:scale-95"
+            >
+              <Radio size={14} />
+              <span className="hidden sm:inline">Tuner</span>
+            </button>
+
+            {/* Musician Stage Hotkeys */}
+            <button
+              type="button"
+              onClick={() => setShowShortcutsModal(true)}
+              title="Stage Hotkeys & Keyboard Shortcuts (Hotkey: ?)"
+              aria-label="Keyboard Shortcuts"
+              className="h-8 w-8 inline-flex items-center justify-center rounded-lg bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/5 dark:border-white/5 text-wok-muted hover:text-wok-text text-xs font-bold font-mono transition active:scale-95"
+            >
+              ?
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Floating Metronome Popover */}
+      {showMetronomePopover && (
+        <div className="relative z-30 flex justify-end">
+          <div className="absolute top-1 right-0 shadow-2xl">
+            <Metronome compact />
+          </div>
+        </div>
+      )}
 
       {/* Setlist Toast Notification */}
       {toastMsg && (
@@ -799,6 +933,37 @@ export default function InteractiveControls({
           </div>
         </div>
       )}
+
+      {/* Interactive Tuner Modal */}
+      {showTunerModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150"
+          onClick={() => setShowTunerModal(false)}
+        >
+          <div
+            className="relative w-full max-w-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setShowTunerModal(false)}
+              className="absolute top-4 right-4 z-10 p-2 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 text-slate-500 hover:text-slate-900 dark:hover:text-white transition"
+              aria-label="Close tuner"
+            >
+              <X size={18} />
+            </button>
+            <GuitarTuner />
+          </div>
+        </div>
+      )}
+
+      {/* Musician Stage Hotkeys Cheat Sheet Modal */}
+      <ShortcutsModal
+        isOpen={showShortcutsModal}
+        onClose={() => setShowShortcutsModal(false)}
+      />
     </div>
   );
 }
