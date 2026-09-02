@@ -1,0 +1,10 @@
+# WokChords Security Policy & Vulnerability Disclosure
+# Conforms to RFC 9116
+
+Contact: mailto:contact@wokdens.com
+Contact: https://wokchords.wokdens.com/about/#contact
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://wokchords.wokdens.com/.well-known/security.txt
+Policy: https://wokchords.wokdens.com/privacy-policy/
+Acknowledgments: https://wokchords.wokdens.com/about/
