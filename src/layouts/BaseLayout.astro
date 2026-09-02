@@ -4,6 +4,7 @@ import SearchBar from '../components/SearchBar.tsx';
 import ThemeToggle from '../components/ThemeToggle.tsx';
 import SetlistHeaderButton from '../components/SetlistHeaderButton.tsx';
 import SetlistDrawer from '../components/SetlistDrawer.tsx';
+import CookieBanner from '../components/CookieBanner.tsx';
 
 interface Props {
   title: string;
@@ -176,6 +177,9 @@ const languages = [
 
     <!-- Global Floating Setlist Drawer -->
     <SetlistDrawer client:idle />
+
+    <!-- Cookie Consent Popup Banner -->
+    <CookieBanner client:idle />
 
     <!-- Comprehensive Footer -->
     <footer class="mt-14 md:mt-20 border-t border-black/10 dark:border-white/10 bg-wok-panel/30 py-10 md:py-14">
