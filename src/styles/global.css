@@ -105,6 +105,19 @@
   .wok-card {
     @apply relative overflow-hidden rounded-2xl bg-white/70 dark:bg-slate-900/60 backdrop-blur-md border border-black/5 dark:border-white/5 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-500/10 hover:border-orange-500/30;
   }
+
+  @keyframes adfreeTimer {
+    from {
+      width: 100%;
+    }
+    to {
+      width: 0%;
+    }
+  }
+
+  .animate-adfree-timer {
+    animation: adfreeTimer 10s linear forwards;
+  }
 }
 
 @media print {
