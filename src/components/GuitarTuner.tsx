@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Mic, MicOff, Volume2, Music, CheckCircle2 } from 'lucide-react';
 import {
   GUITAR_STANDARD,
-  GUITAR_DROP_D,
   UKULELE_STANDARD,
   playReferenceTone,
   autoCorrelate,
@@ -90,7 +89,15 @@ export default function GuitarTuner({ standalone = false }: GuitarTunerProps) {
       rafIdRef.current = requestAnimationFrame(updatePitch);
     } catch (err: any) {
       console.error('Mic access error:', err);
-      setMicError('Microphone permission denied or unsupported in this browser.');
+      const isBlocked =
+        err?.name === 'NotAllowedError' ||
+        err?.name === 'PermissionDeniedError' ||
+        err?.message?.includes('permissions policy');
+      setMicError(
+        isBlocked
+          ? 'Microphone blocked by browser. Please click the site settings / tune icon in Chrome address bar to Allow Microphone.'
+          : 'Unable to access microphone: ' + (err?.message || 'Unsupported browser')
+      );
       setIsMicActive(false);
     }
   };
@@ -138,17 +145,17 @@ export default function GuitarTuner({ standalone = false }: GuitarTunerProps) {
 
         {/* Instrument Dropdown / Switcher */}
         <div className="flex gap-1.5 p-1 bg-black/5 dark:bg-white/5 rounded-xl text-xs font-medium">
-          {[GUITAR_STANDARD, GUITAR_DROP_D, UKULELE_STANDARD].map((t) => (
+          {[GUITAR_STANDARD, UKULELE_STANDARD].map((t) => (
             <button
               key={t.id}
               onClick={() => setSelectedTuning(t)}
-              className={`px-3 py-1.5 rounded-lg transition-all ${
+              className={`px-3.5 py-1.5 rounded-lg transition-all ${
                 selectedTuning.id === t.id
                   ? 'bg-brand-orange text-white font-bold shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              {t.name.split(' ')[0]}
+              {t.id === 'guitar-standard' ? 'Guitar' : 'Ukulele'}
             </button>
           ))}
         </div>
