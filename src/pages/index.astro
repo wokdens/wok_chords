@@ -254,7 +254,7 @@ const moviesData = popularMoviesList.map((m) => {
     <!-- Center Content -->
     <div class="relative z-10 max-w-4xl mx-auto px-4 text-center">
       <!-- High-Visibility Animated "100% Ad-Free" USP Marketing Bubble -->
-      <div class="inline-flex items-center gap-2 sm:gap-2.5 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-emerald-500/15 border-2 border-emerald-500/40 shadow-lg shadow-emerald-500/10 text-xs sm:text-sm font-bold text-emerald-700 dark:text-emerald-300 mb-6 backdrop-blur-md animate-pulse-glow">
+      <div class="inline-flex items-center gap-2.5 sm:gap-3 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-emerald-500/15 border-2 border-emerald-500/40 shadow-xl shadow-emerald-500/15 text-xs sm:text-sm md:text-[13px] font-bold text-emerald-700 dark:text-emerald-300 mb-6 backdrop-blur-md animate-pulse-glow">
         <span class="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500 text-white shadow-sm shadow-emerald-500/50">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12"></polyline>
@@ -264,18 +264,18 @@ const moviesData = popularMoviesList.map((m) => {
           🛡️ 100% Ad-Free Forever · Zero Popups · No Paywalls
         </span>
         <span class="hidden md:inline-block w-1.5 h-1.5 rounded-full bg-emerald-500/50"></span>
-        <span class="hidden md:inline text-[11px] text-emerald-600/90 dark:text-emerald-400/90 font-semibold">
-          Built by Wokdens
-        </span>
+        <a href="https://wokdens.com" target="_blank" rel="noopener" class="hidden md:inline text-[11px] sm:text-xs text-emerald-600/90 dark:text-emerald-400/90 font-semibold hover:underline">
+          Built by Wokdens.com
+        </a>
       </div>
 
       <!-- Main Headline: Unambiguous Chords & Lyrics Sheet Library -->
       <h1 class="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-wok-text leading-[1.08] mb-4">
-        Accurate <span class="bg-gradient-to-r from-orange-600 via-amber-500 to-cyan-500 bg-clip-text text-transparent">Chords & Lyrics</span>
+        The Ultimate <span class="bg-gradient-to-r from-orange-600 via-amber-500 to-cyan-500 bg-clip-text text-transparent">Chords & Lyrics</span>
         <br class="hidden sm:inline" /> for Guitar, Piano & Ukulele
       </h1>
       <p class="text-base sm:text-lg md:text-xl text-wok-muted max-w-2xl mx-auto leading-relaxed mb-8">
-        Over 3,920 transposable chord sheets with interactive diagrams, capo calculator, and hands-free auto-scroll. Powered by <strong class="text-wok-text font-bold">Wokdens Software Labs</strong>.
+        Over 3,920 transposable chord sheets with interactive diagrams, capo calculator, and hands-free auto-scroll. Powered by <a href="https://wokdens.com" target="_blank" rel="noopener" class="text-wok-text font-bold hover:text-wok-accent hover:underline">Wokdens.com</a>.
       </p>
 
       <!-- Center Search Bar -->
@@ -342,11 +342,17 @@ const moviesData = popularMoviesList.map((m) => {
       animation: noteDrift3 6s ease-in-out infinite;
     }
     @keyframes pulseGlow {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-      50% { transform: scale(1.025); box-shadow: 0 0 24px 6px rgba(16, 185, 129, 0.3); }
+      0%, 100% {
+        transform: translateY(0px) scale(1);
+        box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.25);
+      }
+      50% {
+        transform: translateY(-6px) scale(1.025);
+        box-shadow: 0 12px 28px 6px rgba(16, 185, 129, 0.35);
+      }
     }
     .animate-pulse-glow {
-      animation: pulseGlow 3s ease-in-out infinite;
+      animation: pulseGlow 3.5s ease-in-out infinite;
     }
   </style>
 

@@ -87,11 +87,16 @@ export default function AdFreeBubblePopup() {
 
             <p className="text-xs text-slate-300 leading-relaxed font-sans">
               Zero banner ads, zero video interruptions, no paywalls. Built by{' '}
-              <strong className="text-white font-bold tracking-wide">Wokdens</strong> so musicians can jam in peace.
+              <a href="https://wokdens.com" target="_blank" rel="noopener" className="text-white font-bold tracking-wide hover:underline">
+                Wokdens.com
+              </a>{' '}
+              so musicians can jam in peace.
             </p>
 
             <div className="pt-1 flex items-center justify-between text-[10px] text-emerald-400/80 font-mono">
-              <span>Powered by Wokdens Software Labs</span>
+              <a href="https://wokdens.com" target="_blank" rel="noopener" className="hover:underline">
+                Powered by Wokdens.com
+              </a>
               <span className="opacity-70">Auto-closing in 10s</span>
             </div>
           </div>
