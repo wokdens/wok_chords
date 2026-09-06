@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import InteractiveControls from '../../components/InteractiveControls';
+import ShareButton from '../../components/ShareButton';
 import { parseAndTranspose, extractLyricsText } from '../../lib/chordEngine';
 import { slugify } from '../../lib/slugify';
 import { getAllSongs } from '../../lib/songStore';
@@ -233,6 +234,7 @@ const relatedSongs = related.length > 0 ? related : allSongs.slice(0, 6);
                 #{t}
               </a>
             ))}
+            <ShareButton client:load title={title} artist={artist} url={pageUrl.toString()} />
           </div>
         </header>
 
@@ -414,4 +416,17 @@ const relatedSongs = related.length > 0 ? related : allSongs.slice(0, 6);
       }
     }
   </style>
+
+  <script is:inline define:vars={{ title, artist, originalKey, tempo }}>
+    try {
+      if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+        window.gtag('event', 'song_view', {
+          song_title: title,
+          artist_name: artist,
+          musical_key: originalKey || 'unknown',
+          tempo: tempo || 0,
+        });
+      }
+    } catch (e) {}
+  </script>
 </BaseLayout>

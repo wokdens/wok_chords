@@ -25,9 +25,17 @@ import {
 import { generateChordSvg } from '../lib/chordDiagrams';
 import { isSongInSetlist, toggleSetlist, subscribeToSetlist } from '../lib/setlistStore';
 import { findOptimalEasyChords } from '../lib/simplifyChordEngine';
+import { autoAlignChordPro } from '../lib/chordEngine';
 import Metronome from './Metronome';
 import GuitarTuner from './GuitarTuner';
 import ShortcutsModal from './ShortcutsModal';
+import {
+  trackTranspose,
+  trackCapoChange,
+  trackInstrumentChange,
+  trackSetlistAction,
+  trackShare,
+} from '../lib/analyticsTracker';
 
 const cs: any =
   (chordsheetjs as any)?.ChordProParser
@@ -72,11 +80,13 @@ interface RenderedResult {
 function renderChordHtml(rawText: string, semitones: number): RenderedResult {
   if (!rawText) return { html: '', chords: [] };
   const parser = new ChordProParser();
-  const normalized = rawText
+  let normalized = rawText
     .replace(/^---[\s\S]*?---\r?\n?/, '')
-    .replace(/,[ \t]+/g, ', ')
-    .replace(/[ \t]{2,}/g, ' ')
     .trim();
+  normalized = autoAlignChordPro(normalized);
+  normalized = normalized
+    .replace(/,[ \t]+/g, ', ')
+    .replace(/[ \t]{2,}/g, ' ');
   const sheet: Song = parser.parse(normalized);
 
   const frontmatterBlock = rawText.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
@@ -255,6 +265,7 @@ export default function InteractiveControls({
         transpose,
       });
       setInSetlist(added);
+      trackSetlistAction({ title: title || slug, action: added ? 'add' : 'remove' });
       setToastMsg(added ? `❤️ Saved to Setlist (Key ${displayKey ?? '—'})` : 'Removed from Setlist');
       setTimeout(() => setToastMsg(null), 2500);
     }
@@ -265,10 +276,45 @@ export default function InteractiveControls({
       const url = window.location.href;
       navigator.clipboard?.writeText(url).then(() => {
         setCopied(true);
+        trackShare({ title: title || 'Song', method: 'controls_copy_link' });
         setTimeout(() => setCopied(false), 2000);
       });
     }
-  }, []);
+  }, [title]);
+
+  // Telemetry: Track Transpose Changes
+  const transposeMountRef = useRef(true);
+  useEffect(() => {
+    if (transposeMountRef.current) {
+      transposeMountRef.current = false;
+      return;
+    }
+    if (transpose !== 0) {
+      trackTranspose({ title: title || 'Song', semitones: transpose, newKey: displayKey });
+    }
+  }, [transpose, displayKey, title]);
+
+  // Telemetry: Track Capo Changes
+  const capoMountRef = useRef(true);
+  useEffect(() => {
+    if (capoMountRef.current) {
+      capoMountRef.current = false;
+      return;
+    }
+    if (capoFret !== 0) {
+      trackCapoChange({ title: title || 'Song', capoFret });
+    }
+  }, [capoFret, title]);
+
+  // Telemetry: Track Instrument Changes
+  const instrumentMountRef = useRef(true);
+  useEffect(() => {
+    if (instrumentMountRef.current) {
+      instrumentMountRef.current = false;
+      return;
+    }
+    trackInstrumentChange(instrument);
+  }, [instrument]);
 
   const handlePrint = useCallback(() => {
     if (typeof window !== 'undefined') {
@@ -394,7 +440,9 @@ export default function InteractiveControls({
 
       const mount = mountRef.current ?? document.getElementById(mountId);
       if (mount && html) {
-        mount.innerHTML = html;
+        if (effectiveSemitones !== 0 || !mount.hasChildNodes()) {
+          mount.innerHTML = html;
+        }
         bindChordClicks(mount, handleOpenChordDiagram);
       }
     } catch (err) {

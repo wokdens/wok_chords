@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Search, X } from 'lucide-react';
+import { trackSearch } from '../lib/analyticsTracker';
 
 export interface SongSearchEntry {
   slug: string;
@@ -136,6 +137,16 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
     return scored;
   }, [query, index]);
 
+  // Telemetry: Debounced Search Tracking
+  useEffect(() => {
+    const trimmed = query.trim();
+    if (trimmed.length < 3) return;
+    const timer = setTimeout(() => {
+      trackSearch(trimmed, results.length);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, [query, results.length]);
+
   const showDropdown = open && results.length > 0;
 
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -150,6 +161,7 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
       e.preventDefault();
       const target = focusedIdx >= 0 ? results[focusedIdx] : results[0];
       if (target) {
+        trackSearch(query.trim(), results.length);
         window.location.href = `/song/${target.slug}/`;
       }
     }
