@@ -7,7 +7,9 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "gsc:report": "node scripts/google-search-console-query.mjs",
+    "ga:report": "node scripts/google-analytics-query.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^8.0.0",
@@ -24,6 +26,7 @@
     "typescript": "^5.6.2"
   },
   "devDependencies": {
-    "@types/node": "^26.4.0"
+    "@types/node": "^26.4.0",
+    "googleapis": "^178.0.0"
   }
 }

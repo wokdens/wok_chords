@@ -15,7 +15,9 @@ pnpm-debug.log*
 .env
 .env.*
 .agents/
-scripts/
+*credentials*.json
+*service-account*.json
+google-*.json
 
 # macOS-specific files
 .DS_Store
