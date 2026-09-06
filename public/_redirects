@@ -1,3 +1,7 @@
+# Google Search Console Verification File Rewrite (Avoid 308 Redirect)
+/google*.html /:splat 200
+/googlef038efbaeab843b4.html /googlef038efbaeab843b4 200
+
 # WokChords Cloudflare Pages 301 Redirect Rules
 # Auto-generated from catalog deduplication & tac- slug cleanup
 /album/* /movie/:splat 301

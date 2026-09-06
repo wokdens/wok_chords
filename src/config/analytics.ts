@@ -16,7 +16,7 @@ export interface AnalyticsConfig {
 
 export const analyticsConfig: AnalyticsConfig = {
   // Google Analytics 4 Measurement ID
-  gaMeasurementId: import.meta.env.PUBLIC_GA_MEASUREMENT_ID || '',
+  gaMeasurementId: import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-41TXDL2FNW',
 
   // Cloudflare Web Analytics Beacon Token (from Cloudflare dashboard)
   cloudflareBeaconToken: import.meta.env.PUBLIC_CF_BEACON_TOKEN || '',
