@@ -66,11 +66,22 @@ const clarityId = analyticsConfig.clarityId;
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL('/og-image.png', canonicalURL)} />
+    <meta property="og:site_name" content="WokChords" />
+    <meta name="application-name" content="WokChords" />
     <link rel="canonical" href={canonicalURL} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
     <title>{fullTitle}</title>
+
+    {/* Google Search Official Site Name Structured Data */}
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'WokChords',
+      alternateName: ['wokchords.wokdens.com', 'WokChords by Wokdens'],
+      url: 'https://wokchords.wokdens.com/'
+    })}></script>
 
     {/* Google Analytics 4 (GA4) */}
     {gaMeasurementId && (
