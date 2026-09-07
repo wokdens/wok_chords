@@ -72,6 +72,39 @@ const artistSlug = slugify(artist);
 const pageTitle = `${title} Chords & Lyrics (${originalKey ? `Key of ${originalKey}` : 'Original'}) — ${artist}${movie ? ` (${movie})` : ''} | Guitar & Piano Chords`;
 const description = `Play ${title} chords by ${artist}${movie ? ` from ${movie}` : ''} on Guitar, Ukulele & Piano. Features key transpose, capo calculator, auto-scroll, and interactive chord fingering diagrams on WokChords.`;
 
+const baseUrl = Astro.site ? Astro.site.toString().replace(/\/+$/, '') : 'https://wokchords.wokdens.com';
+
+const breadcrumbElements: Array<{ '@type': string; position: number; name: string; item: string }> = [
+  {
+    '@type': 'ListItem',
+    position: 1,
+    name: 'Home',
+    item: `${baseUrl}/`,
+  },
+  {
+    '@type': 'ListItem',
+    position: 2,
+    name: artist,
+    item: `${baseUrl}/artist/${artistSlug}/`,
+  },
+];
+
+if (movie && movieSlug) {
+  breadcrumbElements.push({
+    '@type': 'ListItem',
+    position: breadcrumbElements.length + 1,
+    name: movie,
+    item: `${baseUrl}/movie/${movieSlug}/`,
+  });
+}
+
+breadcrumbElements.push({
+  '@type': 'ListItem',
+  position: breadcrumbElements.length + 1,
+  name: title,
+  item: pageUrl.toString(),
+});
+
 const jsonLd = [
   {
     '@context': 'https://schema.org',
@@ -104,26 +137,7 @@ const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: Astro.site?.toString() ?? 'https://wokchords.wokdens.com',
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: artist,
-        item: `${Astro.site?.toString() ?? 'https://wokchords.wokdens.com'}/artist/${artistSlug}/`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: title,
-        item: pageUrl.toString(),
-      },
-    ],
+    itemListElement: breadcrumbElements,
   },
 ];
 
@@ -261,6 +275,12 @@ const relatedSongs = related.length > 0 ? related : allSongs.slice(0, 6);
             #chord-sheet-mount .lyrics, #chord-sheet-mount .lyric { color: #e5e7eb; }
           </style>
         </noscript>
+
+        {/* Print-Only Footer Attribution */}
+        <div class="print-only-footer">
+          <span>Printed from <strong>WokChords</strong> — wokchords.wokdens.com</span>
+          <span>100% Free &amp; Ad-Free Guitar Chords</span>
+        </div>
       </article>
 
       <!-- Sidebar -->

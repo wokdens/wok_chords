@@ -120,14 +120,92 @@
   }
 }
 
+/* Watermark & print-only footer hidden on screens, active on print */
+.print-watermark,
+.print-only-footer {
+  display: none;
+}
+
 @media print {
-  body {
-    background: white !important;
-    color: black !important;
+  @page {
+    margin: 1.2cm 1.4cm;
   }
-  header, footer, nav, aside, .sticky, button, select, input, .no-print {
+
+  html, body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  /* Fixed positioning ensures watermark repeats on every printed page */
+  .print-watermark {
+    display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: -100 !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  .print-watermark svg {
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+  }
+
+  /* Print-only footer attribution */
+  .print-only-footer {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    font-size: 8.5pt !important;
+    color: #64748b !important;
+    border-top: 1px solid #cbd5e1 !important;
+    margin-top: 24px !important;
+    padding-top: 8px !important;
+  }
+
+  /* Hide screen navigation, sticky toolbars, and buttons */
+  body > header,
+  header.sticky,
+  footer,
+  nav,
+  aside,
+  .sticky,
+  button,
+  select,
+  input,
+  .no-print {
     display: none !important;
   }
+
+  /* Ensure song header prints cleanly at top of page 1 */
+  article header,
+  article header * {
+    display: block !important;
+  }
+
+  article header h1 {
+    font-size: 24pt !important;
+    color: #0f172a !important;
+    margin-bottom: 4px !important;
+    line-height: 1.2 !important;
+  }
+
+  article header p {
+    font-size: 11pt !important;
+    color: #475569 !important;
+    margin-bottom: 12px !important;
+  }
+
   #chord-sheet {
     border: none !important;
     box-shadow: none !important;
@@ -135,11 +213,26 @@
     padding: 0 !important;
     margin: 0 !important;
   }
+
   #chord-sheet-mount .chord {
-    color: #c2410c !important;
-    font-weight: bold !important;
+    color: #ea580c !important;
+    font-weight: 800 !important;
+    font-size: 11pt !important;
   }
-  #chord-sheet-mount .lyrics, #chord-sheet-mount .lyric {
+
+  #chord-sheet-mount .lyrics,
+  #chord-sheet-mount .lyric {
     color: #0f172a !important;
+    font-size: 11pt !important;
+    line-height: 1.65 !important;
+  }
+
+  #chord-sheet-mount .comment,
+  #chord-sheet-mount .label {
+    color: #64748b !important;
+    border-left: 3px solid #ea580c !important;
+    padding-left: 8px !important;
+    font-size: 9pt !important;
+    margin: 14px 0 6px !important;
   }
 }

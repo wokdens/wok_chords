@@ -5,6 +5,8 @@
 # WokChords Cloudflare Pages 301 Redirect Rules
 # Auto-generated from catalog deduplication & tac- slug cleanup
 /album/* /movie/:splat 301
+/song/tum-se-hi-mohit-chauhan-pritam-jab-we-me-14 /song/tum-se-hi/ 301
+/song/tum-se-hi-mohit-chauhan-pritam-jab-we-me-14/ /song/tum-se-hi/ 301
 /song/tac-50-ways-to-say-goodbye /song/50-ways-to-say-goodbye-train-pat-monahan-2049/ 301
 /song/tac-50-ways-to-say-goodbye/ /song/50-ways-to-say-goodbye-train-pat-monahan-2049/ 301
 /song/aaj-bhi-vishal-mishra-2275 /song/tac-aaj-bhi/ 301
