@@ -62,41 +62,56 @@ const otherArtists = allArtistsList
   .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
   .slice(0, 8);
 
-const pageTitle = `${artistName} Guitar Chords, Lyrics & Tabs`;
-const pageDescription = `Play guitar and piano chords for songs by ${artistName} on WokChords. Transpose keys, capo calculator, auto-scroll, and interactive chord diagrams.`;
-const pageUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+const pageTitle = `${artistName} Guitar Chords, Tabs & Song Lyrics | WokChords`;
+const pageDescription = `Free guitar chords, ukulele chords, and lyrics for songs by ${artistName} on WokChords. Featuring interactive transpose, capo calculator, online tuner, and auto-scroll.`;
+const baseUrl = 'https://wokchords.wokdens.com';
+const pageCanonical = `${baseUrl}/artist/${artistSlug}/`;
 
-const breadcrumbJsonLd = {
+const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
+  '@graph': [
     {
-      '@type': 'ListItem',
-      position: 1,
-      name: 'Home',
-      item: new URL('/', Astro.site ?? Astro.url).toString(),
-    },
-    {
-      '@type': 'ListItem',
-      position: 2,
-      name: 'Artists',
-      item: new URL('/artists/', Astro.site ?? Astro.url).toString(),
-    },
-    {
-      '@type': 'ListItem',
-      position: 3,
+      '@type': 'MusicGroup',
       name: artistName,
-      item: pageUrl.toString(),
+      url: pageCanonical,
+      track: enriched.slice(0, 30).map((s) => ({
+        '@type': 'MusicRecording',
+        name: s.title,
+        url: `${baseUrl}/song/${s.slug}/`,
+      })),
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${baseUrl}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Artists',
+          item: `${baseUrl}/artists/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: artistName,
+          item: pageCanonical,
+        },
+      ],
     },
   ],
 };
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
-  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <div class="max-w-7xl w-full mx-auto px-3 sm:px-5 py-5 md:py-8 min-w-0">
-    <nav class="flex items-center gap-2 text-xs text-wok-muted mb-4 uppercase tracking-wider font-semibold">
+    <nav class="flex items-center gap-2 text-xs text-wok-muted mb-4 uppercase tracking-wider font-semibold" aria-label="Breadcrumb">
       <a href="/" class="hover:text-wok-accent transition-colors">Home</a>
       <span>/</span>
       <a href="/artists/" class="hover:text-wok-accent transition-colors">Artists</a>
@@ -112,14 +127,17 @@ const breadcrumbJsonLd = {
               {artistName.charAt(0)}
             </div>
             <div class="min-w-0">
-              <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-wok-text truncate">
-                {artistName}
+              <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-wok-text">
+                {artistName} <span class="text-wok-accent text-lg sm:text-2xl md:text-3xl font-extrabold block sm:inline">Guitar Chords & Songs</span>
               </h1>
-              <p class="text-xs sm:text-sm text-wok-muted mt-0.5">
+              <p class="text-xs sm:text-sm text-wok-muted mt-1">
                 {songs.length} chord sheet{songs.length === 1 ? '' : 's'} available
               </p>
             </div>
           </div>
+          <p class="text-xs sm:text-sm text-wok-muted mt-2 max-w-2xl leading-relaxed">
+            Explore {songs.length} verified guitar chord sheets and lyrics by {artistName}. Transpose pitch, calculate capo settings, tune up, and play along with hands-free auto-scroll.
+          </p>
         </header>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full min-w-0">

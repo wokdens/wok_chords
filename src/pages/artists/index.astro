@@ -26,8 +26,9 @@ for (const s of songs) {
   if (!rawArtist || rawArtist === 'Bollywood' || rawArtist === 'Unknown Artist') continue;
 
   const slug = slugify(rawArtist);
+  const isSpanish = s.tags.includes('spanish');
   const isHindi = s.tags.includes('hindi') || s.tags.includes('bollywood');
-  const isEnglish = s.tags.includes('english') || (!isHindi && !s.tags.includes('punjabi') && !s.tags.includes('bengali') && !s.tags.includes('tamil') && !s.tags.includes('marathi'));
+  const isEnglish = s.tags.includes('english') || (!isHindi && !isSpanish && !s.tags.includes('punjabi') && !s.tags.includes('bengali') && !s.tags.includes('tamil') && !s.tags.includes('marathi'));
 
   if (!artistMap.has(slug)) {
     artistMap.set(slug, {
@@ -63,26 +64,74 @@ const letters = Object.keys(groups).sort((a, b) => {
   if (b === '#') return -1;
   return a.localeCompare(b);
 });
+
+const baseUrl = 'https://wokchords.wokdens.com';
+const pageTitle = "All Artists Directory (A–Z) — Chords & Tabs | WokChords";
+const pageDescription = "Browse guitar, piano, and ukulele chords by your favorite artists. Complete A to Z index of Hindi, Bollywood, and Western musicians on WokChords.";
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: `${baseUrl}/`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Artists',
+      item: `${baseUrl}/artists/`,
+    },
+  ],
+};
 ---
 
 <BaseLayout
-  title="All Artists Directory (A–Z) — Chords & Tabs"
-  description="Browse guitar, piano, and ukulele chords by your favorite artists. Complete A to Z index of Hindi, Bollywood, and Western musicians on WokChords."
+  title={pageTitle}
+  description={pageDescription}
 >
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
   <section class="max-w-[90rem] mx-auto px-3 md:px-5 pt-5 md:pt-8 pb-3 md:pb-4">
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-4 border-b border-black/5 dark:border-white/5">
       <div>
-        <div class="flex items-center gap-2 text-xs text-wok-muted mb-1">
+        <nav class="flex items-center gap-2 text-xs text-wok-muted mb-1" aria-label="Breadcrumb">
           <a href="/" class="hover:text-wok-accent">Home</a>
           <span>/</span>
           <span class="text-wok-text font-semibold">Artists</span>
-        </div>
+        </nav>
         <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-wok-text">
           Artists Directory (A–Z)
         </h1>
         <p class="mt-1 text-xs md:text-sm text-wok-muted">
           {allArtists.length.toLocaleString()} artists and bands · click any letter to jump
         </p>
+        <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-3.5 text-xs font-medium">
+          <span class="text-wok-muted text-[11px] uppercase tracking-wider font-semibold mr-1">Languages:</span>
+          <a href="/tag/english/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors">
+            English & Western
+          </a>
+          <a href="/tag/hindi/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors">
+            Hindi & Bollywood
+          </a>
+          <a href="/tag/spanish/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors">
+            Spanish & Latin
+          </a>
+          <a href="/tag/punjabi/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors">
+            Punjabi
+          </a>
+          <a href="/tag/bengali/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors">
+            Bengali
+          </a>
+          <a href="/tag/marathi/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors">
+            Marathi
+          </a>
+          <a href="/tag/tamil/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors">
+            Tamil
+          </a>
+        </div>
       </div>
     </div>
   </section>

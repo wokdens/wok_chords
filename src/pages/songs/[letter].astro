@@ -1,0 +1,205 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAllSongs, type SongItem } from '../../lib/songStore';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const allSongs = getAllSongs();
+
+  // Group songs by letter
+  const groups: Record<string, SongItem[]> = {};
+  for (let i = 65; i <= 90; i++) {
+    groups[String.fromCharCode(i)] = [];
+  }
+  groups['#'] = [];
+
+  for (const song of allSongs) {
+    const title = (song.title || '').trim();
+    const firstChar = title.charAt(0).toUpperCase();
+    if (/^[A-Z]$/.test(firstChar)) {
+      groups[firstChar].push(song);
+    } else {
+      groups['#'].push(song);
+    }
+  }
+
+  // Letters summary for navigation
+  const letterSummary = [
+    { label: '#', slug: 'num', count: groups['#'].length },
+    ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map((char) => ({
+      label: char,
+      slug: char.toLowerCase(),
+      count: groups[char]?.length || 0,
+    })),
+  ];
+
+  const paths = letterSummary.map((entry) => {
+    const songsForLetter = groups[entry.label] || [];
+    songsForLetter.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+
+    return {
+      params: { letter: entry.slug },
+      props: {
+        letter: entry.label,
+        letterSlug: entry.slug,
+        songs: songsForLetter,
+        letterSummary,
+      },
+    };
+  });
+
+  return paths;
+}
+
+interface Props {
+  letter: string;
+  letterSlug: string;
+  songs: SongItem[];
+  letterSummary: Array<{ label: string; slug: string; count: number }>;
+}
+
+const { letter, letterSlug, songs, letterSummary } = Astro.props;
+
+const pageTitle = `Songs Starting With "${letter}" — Chords & Lyrics | WokChords`;
+const pageDescription = `Browse ${songs.length.toLocaleString()} guitar, piano, and ukulele chord sheets starting with "${letter}" on WokChords. Free key transpose, capo calculator, and auto-scroll.`;
+
+const baseUrl = 'https://wokchords.wokdens.com';
+const currentCanonical = `${baseUrl}/songs/${letterSlug}/`;
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: `${baseUrl}/`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'All Songs',
+      item: `${baseUrl}/songs/`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: `Letter ${letter}`,
+      item: currentCanonical,
+    },
+  ],
+};
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <div class="max-w-[90rem] mx-auto px-3 md:px-5 pt-5 md:pt-8 pb-16 md:pb-24">
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex items-center gap-2 text-xs text-wok-muted mb-4 uppercase tracking-wider font-semibold" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-wok-accent transition-colors">Home</a>
+      <span>/</span>
+      <a href="/songs/" class="hover:text-wok-accent transition-colors">All Songs</a>
+      <span>/</span>
+      <span class="text-wok-accent">Letter {letter}</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="pb-6 mb-6 border-b border-black/5 dark:border-white/5 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-3 mb-2">
+          <span class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-wok-accent text-white font-black text-2xl shadow-md shadow-wok-accent/20">
+            {letter}
+          </span>
+          <div>
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-wok-text">
+              Songs Starting With "{letter}"
+            </h1>
+            <p class="text-xs sm:text-sm text-wok-muted mt-0.5">
+              {songs.length.toLocaleString()} chord sheets available · Click any song to play with transpose & auto-scroll
+            </p>
+          </div>
+        </div>
+      </div>
+      <a
+        href="/songs/"
+        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white text-xs font-semibold text-wok-text transition-colors self-start sm:self-auto"
+      >
+        <span>← All Letters Directory</span>
+      </a>
+    </header>
+
+    <!-- Quick Alphabet Sub-navigation -->
+    <div class="mb-8 p-3 rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/30">
+      <div class="flex items-center gap-1.5 flex-wrap">
+        <span class="text-xs font-bold text-wok-muted uppercase tracking-wider mr-2 hidden sm:inline">Jump to:</span>
+        {letterSummary.map((item) => {
+          const isActive = item.slug === letterSlug;
+          return (
+            <a
+              href={`/songs/${item.slug}/`}
+              class={`
+                inline-flex items-center justify-center min-w-[2rem] h-8 px-2 rounded-lg text-xs font-bold transition-all
+                ${isActive
+                  ? 'bg-wok-accent text-white shadow-sm scale-105 pointer-events-none'
+                  : 'bg-black/5 dark:bg-white/5 text-wok-muted hover:bg-wok-accent/15 hover:text-wok-accent'
+                }
+              `}
+              title={`${item.count} songs under ${item.label}`}
+            >
+              {item.label}
+              <span class="text-[9px] opacity-70 ml-1 font-normal">({item.count})</span>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+
+    <!-- Song Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 w-full min-w-0">
+      {songs.map(({ slug, title, artist, movie, key, tags, snippet }) => (
+        <a
+          href={`/song/${slug}/`}
+          class="group flex flex-col justify-between rounded-xl border border-black/5 dark:border-white/5 bg-white/75 dark:bg-slate-900/60 backdrop-blur-md hover:bg-white/95 dark:hover:bg-slate-900/90 transition-all p-3.5 hover:border-orange-500/40 hover:-translate-y-1 duration-150 shadow-sm hover:shadow-lg hover:shadow-orange-500/10 w-full min-w-0 overflow-hidden"
+        >
+          <div class="min-w-0 mb-2">
+            <div class="flex items-start justify-between gap-2">
+              <h2 class="text-sm font-bold text-wok-text group-hover:text-wok-accent transition-colors truncate">
+                {title}
+              </h2>
+              {key && (
+                <span class="shrink-0 px-1.5 py-0.5 rounded bg-wok-chord/10 text-wok-chord border border-wok-chord/20 text-[10px] font-mono font-bold">
+                  {key}
+                </span>
+              )}
+            </div>
+            <p class="text-wok-muted text-xs truncate mt-0.5 font-medium">
+              {artist}{movie ? ` · ${movie}` : ''}
+            </p>
+          </div>
+
+          {snippet && (
+            <p class="text-[11px] text-wok-muted/80 italic leading-snug truncate mb-2.5 pl-1.5 border-l border-wok-accent/30">
+              “{snippet}”
+            </p>
+          )}
+
+          <div class="flex items-center justify-between text-[10px] pt-1.5 border-t border-black/5 dark:border-white/5 mt-auto">
+            <div class="flex gap-1 truncate">
+              {tags.slice(0, 1).map((tag: string) => (
+                <span key={tag} class="text-wok-muted capitalize">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+            <span class="text-wok-muted group-hover:text-wok-accent font-semibold ml-auto flex items-center gap-1">
+              Play Chords →
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

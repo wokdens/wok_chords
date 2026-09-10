@@ -9,17 +9,38 @@ const description = "Tune your guitar or ukulele with WokChords free online tune
 
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'WebApplication',
-  name: 'WokChords Free Online Guitar & Ukulele Tuner',
-  applicationCategory: 'MusicApplication',
-  operatingSystem: 'Any',
-  offers: {
-    '@type': 'Offer',
-    price: '0',
-    priceCurrency: 'USD',
-  },
-  description: description,
-  url: 'https://wokchords.wokdens.com/tuner/',
+  '@graph': [
+    {
+      '@type': 'WebApplication',
+      name: 'WokChords Free Online Guitar & Ukulele Tuner',
+      applicationCategory: 'MusicApplication',
+      operatingSystem: 'Any',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+      },
+      description: description,
+      url: 'https://wokchords.wokdens.com/tuner/',
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: 'https://wokchords.wokdens.com/',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Guitar Tuner',
+          item: 'https://wokchords.wokdens.com/tuner/',
+        },
+      ],
+    },
+  ],
 };
 ---
 

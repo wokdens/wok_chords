@@ -62,9 +62,124 @@ const otherTags = allTagsList
   .filter((t) => t.slug !== tagSlug)
   .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 
-const pageTitle = `${tagName.toUpperCase()} Song Chords & Lyrics | Guitar & Piano Tabs`;
-const pageDescription = `Play ${tagName} songs on Guitar, Ukulele and Piano with accurate chords, transpose, and lyrics on WokChords.`;
-const pageUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+const tagNameCapitalized = tagName.charAt(0).toUpperCase() + tagName.slice(1);
+
+interface LangConfig {
+  name: string;
+  langCode: string;
+  ogLocale: string;
+  heroHeadline: string;
+  introDescription: string;
+  metaTitle: string;
+  metaDesc: string;
+}
+
+const LANGUAGE_DETAILS: Record<string, LangConfig> = {
+  english: {
+    name: 'English',
+    langCode: 'en',
+    ogLocale: 'en_US',
+    heroHeadline: 'English & International Guitar Chords',
+    introDescription: 'Explore guitar chords, tabs, and lyrics for Western, pop, rock, indie, and international classics. Features interactive transposition, capo positioning, and auto-scroll.',
+    metaTitle: 'English Guitar Chords, Tabs & Song Lyrics | WokChords',
+    metaDesc: 'Play verified English guitar chords and song lyrics for pop, rock, and Western classics. Free chord transposition, capo charts, and auto-scroll on WokChords.',
+  },
+  spanish: {
+    name: 'Spanish',
+    langCode: 'es',
+    ogLocale: 'es_LA',
+    heroHeadline: 'Spanish & Latin Guitar Chords (Acordes de Guitarra)',
+    introDescription: 'Descubre acordes de guitarra y letras para canciones en español y música latina. Transposición en tiempo real, afinador de guitarra y desplazamiento automático.',
+    metaTitle: 'Acordes de Guitarra en Español — Spanish Guitar Chords & Lyrics | WokChords',
+    metaDesc: 'Colección de acordes de guitarra y letras para canciones en español y éxitos latinos. Transposición interactiva, cejilla (capo) y auto-scroll en WokChords.',
+  },
+  hindi: {
+    name: 'Hindi',
+    langCode: 'hi',
+    ogLocale: 'hi_IN',
+    heroHeadline: 'Hindi & Bollywood Guitar Chords',
+    introDescription: 'Play accurate guitar and piano chords for timeless Hindi classics, modern Bollywood hits, and indie tracks. Includes original keys, capo recommendations, and auto-scroll.',
+    metaTitle: 'Hindi Guitar Chords, Bollywood Songs & Lyrics | WokChords',
+    metaDesc: 'Verified Hindi and Bollywood guitar chords with lyrics. Free interactive key transpose, capo finder, and auto-scroll for guitarists on WokChords.',
+  },
+  bollywood: {
+    name: 'Bollywood',
+    langCode: 'hi',
+    ogLocale: 'hi_IN',
+    heroHeadline: 'Bollywood Movie Guitar Chords & Soundtracks',
+    introDescription: 'Find guitar chords and lyrics for famous Bollywood film songs across golden eras and latest movie releases.',
+    metaTitle: 'Bollywood Guitar Chords & Movie Song Lyrics | WokChords',
+    metaDesc: 'Master your favorite Bollywood movie guitar chords with accurate lyrics, key transpose, and capo suggestions on WokChords.',
+  },
+  punjabi: {
+    name: 'Punjabi',
+    langCode: 'pa',
+    ogLocale: 'pa_IN',
+    heroHeadline: 'Punjabi Guitar Chords & Folk Beats',
+    introDescription: 'Accurate guitar chords and lyrics for Punjabi pop, folk, and acoustic tracks. Transpose into any comfortable vocal key.',
+    metaTitle: 'Punjabi Guitar Chords & Song Lyrics | WokChords',
+    metaDesc: 'Play verified Punjabi guitar chords and lyrics. Interactive pitch transpose, capo tools, and auto-scrolling chord sheets on WokChords.',
+  },
+  bengali: {
+    name: 'Bengali',
+    langCode: 'bn',
+    ogLocale: 'bn_IN',
+    heroHeadline: 'Bengali Guitar Chords & Bangla Songs',
+    introDescription: 'Authentic guitar chords for Bangla classics, modern Bengali bands, and acoustic arrangements with accurate lyrics.',
+    metaTitle: 'Bengali Guitar Chords & Bangla Song Lyrics | WokChords',
+    metaDesc: 'Explore Bengali guitar chords and song lyrics. Free pitch transpose, ukulele chord diagrams, and auto-scroll on WokChords.',
+  },
+  marathi: {
+    name: 'Marathi',
+    langCode: 'mr',
+    ogLocale: 'mr_IN',
+    heroHeadline: 'Marathi Guitar Chords & Bhavgeet',
+    introDescription: 'Chord sheets and lyrics for Marathi film songs, natyageet, and modern Marathi melodies with capo and transpose support.',
+    metaTitle: 'Marathi Guitar Chords & Song Lyrics | WokChords',
+    metaDesc: 'Verified Marathi guitar chords and lyrics for guitarists and keyboard players. Easy transpose and auto-scroll on WokChords.',
+  },
+  tamil: {
+    name: 'Tamil',
+    langCode: 'ta',
+    ogLocale: 'ta_IN',
+    heroHeadline: 'Tamil Guitar Chords & Kollywood Hits',
+    introDescription: 'Discover guitar chords for iconic Tamil film songs and acoustic arrangements with real-time transposition.',
+    metaTitle: 'Tamil Guitar Chords & Kollywood Song Lyrics | WokChords',
+    metaDesc: 'Play verified Tamil guitar chords and lyrics with interactive transposition, capo helper, and auto-scroll on WokChords.',
+  },
+};
+
+const meta: LangConfig = LANGUAGE_DETAILS[tagSlug] || {
+  name: tagNameCapitalized,
+  langCode: 'en',
+  ogLocale: 'en_US',
+  heroHeadline: `${tagNameCapitalized} Guitar Chords & Songs`,
+  introDescription: `Browse ${songs.length} verified ${tagNameCapitalized} guitar chord sheets and lyrics. Featuring real-time pitch transpose, ukulele chord diagrams, capo calculator, and auto-scroll.`,
+  metaTitle: `${tagNameCapitalized} Guitar Chords, Tabs & Song Lyrics | WokChords`,
+  metaDesc: `Browse and play verified ${tagNameCapitalized} guitar chords with lyrics. Interactive key transpose, capo finder, and auto-scroll on WokChords.`,
+};
+
+// Compute top artists for this tag
+const artistCounts = new Map<string, { name: string; count: number }>();
+for (const s of songs) {
+  const rawArtist = (s.artist || '').replace(/\s*\([^)]+\)$/, '').trim();
+  if (!rawArtist || rawArtist === 'Various Artists' || rawArtist === 'Unknown' || rawArtist === 'Bollywood') continue;
+  const primary = rawArtist.split(/[,/&]/)[0].trim();
+  if (primary && primary.length > 1) {
+    const aSlug = slugify(primary);
+    if (!artistCounts.has(aSlug)) {
+      artistCounts.set(aSlug, { name: primary, count: 0 });
+    }
+    artistCounts.get(aSlug)!.count += 1;
+  }
+}
+const topTagArtists = Array.from(artistCounts.entries())
+  .map(([slug, val]) => ({ slug, name: val.name, count: val.count }))
+  .sort((a, b) => b.count - a.count)
+  .slice(0, 12);
+
+const baseUrl = 'https://wokchords.wokdens.com';
+const pageCanonical = `${baseUrl}/tag/${tagSlug}/`;
 
 const breadcrumbJsonLd = {
   '@context': 'https://schema.org',
@@ -74,100 +189,150 @@ const breadcrumbJsonLd = {
       '@type': 'ListItem',
       position: 1,
       name: 'Home',
-      item: new URL('/', Astro.site ?? Astro.url).toString(),
+      item: `${baseUrl}/`,
     },
     {
       '@type': 'ListItem',
       position: 2,
-      name: 'Category',
-      item: new URL('/', Astro.site ?? Astro.url).toString(),
-    },
-    {
-      '@type': 'ListItem',
-      position: 3,
-      name: tagName,
-      item: pageUrl.toString(),
+      name: `${meta.name} Songs`,
+      item: pageCanonical,
     },
   ],
 };
+
+const collectionJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: meta.metaTitle,
+  description: meta.metaDesc,
+  url: pageCanonical,
+  inLanguage: meta.langCode,
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: songs.length,
+    itemListElement: enriched.slice(0, 30).map((s, idx) => ({
+      '@type': 'ListItem',
+      position: idx + 1,
+      name: `${s.title} - ${s.artist}`,
+      url: `${baseUrl}/song/${s.slug}/`,
+    })),
+  },
+};
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
+<BaseLayout
+  title={meta.metaTitle}
+  description={meta.metaDesc}
+  canonical={pageCanonical}
+  lang={meta.langCode}
+  ogLocale={meta.ogLocale}
+>
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(collectionJsonLd)} />
 
   <div class="max-w-7xl w-full mx-auto px-3 sm:px-5 py-5 md:py-8 min-w-0">
-    <nav class="flex items-center gap-2 text-xs text-wok-muted mb-4 uppercase tracking-wider font-semibold">
+    <nav class="flex items-center gap-2 text-xs text-wok-muted mb-4 uppercase tracking-wider font-semibold" aria-label="Breadcrumb">
       <a href="/" class="hover:text-wok-accent transition-colors">Home</a>
       <span>/</span>
       <span class="text-wok-accent">Category</span>
       <span>/</span>
-      <span class="text-wok-text capitalize truncate">{tagName}</span>
+      <span class="text-wok-text capitalize truncate">{meta.name}</span>
     </nav>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 min-w-0 w-full">
       <main class="lg:col-span-8 xl:col-span-9 min-w-0 w-full">
         <header class="mb-6 pb-4 border-b border-black/5 dark:border-white/5">
           <div class="flex items-center gap-3 mb-2 min-w-0">
-            <div class="w-12 h-12 rounded-2xl bg-purple-500/15 text-purple-400 flex items-center justify-center text-xl font-black shrink-0">
+            <div class="w-12 h-12 rounded-2xl bg-purple-500/15 text-purple-500 flex items-center justify-center text-xl font-black shrink-0">
               #
             </div>
             <div class="min-w-0">
-              <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-wok-text capitalize truncate">
-                {tagName} Songs
+              <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-wok-text">
+                {meta.heroHeadline}
               </h1>
               <p class="text-xs sm:text-sm text-wok-muted mt-0.5">
-                {songs.length} song{songs.length === 1 ? '' : 's'} tagged with #{tagName}
+                {songs.length} verified song{songs.length === 1 ? '' : 's'} · Full lyrics & chord sheets
               </p>
             </div>
           </div>
+          <p class="text-xs sm:text-sm text-wok-muted mt-2 max-w-2xl leading-relaxed">
+            {meta.introDescription}
+          </p>
         </header>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full min-w-0">
-          {enriched.map(({ slug, title, artist, key, snippet }) => (
-            <a
-              href={`/song/${slug}/`}
-              class="group block w-full min-w-0 rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/40 hover:bg-wok-panel/80 transition-all p-4 shadow-md hover:border-wok-accent/40 hover:-translate-y-0.5 duration-150 overflow-hidden"
-            >
-              <div class="flex items-start justify-between gap-2.5 mb-2 min-w-0">
-                <div class="min-w-0 flex-1">
-                  <h2 class="text-base sm:text-lg font-bold tracking-tight text-wok-text group-hover:text-wok-accent transition-colors truncate">
-                    {title}
-                  </h2>
-                  <p class="text-wok-muted text-xs truncate mt-0.5">
-                    {artist}
-                  </p>
+        {topTagArtists.length > 0 && (
+          <section class="mb-6 p-4 rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/30 backdrop-blur-sm" aria-label={`Popular ${meta.name} Artists`}>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-wok-muted mb-3 flex items-center gap-1.5">
+              <span>⭐</span> Popular {meta.name} Artists
+            </h2>
+            <div class="flex flex-wrap gap-2">
+              {topTagArtists.map((a) => (
+                <a
+                  href={`/artist/${a.slug}/`}
+                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold bg-white/70 dark:bg-slate-900/60 border border-black/5 dark:border-white/5 hover:border-wok-accent/40 hover:text-wok-accent transition-colors"
+                >
+                  <span>{a.name}</span>
+                  <span class="text-[10px] font-mono text-wok-muted">({a.count})</span>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section aria-label={`All ${meta.name} Songs`}>
+          <div class="flex items-center justify-between gap-2 mb-4">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-wok-muted">
+              All {meta.name} Chords ({songs.length})
+            </h2>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full min-w-0">
+            {enriched.map(({ slug, title, artist, key, snippet }) => (
+              <a
+                href={`/song/${slug}/`}
+                class="group block w-full min-w-0 rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/40 hover:bg-wok-panel/80 transition-all p-4 shadow-md hover:border-wok-accent/40 hover:-translate-y-0.5 duration-150 overflow-hidden"
+              >
+                <div class="flex items-start justify-between gap-2.5 mb-2 min-w-0">
+                  <div class="min-w-0 flex-1">
+                    <h3 class="text-base sm:text-lg font-bold tracking-tight text-wok-text group-hover:text-wok-accent transition-colors truncate">
+                      {title}
+                    </h3>
+                    <p class="text-wok-muted text-xs truncate mt-0.5">
+                      {artist}
+                    </p>
+                  </div>
+                  {key && (
+                    <span class="shrink-0 inline-flex items-center px-2 py-0.5 rounded-md bg-wok-chord/10 text-wok-chord border border-wok-chord/30 text-[11px] font-mono font-bold">
+                      Key {key}
+                    </span>
+                  )}
                 </div>
-                {key && (
-                  <span class="shrink-0 inline-flex items-center px-2 py-0.5 rounded-md bg-wok-chord/10 text-wok-chord border border-wok-chord/30 text-[11px] font-mono font-bold">
-                    Key {key}
-                  </span>
+
+                {snippet && (
+                  <p class="text-xs text-wok-muted/90 italic leading-relaxed line-clamp-2 mb-3 pl-2 border-l-2 border-black/10 dark:border-white/10 break-words">
+                    “{snippet}…”
+                  </p>
                 )}
-              </div>
 
-              {snippet && (
-                <p class="text-xs text-wok-muted/90 italic leading-relaxed line-clamp-2 mb-3 pl-2 border-l-2 border-black/10 dark:border-white/10 break-words">
-                  “{snippet}…”
-                </p>
-              )}
-
-              <div class="flex items-center justify-between text-[11px] pt-1 min-w-0">
-                <span class="text-wok-accent font-medium capitalize truncate mr-2">
-                  #{tagName}
-                </span>
-                <span class="text-wok-muted/80 group-hover:text-wok-accent font-semibold inline-flex items-center gap-1 shrink-0">
-                  Play Chords →
-                </span>
-              </div>
-            </a>
-          ))}
-        </div>
+                <div class="flex items-center justify-between text-[11px] pt-1 min-w-0">
+                  <span class="text-wok-accent font-medium capitalize truncate mr-2">
+                    #{meta.name}
+                  </span>
+                  <span class="text-wok-muted/80 group-hover:text-wok-accent font-semibold inline-flex items-center gap-1 shrink-0">
+                    Play Chords →
+                  </span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
       </main>
 
       <aside class="lg:col-span-4 xl:col-span-3">
         <div class="lg:sticky lg:top-16 space-y-4">
           <div class="rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/30 p-4">
             <h3 class="text-xs font-bold uppercase tracking-widest text-wok-muted mb-3">
-              All Categories
+              All Music Categories
             </h3>
             <ul class="space-y-1.5">
               {otherTags.map((t) => (
@@ -183,6 +348,38 @@ const breadcrumbJsonLd = {
                   </a>
                 </li>
               ))}
+            </ul>
+          </div>
+
+          <div class="rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/30 p-4">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-wok-muted mb-2">
+              Free Guitar Tools
+            </h3>
+            <ul class="space-y-2 text-xs">
+              <li>
+                <a href="/tuner/" class="flex items-center gap-2 p-2 rounded-xl text-wok-text hover:bg-black/5 dark:hover:bg-white/5 hover:text-wok-accent transition font-medium">
+                  <span>🎸</span>
+                  <span>Free Guitar & Ukulele Tuner</span>
+                </a>
+              </li>
+              <li>
+                <a href="/songs/" class="flex items-center gap-2 p-2 rounded-xl text-wok-text hover:bg-black/5 dark:hover:bg-white/5 hover:text-wok-accent transition font-medium">
+                  <span>📚</span>
+                  <span>Alphabetical Song Directory</span>
+                </a>
+              </li>
+              <li>
+                <a href="/artists/" class="flex items-center gap-2 p-2 rounded-xl text-wok-text hover:bg-black/5 dark:hover:bg-white/5 hover:text-wok-accent transition font-medium">
+                  <span>🎤</span>
+                  <span>Browse All Artists</span>
+                </a>
+              </li>
+              <li>
+                <a href="/movies/" class="flex items-center gap-2 p-2 rounded-xl text-wok-text hover:bg-black/5 dark:hover:bg-white/5 hover:text-wok-accent transition font-medium">
+                  <span>🎬</span>
+                  <span>Movie Soundtracks</span>
+                </a>
+              </li>
             </ul>
           </div>
         </div>

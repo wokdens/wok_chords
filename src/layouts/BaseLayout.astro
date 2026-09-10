@@ -13,18 +13,35 @@ interface Props {
   title: string;
   description?: string;
   hideSearch?: boolean;
+  noindex?: boolean;
+  ogType?: string;
+  lang?: string;
+  ogLocale?: string;
 }
 
-const { title, description = 'WokChords — Fast, clean, and accurate guitar, piano, and ukulele chords with transpose and auto-scroll.', hideSearch = false } = Astro.props;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
-const fullTitle = title.toLowerCase().includes('wokchords') ? title : `${title} — WokChords`;
+const {
+  title,
+  description = 'WokChords — Fast, clean, and accurate guitar, piano, and ukulele chords with transpose and auto-scroll.',
+  hideSearch = false,
+  noindex = false,
+  ogType = 'website',
+  lang = 'en',
+  ogLocale = 'en_US',
+} = Astro.props;
+
+const rawPath = Astro.url.pathname;
+const cleanPath = (rawPath === '/' || rawPath.includes('.'))
+  ? rawPath
+  : (rawPath.endsWith('/') ? rawPath : `${rawPath}/`);
+const canonicalURL = new URL(cleanPath, 'https://wokchords.wokdens.com');
+const fullTitle = title.toLowerCase().includes('wokchords') ? title : `${title} | WokChords`;
 
 const languages = [
-  { name: 'Hindi', slug: 'hindi' },
   { name: 'English', slug: 'english' },
-  { name: 'Bengali', slug: 'bengali' },
-  { name: 'Punjabi', slug: 'punjabi' },
+  { name: 'Hindi', slug: 'hindi' },
   { name: 'Spanish', slug: 'spanish' },
+  { name: 'Punjabi', slug: 'punjabi' },
+  { name: 'Bengali', slug: 'bengali' },
   { name: 'Marathi', slug: 'marathi' },
   { name: 'Tamil', slug: 'tamil' },
 ];
@@ -35,11 +52,16 @@ const clarityId = analyticsConfig.clarityId;
 ---
 
 <!doctype html>
-<html lang="en" class="light">
+<html lang={lang} class="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
     <meta name="generator" content={Astro.generator} />
+    {noindex ? (
+      <meta name="robots" content="noindex, nofollow" />
+    ) : (
+      <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    )}
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="apple-touch-icon" type="image/svg+xml" href="/apple-touch-icon.svg" />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ea580c" />
@@ -56,8 +78,9 @@ const clarityId = analyticsConfig.clarityId;
     <meta name="description" content={description} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:url" content={canonicalURL.toString()} />
     <meta property="og:image" content={new URL('/og-image.png', canonicalURL)} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -68,7 +91,7 @@ const clarityId = analyticsConfig.clarityId;
     <meta name="twitter:image" content={new URL('/og-image.png', canonicalURL)} />
     <meta property="og:site_name" content="WokChords" />
     <meta name="application-name" content="WokChords" />
-    <link rel="canonical" href={canonicalURL} />
+    <link rel="canonical" href={canonicalURL.toString()} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />

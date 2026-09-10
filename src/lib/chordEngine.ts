@@ -321,6 +321,8 @@ export function parseAndTranspose(rawText: string, semitones: number): ParsedSon
   let text = '';
   try {
     html = htmlFormatter.format(finalSheet);
+    // Strip duplicate <h1> emitted by ChordSheetJS so pages maintain strictly ONE canonical <h1>
+    html = html.replace(/<h1[^>]*>[\s\S]*?<\/h1>/gi, '');
   } catch {
     html = '';
   }

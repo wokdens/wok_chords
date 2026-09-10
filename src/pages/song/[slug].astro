@@ -5,6 +5,7 @@ import ShareButton from '../../components/ShareButton';
 import { parseAndTranspose, extractLyricsText } from '../../lib/chordEngine';
 import { slugify } from '../../lib/slugify';
 import { getAllSongs } from '../../lib/songStore';
+import { findOptimalEasyChords } from '../../lib/simplifyChordEngine';
 
 interface SongFile {
   slug: string;
@@ -66,14 +67,84 @@ const originalKey = song.data.key || initial.metadata.key || initial.key;
 const tempo = song.data.tempo || initial.metadata.tempo;
 const timeSig = initial.metadata.time;
 const lyricsText = extractLyricsText(rawBody);
-const pageUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+
+const baseUrl = 'https://wokchords.wokdens.com';
+const pageCanonical = `${baseUrl}/song/${song.slug}/`;
 
 const artistSlug = slugify(artist);
-const pageTitle = `${title} Guitar Chords & Lyrics — ${artist}${movie ? ` (${movie})` : ''}${originalKey ? ` [Key ${originalKey}]` : ''}`;
-const description = `Accurate guitar, ukulele, and piano chords for "${title}" by ${artist}${movie ? ` from ${movie}` : ''}. Transpose keys (${originalKey ? `Key ${originalKey}` : 'Original'}), capo calculator, and auto-scroll on WokChords.`;
 
-const baseUrl = Astro.site ? Astro.site.toString().replace(/\/+$/, '') : 'https://wokchords.wokdens.com';
+// 1. Language determination from genuine tags
+const LANGUAGE_CONFIG: Record<string, { name: string; code: string; slug: string }> = {
+  hindi: { name: 'Hindi', code: 'hi', slug: 'hindi' },
+  bollywood: { name: 'Hindi', code: 'hi', slug: 'hindi' },
+  punjabi: { name: 'Punjabi', code: 'pa', slug: 'punjabi' },
+  bengali: { name: 'Bengali', code: 'bn', slug: 'bengali' },
+  tamil: { name: 'Tamil', code: 'ta', slug: 'tamil' },
+  telugu: { name: 'Telugu', code: 'te', slug: 'telugu' },
+  marathi: { name: 'Marathi', code: 'mr', slug: 'marathi' },
+  spanish: { name: 'Spanish', code: 'es', slug: 'spanish' },
+  english: { name: 'English', code: 'en', slug: 'english' },
+};
 
+const LANGUAGE_PRIORITY = ['spanish', 'bengali', 'punjabi', 'marathi', 'tamil', 'telugu', 'hindi', 'bollywood', 'english'];
+let primaryLang = { name: 'English', code: 'en', slug: 'english' };
+if (song.data.tags && song.data.tags.length > 0) {
+  const normTags = song.data.tags.map((t) => t.toLowerCase().trim());
+  for (const langKey of LANGUAGE_PRIORITY) {
+    if (normTags.includes(langKey) && LANGUAGE_CONFIG[langKey]) {
+      primaryLang = LANGUAGE_CONFIG[langKey];
+      break;
+    }
+  }
+}
+
+// 2. Chords analysis
+const uniqueChords = initial.uniqueChords || [];
+const totalChordsCount = uniqueChords.length;
+const chordSummaryStr = uniqueChords.slice(0, 5).join(', ');
+
+const EASY_CHORDS_SET = new Set([
+  'C', 'C7', 'Cmaj7', 'Cadd9',
+  'D', 'D7', 'Dm', 'Dsus2', 'Dsus4',
+  'E', 'E7', 'Em', 'Em7', 'Esus4',
+  'G', 'G7', 'Gadd9',
+  'A', 'A7', 'Am', 'Am7', 'Asus2', 'Asus4',
+  'F', 'Fmaj7',
+]);
+const isBeginnerFriendly = uniqueChords.length > 0 && uniqueChords.every((c) => EASY_CHORDS_SET.has(c.split('/')[0]));
+const capoRecommendation = findOptimalEasyChords(uniqueChords);
+
+// 3. Dynamic Scalable Title
+const cleanMovie = movie ? ` (${movie})` : '';
+const cleanKey = originalKey ? ` [Key ${originalKey}]` : '';
+const pageTitle = `${title} Guitar Chords & Lyrics — ${artist}${cleanMovie}${cleanKey} | WokChords`;
+
+// 4. Dynamic Scalable Meta Description
+const descParts: string[] = [];
+if (movie) {
+  descParts.push(`Accurate guitar chords and lyrics for "${title}" by ${artist} from ${movie}.`);
+} else {
+  descParts.push(`Accurate guitar chords and lyrics for "${title}" by ${artist}.`);
+}
+
+if (originalKey && uniqueChords.length > 0) {
+  descParts.push(`Original key ${originalKey}. Chords used: ${chordSummaryStr}.`);
+} else if (originalKey) {
+  descParts.push(`In original key ${originalKey}.`);
+} else if (uniqueChords.length > 0) {
+  descParts.push(`Chords used: ${chordSummaryStr}.`);
+}
+
+if (capoRecommendation && capoRecommendation.capoFret > 0) {
+  descParts.push(`Capo on fret ${capoRecommendation.capoFret} recommended for simpler chord shapes.`);
+} else if (isBeginnerFriendly) {
+  descParts.push(`Features standard beginner-friendly open chords.`);
+}
+
+descParts.push(`Free interactive pitch transpose, capo chart, tuner, and auto-scroll on WokChords.`);
+const pageDescription = descParts.join(' ');
+
+// 5. Breadcrumb Elements & JSON-LD
 const breadcrumbElements: Array<{ '@type': string; position: number; name: string; item: string }> = [
   {
     '@type': 'ListItem',
@@ -84,6 +155,12 @@ const breadcrumbElements: Array<{ '@type': string; position: number; name: strin
   {
     '@type': 'ListItem',
     position: 2,
+    name: `${primaryLang.name} Songs`,
+    item: `${baseUrl}/tag/${primaryLang.slug}/`,
+  },
+  {
+    '@type': 'ListItem',
+    position: 3,
     name: artist,
     item: `${baseUrl}/artist/${artistSlug}/`,
   },
@@ -102,100 +179,111 @@ breadcrumbElements.push({
   '@type': 'ListItem',
   position: breadcrumbElements.length + 1,
   name: title,
-  item: pageUrl.toString(),
+  item: pageCanonical,
 });
 
-const jsonLd = [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'MusicComposition',
-    name: `${title} (Guitar Chords & Lyrics)`,
-    alternateName: title,
-    author: {
-      '@type': 'Person',
-      name: artist,
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'MusicComposition',
+      name: `${title} (Guitar Chords & Lyrics)`,
+      alternateName: title,
+      composer: {
+        '@type': 'Person',
+        name: artist,
+      },
+      byArtist: {
+        '@type': 'MusicGroup',
+        name: artist,
+        url: `${baseUrl}/artist/${artistSlug}/`,
+      },
+      inLanguage: primaryLang.code,
+      url: pageCanonical,
+      ...(originalKey ? { musicalKey: originalKey } : {}),
+      ...(tempo ? { tempo } : {}),
+      ...(timeSig ? { timeSignature: timeSig } : {}),
+      lyrics: {
+        '@type': 'CreativeWork',
+        text: lyricsText.slice(0, 3000),
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'WokChords',
+        url: `${baseUrl}/`,
+      },
+      ...(movie && movieSlug
+        ? {
+            isPartOf: {
+              '@type': 'MusicAlbum',
+              name: movie,
+              url: `${baseUrl}/movie/${movieSlug}/`,
+            },
+          }
+        : {}),
+      isAccessibleForFree: true,
+      keywords: ['guitar chords', 'lyrics', 'chords', artist, title, movie, primaryLang.name].filter(Boolean).join(', '),
     },
-    byArtist: {
-      '@type': 'MusicGroup',
-      name: artist,
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: breadcrumbElements,
     },
-    inLanguage: 'en',
-    url: pageUrl.toString(),
-    ...(originalKey ? { musicalKey: originalKey } : {}),
-    ...(tempo ? { tempo } : {}),
-    ...(timeSig ? { timeSignature: timeSig } : {}),
-    lyrics: {
-      '@type': 'CreativeWork',
-      text: lyricsText.slice(0, 4000),
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'WokChords',
-    },
-    isAccessibleForFree: true,
-    keywords: ['chords', 'guitar chords', 'piano chords', 'ukulele chords', 'lyrics', artist, title, movie].filter(Boolean).join(', '),
-  },
-  {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: breadcrumbElements,
-  },
-];
+  ],
+};
 
+// 6. Multi-faceted Internal Link Datasets
+const allSongs = getAllSongs();
 const curArtistNorm = normalize(artist);
 const curMovieNorm = movie ? normalize(movie) : '';
-const curTagNorm = song.data.tags?.[0] ? normalize(song.data.tags[0]) : '';
+const curLangTag = primaryLang.slug;
 
-const allSongs = getAllSongs();
-const related: Array<{ slug: string; title: string; artist: string; movie?: string }> = [];
+const allArtistSongs = allSongs.filter((s) => s.artist && normalize(s.artist) === curArtistNorm);
+const moreByArtist = allArtistSongs.filter((s) => s.slug !== song.slug).slice(0, 6);
 
-for (const s of allSongs) {
-  if (s.slug === song.slug) continue;
-  if (curMovieNorm && s.movie && normalize(s.movie) === curMovieNorm) {
-    related.push({ slug: s.slug, title: s.title, artist: s.artist, movie: s.movie });
-    if (related.length >= 6) break;
-  }
-}
+const allMovieSongs = curMovieNorm
+  ? allSongs.filter((s) => s.movie && normalize(s.movie) === curMovieNorm)
+  : [];
+const moreInMovie = allMovieSongs.filter((s) => s.slug !== song.slug).slice(0, 6);
 
-if (related.length < 6) {
-  for (const s of allSongs) {
-    if (s.slug === song.slug || related.some((r) => r.slug === s.slug)) continue;
-    if (curArtistNorm && s.artist && normalize(s.artist) === curArtistNorm) {
-      related.push({ slug: s.slug, title: s.title, artist: s.artist, movie: s.movie });
-      if (related.length >= 6) break;
-    }
-  }
-}
+const moreInLang = allSongs
+  .filter((s) => s.slug !== song.slug && s.tags?.some((t) => t.toLowerCase() === curLangTag))
+  .slice(0, 6);
 
-if (related.length < 6) {
-  for (const s of allSongs) {
-    if (s.slug === song.slug || related.some((r) => r.slug === s.slug)) continue;
-    if (curTagNorm && s.tags && s.tags.map(normalize).includes(curTagNorm)) {
-      related.push({ slug: s.slug, title: s.title, artist: s.artist, movie: s.movie });
-      if (related.length >= 6) break;
-    }
-  }
-}
+const firstChar = title.trim().charAt(0).toUpperCase();
+const letterChar = /^[A-Z]$/.test(firstChar) ? firstChar : '#';
+const letterSlug = letterChar === '#' ? 'num' : letterChar.toLowerCase();
 
-const relatedSongs = related.length > 0 ? related : allSongs.slice(0, 6);
+const OG_LOCALE_MAP: Record<string, string> = {
+  en: 'en_US',
+  es: 'es_ES',
+  hi: 'hi_IN',
+  pa: 'pa_IN',
+  bn: 'bn_IN',
+  mr: 'mr_IN',
+  ta: 'ta_IN',
+  te: 'te_IN',
+};
+const ogLocale = OG_LOCALE_MAP[primaryLang.code] || 'en_US';
 ---
 
-<BaseLayout title={pageTitle} description={description}>
+<BaseLayout title={pageTitle} description={pageDescription} ogType="music.song" lang={primaryLang.code} ogLocale={ogLocale}>
   <script
     type="application/ld+json"
     set:html={JSON.stringify(jsonLd)}
   />
 
   <div class="max-w-[90rem] w-full mx-auto px-3 sm:px-6 py-4 md:py-6 min-w-0">
-    <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 text-xs text-wok-muted mb-4 uppercase tracking-wider font-semibold">
+    <!-- Breadcrumb Hierarchy -->
+    <nav class="flex items-center gap-1.5 sm:gap-2 text-xs text-wok-muted mb-4 uppercase tracking-wider font-semibold flex-wrap" aria-label="Breadcrumb">
       <a href="/" class="hover:text-wok-accent transition-colors">Home</a>
+      <span>/</span>
+      <a href={`/tag/${primaryLang.slug}/`} class="hover:text-wok-accent transition-colors capitalize">{primaryLang.name} Songs</a>
       <span>/</span>
       <a href={`/artist/${artistSlug}/`} class="hover:text-wok-accent transition-colors truncate">{artist}</a>
       {movie && movieSlug && (
         <>
           <span>/</span>
-          <a href={`/movie/${movieSlug}/`} class="hover:text-wok-accent transition-colors truncate">{movie}</a>
+          <a href={`/movie/${movieSlug}/`} class="hover:text-wok-accent transition-colors truncate">🎬 {movie}</a>
         </>
       )}
       <span>/</span>
@@ -207,7 +295,7 @@ const relatedSongs = related.length > 0 ? related : allSongs.slice(0, 6);
       <article class="lg:col-span-8 xl:col-span-9 min-w-0 w-full">
         <header class="mb-4 md:mb-6">
           <h1 class="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight mb-2 text-wok-text">
-            {title} <span class="text-wok-accent text-lg sm:text-2xl md:text-3xl font-extrabold block sm:inline">Chords & Lyrics</span>
+            {title} <span class="text-wok-accent text-lg sm:text-2xl md:text-3xl font-extrabold block sm:inline">Guitar Chords & Lyrics</span>
           </h1>
           <p class="text-base sm:text-lg text-wok-muted mb-3 font-medium flex flex-wrap items-center gap-x-2">
             <span>By <a href={`/artist/${artistSlug}/`} class="text-wok-accent hover:underline font-semibold">{artist}</a></span>
@@ -217,6 +305,7 @@ const relatedSongs = related.length > 0 ? related : allSongs.slice(0, 6);
               </span>
             )}
           </p>
+
           <div class="flex flex-wrap gap-2 items-center">
             {originalKey && (
               <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-wok-chord/10 text-wok-chord border border-wok-chord/30 text-xs font-mono font-bold">
@@ -249,8 +338,41 @@ const relatedSongs = related.length > 0 ? related : allSongs.slice(0, 6);
                 #{t}
               </a>
             ))}
-            <ShareButton client:load title={title} artist={artist} url={pageUrl.toString()} />
+            <a
+              href="/tuner/"
+              class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-orange-500/10 text-orange-600 dark:text-orange-400 hover:bg-orange-500 hover:text-white text-xs font-semibold transition-colors"
+              title="Tune guitar before playing"
+            >
+              🎸 Tuner
+            </a>
+            <ShareButton client:load title={title} artist={artist} url={pageCanonical} />
           </div>
+
+          <!-- Visual Chord Badges in Song -->
+          {uniqueChords.length > 0 && (
+            <div class="mt-4 pt-3 border-t border-black/5 dark:border-white/5">
+              <h2 class="text-xs font-bold uppercase tracking-wider text-wok-muted mb-2 flex items-center gap-1.5">
+                <span>Chords in this Song ({totalChordsCount})</span>
+              </h2>
+              <div class="flex flex-wrap gap-1.5">
+                {uniqueChords.map((chord) => (
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-wok-chord/10 text-wok-chord border border-wok-chord/20 text-xs font-mono font-bold">
+                    {chord}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <!-- Capo Recommendation (Only if genuine) -->
+          {capoRecommendation && capoRecommendation.capoFret > 0 && (
+            <div class="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-800 dark:text-amber-300 flex items-center gap-2">
+              <span class="text-base shrink-0">💡</span>
+              <span>
+                <strong>Capo Recommendation:</strong> Place Capo on <strong>Fret {capoRecommendation.capoFret}</strong> to play with simpler open chord shapes ({capoRecommendation.sampleChords.join(', ')}).
+              </span>
+            </div>
+          )}
         </header>
 
         <!-- Interactive Sticky Controls -->
@@ -262,7 +384,7 @@ const relatedSongs = related.length > 0 ? related : allSongs.slice(0, 6);
           scrollTargetSelector="#chord-sheet"
         />
 
-        <!-- Original Clean Chord Sheet Display -->
+        <!-- Pre-rendered Static Chord Sheet (100% Crawlable Server Output) -->
         <div
           id="chord-sheet"
           class="mt-4 md:mt-6 px-5 md:px-8 py-6 md:py-8 rounded-3xl bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl border border-black/5 dark:border-white/10 shadow-xl shadow-orange-950/5 ring-1 ring-black/5 dark:ring-white/5 overflow-x-auto"
@@ -277,18 +399,193 @@ const relatedSongs = related.length > 0 ? related : allSongs.slice(0, 6);
           </style>
         </noscript>
 
-        {/* Print-Only Footer Attribution */}
+        <!-- Print-Only Footer Attribution -->
         <div class="print-only-footer">
           <span>Printed from <strong>WokChords</strong> — wokchords.wokdens.com</span>
           <span>100% Free &amp; Ad-Free Guitar Chords</span>
         </div>
+
+        <!-- Internal Link Section 1: More by Artist -->
+        {moreByArtist.length > 0 && (
+          <section class="mt-8 pt-8 border-t border-black/10 dark:border-white/10">
+            <div class="flex items-center justify-between gap-3 mb-4">
+              <h2 class="text-lg sm:text-xl font-black text-wok-text tracking-tight">
+                More Songs by {artist}
+              </h2>
+              <a
+                href={`/artist/${artistSlug}/`}
+                class="text-xs font-bold text-wok-accent hover:underline flex items-center gap-1 shrink-0"
+              >
+                <span>View all {allArtistSongs.length} songs</span>
+                <span>→</span>
+              </a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {moreByArtist.map((s) => (
+                <a
+                  href={`/song/${s.slug}/`}
+                  class="group flex flex-col justify-between p-3.5 rounded-xl border border-black/5 dark:border-white/5 bg-wok-panel/30 hover:bg-wok-panel/80 hover:border-wok-accent/40 hover:-translate-y-0.5 transition-all shadow-sm duration-150"
+                >
+                  <div>
+                    <div class="flex items-start justify-between gap-2 mb-1">
+                      <h3 class="font-bold text-xs sm:text-sm text-wok-text group-hover:text-wok-accent transition-colors truncate">
+                        {s.title}
+                      </h3>
+                      {s.key && (
+                        <span class="shrink-0 px-1.5 py-0.5 rounded bg-wok-chord/10 text-wok-chord text-[10px] font-mono font-bold">
+                          {s.key}
+                        </span>
+                      )}
+                    </div>
+                    {s.movie && (
+                      <p class="text-[11px] text-wok-muted truncate">🎬 {s.movie}</p>
+                    )}
+                  </div>
+                  <span class="text-[11px] font-semibold text-wok-accent group-hover:underline mt-2 flex items-center gap-1">
+                    <span>Play Chords</span>
+                    <span>→</span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <!-- Internal Link Section 2: More from Movie Soundtrack -->
+        {moreInMovie.length > 0 && (
+          <section class="mt-8 pt-8 border-t border-black/10 dark:border-white/10">
+            <div class="flex items-center justify-between gap-3 mb-4">
+              <h2 class="text-lg sm:text-xl font-black text-wok-text tracking-tight">
+                More Songs from {movie} Soundtrack
+              </h2>
+              <a
+                href={`/movie/${movieSlug}/`}
+                class="text-xs font-bold text-wok-accent hover:underline flex items-center gap-1 shrink-0"
+              >
+                <span>View full album ({allMovieSongs.length} tracks)</span>
+                <span>→</span>
+              </a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {moreInMovie.map((s) => (
+                <a
+                  href={`/song/${s.slug}/`}
+                  class="group flex flex-col justify-between p-3.5 rounded-xl border border-black/5 dark:border-white/5 bg-wok-panel/30 hover:bg-wok-panel/80 hover:border-wok-accent/40 hover:-translate-y-0.5 transition-all shadow-sm duration-150"
+                >
+                  <div>
+                    <div class="flex items-start justify-between gap-2 mb-1">
+                      <h3 class="font-bold text-xs sm:text-sm text-wok-text group-hover:text-wok-accent transition-colors truncate">
+                        {s.title}
+                      </h3>
+                      {s.key && (
+                        <span class="shrink-0 px-1.5 py-0.5 rounded bg-wok-chord/10 text-wok-chord text-[10px] font-mono font-bold">
+                          {s.key}
+                        </span>
+                      )}
+                    </div>
+                    <p class="text-[11px] text-wok-muted truncate">{s.artist}</p>
+                  </div>
+                  <span class="text-[11px] font-semibold text-wok-accent group-hover:underline mt-2 flex items-center gap-1">
+                    <span>Play Chords</span>
+                    <span>→</span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <!-- Internal Link Section 3: Popular in Language -->
+        {moreInLang.length > 0 && (
+          <section class="mt-8 pt-8 border-t border-black/10 dark:border-white/10">
+            <div class="flex items-center justify-between gap-3 mb-4">
+              <h2 class="text-lg sm:text-xl font-black text-wok-text tracking-tight">
+                Popular {primaryLang.name} Guitar Chords
+              </h2>
+              <a
+                href={`/tag/${primaryLang.slug}/`}
+                class="text-xs font-bold text-wok-accent hover:underline flex items-center gap-1 shrink-0"
+              >
+                <span>Browse all {primaryLang.name} songs</span>
+                <span>→</span>
+              </a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {moreInLang.map((s) => (
+                <a
+                  href={`/song/${s.slug}/`}
+                  class="group flex flex-col justify-between p-3.5 rounded-xl border border-black/5 dark:border-white/5 bg-wok-panel/30 hover:bg-wok-panel/80 hover:border-wok-accent/40 hover:-translate-y-0.5 transition-all shadow-sm duration-150"
+                >
+                  <div>
+                    <div class="flex items-start justify-between gap-2 mb-1">
+                      <h3 class="font-bold text-xs sm:text-sm text-wok-text group-hover:text-wok-accent transition-colors truncate">
+                        {s.title}
+                      </h3>
+                      {s.key && (
+                        <span class="shrink-0 px-1.5 py-0.5 rounded bg-wok-chord/10 text-wok-chord border border-wok-chord/20 text-[10px] font-mono font-bold">
+                          {s.key}
+                        </span>
+                      )}
+                    </div>
+                    <p class="text-[11px] text-wok-muted truncate">{s.artist}{s.movie ? ` · ${s.movie}` : ''}</p>
+                  </div>
+                  <span class="text-[11px] font-semibold text-wok-accent group-hover:underline mt-2 flex items-center gap-1">
+                    <span>Play Chords</span>
+                    <span>→</span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <!-- Internal Link Section 4: Exploration Hub -->
+        <section class="mt-8 pt-8 border-t border-black/10 dark:border-white/10">
+          <div class="p-5 rounded-2xl border border-black/5 dark:border-white/5 bg-wok-panel/20">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-wok-muted mb-3">
+              Explore WokChords Music Directory
+            </h2>
+            <div class="flex flex-wrap gap-2 text-xs font-semibold">
+              <a
+                href={`/songs/${letterSlug}/`}
+                class="px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 text-wok-text hover:bg-wok-accent hover:text-white transition-colors"
+              >
+                Songs Starting With "{letterChar}" →
+              </a>
+              <a
+                href="/tuner/"
+                class="px-3 py-1.5 rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400 hover:bg-orange-500 hover:text-white transition-colors"
+              >
+                🎸 Free Guitar Tuner
+              </a>
+              <a
+                href="/artists/"
+                class="px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 text-wok-text hover:bg-wok-accent hover:text-white transition-colors"
+              >
+                Artists Directory (A–Z)
+              </a>
+              <a
+                href="/movies/"
+                class="px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 text-wok-text hover:bg-wok-accent hover:text-white transition-colors"
+              >
+                Movie Soundtracks
+              </a>
+              <a
+                href="/songs/"
+                class="px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 text-wok-text hover:bg-wok-accent hover:text-white transition-colors"
+              >
+                All 4,000+ Songs Hub
+              </a>
+            </div>
+          </div>
+        </section>
       </article>
 
       <!-- Sidebar -->
       <aside class="lg:col-span-4 xl:col-span-3 space-y-6 w-full min-w-0">
         <!-- Song Details Card -->
         <div class="rounded-2xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md p-5 shadow-sm">
-          <h2 class="text-xs font-bold uppercase tracking-wider text-wok-muted mb-4">Song Details</h2>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-wok-muted mb-4">Song Information</h2>
           <dl class="space-y-2.5 text-xs">
             <div class="flex justify-between py-1 border-b border-black/5 dark:border-white/5">
               <dt class="text-wok-muted">Artist</dt>
@@ -304,6 +601,12 @@ const relatedSongs = related.length > 0 ? related : allSongs.slice(0, 6);
                 </dd>
               </div>
             )}
+            <div class="flex justify-between py-1 border-b border-black/5 dark:border-white/5">
+              <dt class="text-wok-muted">Language</dt>
+              <dd class="font-semibold text-wok-text">
+                <a href={`/tag/${primaryLang.slug}/`} class="text-wok-accent hover:underline capitalize">{primaryLang.name}</a>
+              </dd>
+            </div>
             {originalKey && (
               <div class="flex justify-between py-1 border-b border-black/5 dark:border-white/5">
                 <dt class="text-wok-muted">Original Key</dt>
@@ -316,43 +619,50 @@ const relatedSongs = related.length > 0 ? related : allSongs.slice(0, 6);
                 <dd class="font-mono font-semibold text-wok-text">{tempo} BPM</dd>
               </div>
             )}
-            <div class="flex justify-between py-1">
+            {timeSig && (
+              <div class="flex justify-between py-1 border-b border-black/5 dark:border-white/5">
+                <dt class="text-wok-muted">Time Signature</dt>
+                <dd class="font-mono font-semibold text-wok-text">{timeSig}</dd>
+              </div>
+            )}
+            <div class="flex justify-between py-1 border-b border-black/5 dark:border-white/5">
+              <dt class="text-wok-muted">Chords</dt>
+              <dd class="font-mono text-wok-text font-semibold">{totalChordsCount} unique</dd>
+            </div>
+            <div class="flex justify-between py-1 border-b border-black/5 dark:border-white/5">
               <dt class="text-wok-muted">Tuning</dt>
-              <dd class="font-mono text-wok-muted">Standard (E A D G B E)</dd>
+              <dd>
+                <a href="/tuner/" class="font-mono text-wok-accent hover:underline">Standard (EADGBE) ↗</a>
+              </dd>
+            </div>
+            <div class="flex justify-between py-1">
+              <dt class="text-wok-muted">Difficulty</dt>
+              <dd class="font-semibold text-wok-text">
+                {isBeginnerFriendly ? '🟢 Beginner (Open Chords)' : (capoRecommendation ? '🟡 Capo Recommended' : '🔵 Intermediate')}
+              </dd>
             </div>
           </dl>
         </div>
 
-        <!-- Related Songs Card -->
-        {relatedSongs.length > 0 && (
-          <div class="rounded-2xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md p-5 shadow-sm">
-            <h2 class="text-xs font-bold uppercase tracking-wider text-wok-muted mb-4">
-              {movie ? `More from ${movie}` : `More by ${artist}`}
-            </h2>
-            <ul class="space-y-2">
-              {relatedSongs.map((rel) => (
-                <li>
-                  <a
-                    href={`/song/${rel.slug}/`}
-                    class="group flex items-start gap-2.5 p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                  >
-                    <div class="mt-0.5 w-7 h-7 shrink-0 rounded-lg bg-wok-accent/15 text-wok-accent font-bold text-xs flex items-center justify-center group-hover:bg-wok-accent group-hover:text-white transition-colors">
-                      {rel.title.charAt(0)}
-                    </div>
-                    <div class="min-w-0 flex-1">
-                      <p class="text-xs font-semibold text-wok-text group-hover:text-wok-accent transition-colors truncate">
-                        {rel.title}
-                      </p>
-                      <p class="text-[11px] text-wok-muted truncate">
-                        {rel.artist}{rel.movie ? ` · ${rel.movie}` : ''}
-                      </p>
-                    </div>
-                  </a>
-                </li>
-              ))}
-            </ul>
+        <!-- Free Guitar Tuner Widget Banner -->
+        <div class="rounded-2xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 to-amber-500/10 p-4 shadow-sm">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">🎸</span>
+            <div>
+              <h3 class="text-xs font-bold text-wok-text uppercase tracking-wider">Free Guitar Tuner</h3>
+              <p class="text-[11px] text-wok-muted mt-0.5 leading-relaxed">
+                Tune your guitar or ukulele with mic pitch detection before playing.
+              </p>
+              <a
+                href="/tuner/"
+                class="inline-flex items-center gap-1 mt-2.5 px-3 py-1 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs transition-colors shadow-sm"
+              >
+                <span>Launch Tuner</span>
+                <span>→</span>
+              </a>
+            </div>
           </div>
-        )}
+        </div>
       </aside>
     </div>
   </div>
