@@ -168,10 +168,10 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
   }
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-lg">
-      <div className="relative flex items-center">
+    <div ref={containerRef} className="relative w-full min-w-0 max-w-lg">
+      <div className="relative flex items-center min-w-0">
         <Search
-          className="pointer-events-none absolute left-2.5 h-4 w-4 text-wok-muted"
+          className="pointer-events-none absolute left-2.5 h-4 w-4 text-wok-muted shrink-0"
           aria-hidden="true"
         />
         <input
@@ -189,8 +189,8 @@ export default function SearchBar({ indexUrl = '/songs-index.json' }: { indexUrl
             setOpen(true);
           }}
           onKeyDown={onKeyDown}
-          placeholder="Search songs, artists, movies… (press /)"
-          className="w-full rounded-xl border py-1.5 pl-8 pr-8 text-sm outline-none transition focus:ring-2 input-surface"
+          placeholder="Search songs, artists… (press /)"
+          className="w-full min-w-0 rounded-xl border py-1.5 pl-8 pr-8 text-sm outline-none transition focus:ring-2 input-surface"
           aria-label="Search songs"
           aria-expanded={showDropdown}
           role="combobox"

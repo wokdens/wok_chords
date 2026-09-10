@@ -450,7 +450,7 @@ export default function InteractiveControls({
     }
   }, [effectiveSemitones, contentText, initialKey, mountId, handleOpenChordDiagram]);
 
-  // Auto-scroll loop
+  // Auto-scroll loop (Mobile-optimized with smooth frame rendering and touch detection)
   useEffect(() => {
     if (!scrollActive) {
       if (rafRef.current) {
@@ -458,30 +458,77 @@ export default function InteractiveControls({
         rafRef.current = null;
       }
       scrollFracRef.current = 0;
+      if (typeof document !== 'undefined') {
+        document.documentElement.classList.remove('is-autoscrolling');
+      }
       return;
     }
 
+    if (typeof document !== 'undefined') {
+      document.documentElement.classList.add('is-autoscrolling');
+    }
+
+    let isTouching = false;
+    const onTouchStart = () => {
+      isTouching = true;
+    };
+    const onTouchEnd = () => {
+      isTouching = false;
+      lastTsRef.current = 0;
+      scrollFracRef.current = 0;
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('touchstart', onTouchStart, { passive: true });
+      window.addEventListener('touchend', onTouchEnd, { passive: true });
+      window.addEventListener('touchcancel', onTouchEnd, { passive: true });
+    }
+
     lastTsRef.current = 0;
+    scrollFracRef.current = 0;
+
     const step = (ts: number) => {
-      const last = lastTsRef.current || ts;
-      const dt = ts - last;
+      if (!lastTsRef.current) {
+        lastTsRef.current = ts;
+      }
+      const rawDt = ts - lastTsRef.current;
       lastTsRef.current = ts;
+      const dt = Math.min(Math.max(rawDt, 0), 64);
+
+      if (isTouching) {
+        rafRef.current = requestAnimationFrame(step);
+        return;
+      }
+
       const pxPerSec = scrollSpeed * 40;
       const delta = (pxPerSec * dt) / 1000;
 
       if (typeof window !== 'undefined') {
         scrollFracRef.current += delta;
-        const apply = Math.floor(scrollFracRef.current);
-        if (apply > 0) {
+        if (scrollFracRef.current >= 1) {
+          const apply = Math.floor(scrollFracRef.current);
           scrollFracRef.current -= apply;
-          window.scrollBy({ top: apply, behavior: 'instant' as ScrollBehavior });
-        }
-        const atBottom =
-          window.innerHeight + window.scrollY >=
-          document.documentElement.scrollHeight - 10;
-        if (atBottom) {
-          setScrollActive(false);
-          return;
+
+          const scrollEl = document.scrollingElement || document.documentElement || document.body;
+          if (scrollEl) {
+            const prev = scrollEl.scrollTop;
+            scrollEl.scrollTop = prev + apply;
+            if (scrollEl.scrollTop === prev) {
+              window.scrollBy({ top: apply, left: 0, behavior: 'auto' });
+            }
+          } else {
+            window.scrollBy({ top: apply, left: 0, behavior: 'auto' });
+          }
+
+          const el = document.scrollingElement || document.documentElement || document.body;
+          if (el) {
+            const maxScroll = el.scrollHeight - el.clientHeight;
+            const currentScroll = el.scrollTop || window.scrollY || 0;
+            if (maxScroll > 100 && currentScroll >= maxScroll - 5) {
+              setScrollActive(false);
+              return;
+            }
+          }
         }
       }
 
@@ -489,8 +536,17 @@ export default function InteractiveControls({
     };
 
     rafRef.current = requestAnimationFrame(step);
+
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (typeof document !== 'undefined') {
+        document.documentElement.classList.remove('is-autoscrolling');
+      }
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('touchstart', onTouchStart);
+        window.removeEventListener('touchend', onTouchEnd);
+        window.removeEventListener('touchcancel', onTouchEnd);
+      }
     };
   }, [scrollActive, scrollSpeed]);
 
@@ -631,6 +687,17 @@ export default function InteractiveControls({
               {scrollActive ? <Pause size={14} /> : <Play size={14} />}
               <span>{scrollActive ? 'Pause' : 'Auto Scroll'}</span>
             </button>
+
+            {scrollActive && (
+              <button
+                type="button"
+                onClick={() => setScrollSpeed((s) => (s >= 1.5 ? 0.7 : Math.round((s + 0.2) * 10) / 10))}
+                title="Tap to change auto-scroll speed"
+                className="md:hidden h-8 px-2 inline-flex items-center gap-1 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-[11px] font-mono font-bold text-wok-muted hover:text-wok-text"
+              >
+                <span>{scrollSpeed.toFixed(1)}x</span>
+              </button>
+            )}
 
             <div className="hidden md:flex items-center gap-1.5 h-8 px-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
               <Gauge size={12} className="text-wok-muted" aria-hidden />

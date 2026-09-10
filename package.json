@@ -6,6 +6,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
+    "postbuild": "node scripts/copy-build-assets.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "gsc:report": "node scripts/google-search-console-query.mjs",

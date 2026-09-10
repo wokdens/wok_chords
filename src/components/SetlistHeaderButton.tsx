@@ -23,15 +23,15 @@ export default function SetlistHeaderButton() {
       onClick={handleClick}
       title="Open My Saved Setlist"
       aria-label={`My Setlist (${count} songs)`}
-      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-xs font-bold text-wok-muted hover:text-rose-500 transition-colors"
+      className="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-xs font-bold text-wok-muted hover:text-rose-500 transition-colors shrink-0"
     >
       <Heart
         size={14}
-        className={`transition-colors ${count > 0 ? 'text-rose-500 fill-rose-500' : 'text-wok-muted'}`}
+        className={`transition-colors shrink-0 ${count > 0 ? 'text-rose-500 fill-rose-500' : 'text-wok-muted'}`}
       />
-      <span>Setlist</span>
+      <span className="hidden sm:inline">Setlist</span>
       {count > 0 && (
-        <span className="px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[10px] font-mono font-bold leading-tight">
+        <span className="px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[10px] font-mono font-bold leading-tight shrink-0">
           {count}
         </span>
       )}

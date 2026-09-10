@@ -7,9 +7,27 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
+// Load .env variables
+const envPath = path.join(rootDir, '.env');
+if (fs.existsSync(envPath)) {
+  const lines = fs.readFileSync(envPath, 'utf8').split(/\r?\n/);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eqIdx = trimmed.indexOf('=');
+    if (eqIdx > 0) {
+      const key = trimmed.slice(0, eqIdx).trim();
+      const val = trimmed.slice(eqIdx + 1).trim().replace(/^['"]|['"]$/g, '');
+      if (!process.env[key]) {
+        process.env[key] = val;
+      }
+    }
+  }
+}
+
 const KEY_FILE = process.env.GOOGLE_APPLICATION_CREDENTIALS || path.join(rootDir, 'google-credentials.json');
 // The GA4 Property ID (can be extracted or set in .env)
-const PROPERTY_ID = process.env.GA4_PROPERTY_ID || '';
+const PROPERTY_ID = process.env.GA4_PROPERTY_ID || '552970561';
 
 console.log('\n📊 ====================================================');
 console.log('   WokChords — Google Analytics 4 (GA4) API Connector');

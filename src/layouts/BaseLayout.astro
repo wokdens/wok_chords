@@ -38,7 +38,7 @@ const clarityId = analyticsConfig.clarityId;
 <html lang="en" class="light">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="apple-touch-icon" type="image/svg+xml" href="/apple-touch-icon.svg" />
@@ -74,13 +74,31 @@ const clarityId = analyticsConfig.clarityId;
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
     <title>{fullTitle}</title>
 
-    {/* Google Search Official Site Name Structured Data */}
+    {/* Google Search Official Site Name Structured Data (Google-compliant format) */}
     <script type="application/ld+json" is:inline set:html={JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'WebSite',
+      '@id': 'https://wokchords.wokdens.com/#website',
       name: 'WokChords',
-      alternateName: ['Wok Chords'],
-      url: 'https://wokchords.wokdens.com/'
+      alternateName: ['Wok Chords', 'WokChords Chords', 'Wokdens Chords'],
+      url: 'https://wokchords.wokdens.com/',
+      publisher: {
+        '@type': 'Organization',
+        name: 'WokChords',
+        url: 'https://wokchords.wokdens.com/',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://wokchords.wokdens.com/icon.svg'
+        }
+      },
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: {
+          '@type': 'EntryPoint',
+          urlTemplate: 'https://wokchords.wokdens.com/songs/?q={search_term_string}'
+        },
+        'query-input': 'required name=search_term_string'
+      }
     })}></script>
 
     {/* Google Analytics 4 (GA4) */}
@@ -150,11 +168,17 @@ const clarityId = analyticsConfig.clarityId;
       <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <pattern id="wokchords-print-pattern" width="280" height="170" patternUnits="userSpaceOnUse" patternTransform="rotate(-28)">
-            <text x="25" y="65" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="28" fill="#000000" fill-opacity="0.04" letter-spacing="1">
+            <text x="25" y="55" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="24" fill="#000000" fill-opacity="0.055" letter-spacing="1.5">
               WokChords
             </text>
-            <text x="165" y="150" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="28" fill="#000000" fill-opacity="0.04" letter-spacing="1">
+            <text x="38" y="72" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="9" fill="#000000" fill-opacity="0.04" letter-spacing="1.5">
+              WOKDENS.COM
+            </text>
+            <text x="165" y="140" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="24" fill="#000000" fill-opacity="0.055" letter-spacing="1.5">
               WokChords
+            </text>
+            <text x="178" y="157" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="9" fill="#000000" fill-opacity="0.04" letter-spacing="1.5">
+              WOKDENS.COM
             </text>
           </pattern>
         </defs>
@@ -196,8 +220,8 @@ const clarityId = analyticsConfig.clarityId;
     </div>
 
     <!-- Top Language Bar (Translucent Glass Bar) -->
-    <div class="bg-slate-950/90 text-white/90 text-xs border-b border-white/10 select-none backdrop-blur-md sticky top-0 z-40">
-      <div class="max-w-[90rem] mx-auto px-3 md:px-5 flex items-center justify-between overflow-x-auto no-scrollbar py-1.5 gap-4 sm:gap-6">
+    <div class="bg-slate-950/90 text-white/90 text-xs border-b border-white/10 select-none backdrop-blur-md sticky top-0 z-40 w-full max-w-full overflow-hidden">
+      <div class="max-w-[90rem] w-full min-w-0 mx-auto px-3 md:px-5 flex items-center justify-between overflow-x-auto no-scrollbar py-1.5 gap-4 sm:gap-6">
         <div class="flex items-center gap-2 sm:gap-4 shrink-0 font-medium">
           <span class="text-white/40 text-[11px] uppercase tracking-wider hidden md:inline font-bold">Explore:</span>
           {languages.map((lang) => (
@@ -220,8 +244,8 @@ const clarityId = analyticsConfig.clarityId;
     </div>
 
     <!-- Main Navigation Header -->
-    <header class="sticky top-[33px] z-30 backdrop-blur-xl bg-white/75 dark:bg-slate-950/80 border-b border-black/5 dark:border-white/5 shadow-sm shadow-orange-500/5">
-      <div class="max-w-[90rem] mx-auto px-3 md:px-5 py-2.5 flex items-center gap-2 md:gap-4">
+    <header class="sticky top-[33px] z-30 backdrop-blur-xl bg-white/75 dark:bg-slate-950/80 border-b border-black/5 dark:border-white/5 shadow-sm shadow-orange-500/5 w-full max-w-full">
+      <div class="max-w-[90rem] w-full min-w-0 mx-auto px-3 md:px-5 py-2.5 flex items-center gap-2 md:gap-4">
         <a href="/" class="flex items-center gap-2.5 group shrink-0">
           <span class="text-2xl md:text-3xl group-hover:rotate-12 transition-transform inline-block drop-shadow-sm">🎸</span>
           <div class="flex items-center gap-2">
@@ -262,7 +286,7 @@ const clarityId = analyticsConfig.clarityId;
       </div>
     </header>
 
-    <main class="flex-1">
+    <main class="flex-1 w-full min-w-0 max-w-full">
       <slot />
     </main>
 
