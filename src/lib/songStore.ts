@@ -75,7 +75,8 @@ function slugifyName(name: string): string {
 
 export function getAllSongs(): SongItem[] {
   const now = Date.now();
-  if (cachedSongs && cachedSongs.length > 0 && now - cacheTime < 5000) {
+  const maxAge = process.env.NODE_ENV === 'development' ? 5000 : 3600000;
+  if (cachedSongs && cachedSongs.length > 0 && now - cacheTime < maxAge) {
     return cachedSongs;
   }
 

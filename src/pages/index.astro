@@ -264,6 +264,10 @@ const moviesData = popularMoviesList.map((m) => {
           🛡️ 100% Ad-Free Forever · Zero Popups · No Paywalls
         </span>
         <span class="hidden md:inline-block w-1.5 h-1.5 rounded-full bg-emerald-500/50"></span>
+        <a href="/tuner/" class="hidden md:inline-flex items-center gap-1 text-[11px] sm:text-xs text-orange-600 dark:text-orange-400 font-bold hover:underline">
+          🎸 Free Guitar Tuner
+        </a>
+        <span class="hidden md:inline-block w-1.5 h-1.5 rounded-full bg-emerald-500/50"></span>
         <a href="https://wokdens.com" target="_blank" rel="noopener" class="hidden md:inline text-[11px] sm:text-xs text-emerald-600/90 dark:text-emerald-400/90 font-semibold hover:underline">
           Built by Wokdens.com
         </a>
@@ -275,7 +279,7 @@ const moviesData = popularMoviesList.map((m) => {
         <br class="hidden sm:inline" /> for Guitar, Piano & Ukulele
       </h1>
       <p class="text-base sm:text-lg md:text-xl text-wok-muted max-w-2xl mx-auto leading-relaxed mb-8">
-        Over 3,920 transposable chord sheets with interactive diagrams, capo calculator, and hands-free auto-scroll. Powered by <a href="https://wokdens.com" target="_blank" rel="noopener" class="text-wok-text font-bold hover:text-wok-accent hover:underline">Wokdens.com</a>.
+        Over 4,000 transposable chord sheets with a built-in <a href="/tuner/" class="text-wok-accent font-bold underline decoration-wok-accent/40 hover:decoration-wok-accent transition-colors">Free Guitar Tuner</a>, interactive chord diagrams, capo calculator, and hands-free auto-scroll. Powered by <a href="https://wokdens.com" target="_blank" rel="noopener" class="text-wok-text font-bold hover:text-wok-accent hover:underline">Wokdens.com</a>.
       </p>
 
       <!-- Center Search Bar -->
@@ -286,6 +290,7 @@ const moviesData = popularMoviesList.map((m) => {
       <!-- Quick Browse Tags -->
       <div class="flex flex-wrap items-center justify-center gap-2 text-xs text-wok-muted">
         <span class="font-medium text-wok-text/60">Quick jump:</span>
+        <a href="/tuner/" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-orange-500/15 text-orange-600 dark:text-orange-400 font-bold border border-orange-500/30 hover:bg-orange-500 hover:text-white transition-colors">🎸 Free Guitar Tuner</a>
         <a href="/tag/hindi/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors">#Hindi</a>
         <a href="/tag/bollywood/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors">#Bollywood</a>
         <a href="/tag/english/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors">#English</a>
@@ -356,7 +361,36 @@ const moviesData = popularMoviesList.map((m) => {
     }
   </style>
 
-  <div class="max-w-[90rem] mx-auto px-4 md:px-6 py-12 md:py-16 space-y-16 md:space-y-20">
+  <div class="max-w-[90rem] mx-auto px-4 md:px-6 py-12 md:py-16 space-y-12 md:space-y-16">
+    <!-- Musical Companion Banner: Free Guitar & Ukulele Tuner -->
+    <div class="relative overflow-hidden rounded-3xl border border-orange-500/30 bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-cyan-500/10 p-5 sm:p-8 backdrop-blur-md shadow-lg shadow-orange-500/5">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-4 sm:gap-5 text-center sm:text-left flex-col sm:flex-row">
+          <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 text-white text-3xl sm:text-4xl flex items-center justify-center shrink-0 shadow-lg shadow-orange-500/30">
+            🎸
+          </div>
+          <div>
+            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-orange-500/15 text-orange-600 dark:text-orange-400 text-[11px] font-bold uppercase tracking-wider mb-1.5">
+              Live Microphone & Reference Tones
+            </div>
+            <h3 class="text-xl sm:text-2xl font-black text-wok-text tracking-tight">
+              Free Online Guitar & Ukulele Tuner
+            </h3>
+            <p class="text-xs sm:text-sm text-wok-muted mt-1 max-w-xl">
+              Tune your instrument right from your browser with our precision pitch detection needle and acoustic string reference tones for Standard EADGBE, Drop D, and Ukulele GCEA.
+            </p>
+          </div>
+        </div>
+        <a
+          href="/tuner/"
+          class="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-sm shadow-md hover:shadow-xl hover:shadow-orange-500/25 transition-all hover:scale-105"
+        >
+          <span>Open Guitar Tuner</span>
+          <span>→</span>
+        </a>
+      </div>
+    </div>
+
     <!-- 1. Trending Songs Section -->
     <section>
       <div class="flex items-end justify-between gap-4 mb-6 pb-3 border-b border-black/5 dark:border-white/5">
