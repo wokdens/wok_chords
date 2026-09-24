@@ -1,44 +1,137 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SearchBar from '../components/SearchBar.tsx';
+import DynamicTrending, { type TrendingSongData } from '../components/DynamicTrending.tsx';
 import { getAllSongs, type SongItem } from '../lib/songStore';
+import { getOpenChordSongs, type OpenChordSong } from '../lib/openChordEngine';
 import { slugify } from '../lib/slugify';
 
 export const prerender = true;
 
 const allSongs = getAllSongs();
 
-// 1. Trending / Popular Songs (Curated selection of most-played classics & modern hits)
-const trendingSlugs = [
-  'tac-uska-hi-banana',
-  'tum-hi-ho-arijit-singh-mithoon-aashiqui--3',
-  'tac-subah-hone-na-de',
-  'tac-tumhi-ho-bandhu-cocktail',
-  'tac-mashallah-mashallah-ek-tha-tiger',
+// 1. Dynamic Trending Songs Pool (Data-driven: Real Google Search Console hits + viral classics)
+const trendingHindiSlugs = [
+  'toota-jo-kabhi-tara',
+  'bol-na-halke-halke-rahat-fateh-ali-khan-566',
+  'ishq-mubarak-arijit-singh-ankit-tiwari-1268',
+  'dil-ko-karaar-aaya-yasser-desai-neha-kakkar-942',
   'tac-apna-bana-le',
-  'let-it-be-the-beatles-let-it-be-346',
-  'hotel-california-eagles-hotel-california-417',
-  'aadat-jal-atif-aslam-96',
-  'tac-pee-loon',
+  'tum-hi-ho-arijit-singh-mithoon-aashiqui--3',
   'tac-channa-mereya',
   'tac-maan-meri-jaan',
+  'tac-uska-hi-banana',
+  'aadat-jal-atif-aslam-96',
+  'tac-pee-loon',
+  'tac-subah-hone-na-de',
+  'tac-tumhi-ho-bandhu-cocktail',
+  'ye-nayan-dare-dare-hemant-kumar-1582',
+  'aa-raat-bhar-arijit-singh-shreya-ghoshal-he-2038',
+  'zara-si-dosti',
 ];
 
-const trendingSongs: SongItem[] = [];
-for (const slug of trendingSlugs) {
-  const found = allSongs.find((s) => s.slug === slug || s.slug.includes(slug.replace('tac-', '')));
-  if (found && !trendingSongs.includes(found)) {
-    trendingSongs.push(found);
+const trendingEnglishSlugs = [
+  'hotel-california-eagles-hotel-california-417',
+  'let-it-be-the-beatles-let-it-be-346',
+  'sweet-child-o-mine-guns-n-roses',
+  'yellow-coldplay-parachutes-399',
+  'someone-like-you-adele-21-382',
+  'perfect-ed-sheeran-divide-410',
+  'believer-imagine-dragons-evolve-2422',
+  'shallow-lady-gaga-bradley-cooper-a-star-is-born-1241',
+  'counting-stars-onerepublic-native-424',
+  'hallelujah-jeff-buckley-grace-415',
+  'wonderwall-oasis-whats-the-story-morning-glory-348',
+];
+
+function resolveSong(slug: string): SongItem | undefined {
+  return allSongs.find((s) => s.slug === slug || s.slug.includes(slug.replace('tac-', '')));
+}
+
+const allTrendingPool: TrendingSongData[] = [];
+
+for (const slug of trendingHindiSlugs) {
+  const s = resolveSong(slug);
+  if (s && !allTrendingPool.some((x) => x.slug === s.slug)) {
+    allTrendingPool.push({
+      slug: s.slug,
+      title: s.title,
+      artist: s.artist,
+      movie: s.movie,
+      key: s.key,
+      tags: s.tags || [],
+      snippet: s.snippet,
+      category: 'hindi',
+    });
   }
 }
 
-// Fallback if any slug not found: fill with top songs
-if (trendingSongs.length < 8) {
-  const fillers = allSongs.filter((s) => !trendingSongs.includes(s)).slice(0, 8 - trendingSongs.length);
-  trendingSongs.push(...fillers);
+for (const slug of trendingEnglishSlugs) {
+  const s = resolveSong(slug);
+  if (s && !allTrendingPool.some((x) => x.slug === s.slug)) {
+    allTrendingPool.push({
+      slug: s.slug,
+      title: s.title,
+      artist: s.artist,
+      movie: s.movie,
+      key: s.key,
+      tags: s.tags || [],
+      snippet: s.snippet,
+      category: 'english',
+    });
+  }
 }
 
-// 2. Curated Hindi Artists
+// Fallback to top songs if pool has fewer than 16 songs
+if (allTrendingPool.length < 16) {
+  for (const s of allSongs) {
+    if (!allTrendingPool.some((x) => x.slug === s.slug)) {
+      allTrendingPool.push({
+        slug: s.slug,
+        title: s.title,
+        artist: s.artist,
+        movie: s.movie,
+        key: s.key,
+        tags: s.tags || [],
+        snippet: s.snippet,
+        category: 'all',
+      });
+      if (allTrendingPool.length >= 24) break;
+    }
+  }
+}
+
+const initialTrending = allTrendingPool.slice(0, 8);
+
+// 2. Open Chords Beginner Songs (Zero barre chords, 100% natural open chords)
+const allOpenSongs = getOpenChordSongs();
+const openChordsFeaturedSlugs = [
+  'a-team-ed-sheeran-plus-288',
+  '18-till-i-die-bryan-adams-793',
+  'aaj-kal-paaon-zameen-par-lata-mangeshkar-r-d-burman-2008',
+  'aaj-kal-tere-mere-pyar-ke-charche-mohammed-rafi-shankar-jaikisha-1951',
+  'aa-bhi-jaa-lucky-ali-sunidhi-chauhan-sur-842',
+  'a-message-coldplay-2340',
+  'a-little-love-bryan-adams-534',
+  'aaiye-meherbaan-asha-bhosle-o-p-nayyar-1798',
+];
+
+const featuredOpenSongs: OpenChordSong[] = [];
+for (const slug of openChordsFeaturedSlugs) {
+  const found = allOpenSongs.find((s) => s.slug === slug || s.slug.includes(slug));
+  if (found && !featuredOpenSongs.includes(found)) {
+    featuredOpenSongs.push(found);
+  }
+}
+
+for (const s of allOpenSongs) {
+  if (featuredOpenSongs.length >= 8) break;
+  if (!featuredOpenSongs.includes(s)) {
+    featuredOpenSongs.push(s);
+  }
+}
+
+// 3. Curated Hindi Artists
 const topHindiArtistsList = [
   { name: 'Arijit Singh', query: 'arijit-singh' },
   { name: 'Kishore Kumar', query: 'kishore-kumar' },
@@ -291,6 +384,7 @@ const moviesData = popularMoviesList.map((m) => {
       <div class="flex flex-wrap items-center justify-center gap-2 text-xs text-wok-muted">
         <span class="font-medium text-wok-text/60">Quick jump:</span>
         <a href="/tuner/" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-orange-500/15 text-orange-600 dark:text-orange-400 font-bold border border-orange-500/30 hover:bg-orange-500 hover:text-white transition-colors">🎸 Free Guitar Tuner</a>
+        <a href="/open-chords/" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30 hover:bg-emerald-500 hover:text-white transition-colors">✨ Open Chords (Beginners)</a>
         <a href="/tag/english/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors font-medium">#English</a>
         <a href="/tag/hindi/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors font-medium">#Hindi</a>
         <a href="/tag/spanish/" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-wok-accent hover:text-white transition-colors font-medium">#Spanish</a>
@@ -393,7 +487,7 @@ const moviesData = popularMoviesList.map((m) => {
       </div>
     </div>
 
-    <!-- 1. Trending Songs Section -->
+    <!-- 1. Dynamic Trending Songs Section -->
     <section>
       <div class="flex items-end justify-between gap-4 mb-6 pb-3 border-b border-black/5 dark:border-white/5">
         <div>
@@ -404,7 +498,7 @@ const moviesData = popularMoviesList.map((m) => {
             </h2>
           </div>
           <p class="text-xs sm:text-sm text-wok-muted mt-0.5">
-            Most played chords by musicians this week
+            Most played chords by musicians this week (auto-rotated & categorized)
           </p>
         </div>
         <a
@@ -416,38 +510,94 @@ const moviesData = popularMoviesList.map((m) => {
         </a>
       </div>
 
+      <!-- Interactive Dynamic Trending with Category Tabs and Shuffle -->
+      <DynamicTrending client:load initialSongs={initialTrending} allPool={allTrendingPool} />
+
+      <!-- SEO Server Fallback for Crawlers without JavaScript -->
+      <noscript>
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mt-4">
+          {initialTrending.map(({ slug, title, artist, movie, key, tags, snippet }) => (
+            <a
+              href={`/song/${slug}/`}
+              class="block p-4 rounded-2xl border border-black/5 dark:border-white/5 bg-white dark:bg-slate-900"
+            >
+              <h3 class="font-bold text-wok-text">{title}</h3>
+              <p class="text-xs text-wok-muted">{artist}{movie ? ` · ${movie}` : ''}</p>
+              {key && <span class="text-xs text-wok-chord">Key {key}</span>}
+            </a>
+          ))}
+        </div>
+      </noscript>
+    </section>
+
+    <!-- 2. Beginner Friendly: Songs with Open Chords Only -->
+    <section>
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pb-3 border-b border-black/5 dark:border-white/5">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🎸</span>
+            <h2 class="text-xl sm:text-2xl font-black tracking-tight text-wok-text">
+              Beginner Friendly: Songs with Open Chords Only
+            </h2>
+          </div>
+          <p class="text-xs sm:text-sm text-wok-muted mt-0.5">
+            Zero barre chords, zero sharps (#) or flats (b). Play right away with standard open shapes (C, G, D, Em, Am, E, A, Dm).
+          </p>
+        </div>
+        <a
+          href="/open-chords/"
+          class="shrink-0 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
+        >
+          <span>Explore All {allOpenSongs.length} Open Chord Songs</span>
+          <span>→</span>
+        </a>
+      </div>
+
       <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {trendingSongs.map(({ slug, title, artist, movie, key, tags, snippet }) => (
+        {featuredOpenSongs.map(({ slug, title, artist, movie, chords, chordCount, snippet }) => (
           <a
             href={`/song/${slug}/`}
-            class="group flex flex-col justify-between rounded-2xl border border-black/5 dark:border-white/5 bg-white/75 dark:bg-slate-900/60 backdrop-blur-md hover:bg-white/95 dark:hover:bg-slate-900/90 transition-all p-4 hover:border-orange-500/40 hover:-translate-y-1 duration-200 shadow-sm hover:shadow-xl hover:shadow-orange-500/10"
+            class="group flex flex-col justify-between rounded-2xl border border-black/5 dark:border-white/5 bg-white/75 dark:bg-slate-900/60 backdrop-blur-md hover:bg-white/95 dark:hover:bg-slate-900/90 transition-all p-4 hover:border-emerald-500/40 hover:-translate-y-1 duration-200 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10"
           >
             <div>
               <div class="flex items-start justify-between gap-2 mb-1.5">
-                <h3 class="text-base font-bold text-wok-text group-hover:text-wok-accent transition-colors line-clamp-1">
+                <h3 class="text-base font-bold text-wok-text group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-1">
                   {title}
                 </h3>
-                {key && (
-                  <span class="shrink-0 px-2 py-0.5 rounded-md bg-wok-chord/10 text-wok-chord border border-wok-chord/20 text-[11px] font-mono font-bold">
-                    Key {key}
-                  </span>
-                )}
+                <span class="shrink-0 px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
+                  {chordCount} Open Chords
+                </span>
               </div>
               <p class="text-xs text-wok-muted line-clamp-1 mb-2 font-medium">
                 {artist}{movie ? ` · ${movie}` : ''}
               </p>
+
+              <!-- Chord badges -->
+              <div class="flex flex-wrap gap-1 mb-3">
+                {chords.slice(0, 5).map((chord) => (
+                  <span class="px-1.5 py-0.5 rounded bg-wok-chord/10 text-wok-chord text-[11px] font-mono font-bold">
+                    {chord}
+                  </span>
+                ))}
+                {chords.length > 5 && (
+                  <span class="text-[10px] text-wok-muted self-center">
+                    +{chords.length - 5}
+                  </span>
+                )}
+              </div>
+
               {snippet && (
-                <p class="text-xs text-wok-muted/80 italic leading-snug line-clamp-2 mb-3 pl-2 border-l-2 border-orange-500/30">
+                <p class="text-xs text-wok-muted/80 italic leading-snug line-clamp-2 mb-3 pl-2 border-l-2 border-emerald-500/30">
                   “{snippet}”
                 </p>
               )}
             </div>
 
             <div class="flex items-center justify-between text-[11px] pt-2 border-t border-black/5 dark:border-white/5">
-              <span class="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/5 text-wok-muted capitalize font-medium">
-                #{tags[0] || 'chords'}
+              <span class="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                <span>✓</span> No Barre Chords
               </span>
-              <span class="text-wok-muted group-hover:text-wok-accent font-bold flex items-center gap-1">
+              <span class="text-wok-muted group-hover:text-emerald-600 dark:group-hover:text-emerald-400 font-bold flex items-center gap-1">
                 Play Chords →
               </span>
             </div>

@@ -16,6 +16,7 @@ export async function GET() {
     { url: `${baseUrl}/artists/`, priority: '0.9', changefreq: 'weekly' },
     { url: `${baseUrl}/movies/`, priority: '0.9', changefreq: 'weekly' },
     { url: `${baseUrl}/tuner/`, priority: '0.9', changefreq: 'weekly' },
+    { url: `${baseUrl}/open-chords/`, priority: '0.9', changefreq: 'weekly' },
     { url: `${baseUrl}/setlist/`, priority: '0.7', changefreq: 'weekly' },
     { url: `${baseUrl}/about/`, priority: '0.5', changefreq: 'monthly' },
     { url: `${baseUrl}/privacy-policy/`, priority: '0.3', changefreq: 'monthly' },

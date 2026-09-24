@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import OpenChordsExplorer from '../components/OpenChordsExplorer';
+import { getOpenChordSongs } from '../lib/openChordEngine';
+
+export const prerender = true;
+
+const openSongs = getOpenChordSongs();
+
+// Sort by popularity / title
+const sortedSongs = [...openSongs].sort((a, b) => {
+  // prioritize shorter chord counts (2 and 3 chords first)
+  if (a.chordCount !== b.chordCount) {
+    return a.chordCount - b.chordCount;
+  }
+  return a.title.localeCompare(b.title);
+});
+
+const pageTitle = "Easy Guitar Songs with Open Chords Only (No Barre Chords) | WokChords";
+const pageDescription = `Play over ${openSongs.length} guitar songs using basic open chords (C, G, D, Em, Am, E, A, Dm). 100% free, zero barre chords, no sharps (#), no flats (b). Perfect for beginner guitarists.`;
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://wokchords.wokdens.com/',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Open Chords Songs',
+      item: 'https://wokchords.wokdens.com/open-chords/',
+    },
+  ],
+};
+
+const collectionJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Easy Guitar Songs with Open Chords Only',
+  description: pageDescription,
+  url: 'https://wokchords.wokdens.com/open-chords/',
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: openSongs.length,
+    itemListElement: sortedSongs.slice(0, 30).map((s, idx) => ({
+      '@type': 'ListItem',
+      position: idx + 1,
+      name: `${s.title} by ${s.artist}`,
+      url: `https://wokchords.wokdens.com/song/${s.slug}/`,
+    })),
+  },
+};
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  canonical="https://wokchords.wokdens.com/open-chords/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(collectionJsonLd)} />
+
+  <div class="max-w-[90rem] mx-auto px-4 md:px-6 py-8 md:py-12 space-y-8">
+    <!-- Breadcrumb & Header -->
+    <header class="pb-6 border-b border-black/5 dark:border-white/5">
+      <nav class="flex items-center gap-2 text-xs text-wok-muted mb-3" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-wok-accent transition-colors">Home</a>
+        <span>/</span>
+        <span class="text-wok-text font-semibold">Open Chords Songs</span>
+      </nav>
+
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div class="max-w-3xl">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider mb-3">
+            <span>✓</span> Beginner Friendly · Zero Barre Chords · No Sharps or Flats
+          </div>
+          <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-wok-text leading-tight mb-3">
+            Easy Guitar Songs with <span class="bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-600 bg-clip-text text-transparent">Open Chords Only</span>
+          </h1>
+          <p class="text-sm sm:text-base text-wok-muted leading-relaxed">
+            Recently picked up guitar and struggling with barre chords like Bm or F? You are not alone! We scanned our entire music library and collected <strong>{openSongs.length} songs</strong> that only require standard open position chords: <strong>C, D, E, G, A, Em, Am, and Dm</strong>. No painful hand stretches, no barre frets, just pure music.
+          </p>
+        </div>
+
+        <!-- Quick Visual Guide Card -->
+        <div class="shrink-0 p-5 rounded-3xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-transparent border border-emerald-500/20 max-w-sm">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 mb-2 flex items-center gap-1.5">
+            <span>🎸</span> The Essential 8 Open Chords
+          </h3>
+          <div class="flex flex-wrap gap-1.5 font-mono text-xs font-bold">
+            {['C', 'G', 'D', 'Em', 'Am', 'E', 'A', 'Dm'].map((c) => (
+              <span class="px-2.5 py-1 rounded-lg bg-white/80 dark:bg-slate-800/80 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                {c}
+              </span>
+            ))}
+          </div>
+          <p class="text-[11px] text-wok-muted mt-2.5">
+            100% natural root notes. Master these 8 shapes and you can play over 1,200 songs today!
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Interactive Filter & Explorer Component -->
+    <section>
+      <OpenChordsExplorer client:load songs={sortedSongs} />
+    </section>
+
+    <!-- SEO Crawlable Fallback & Indexation Booster for Search Engines -->
+    <noscript>
+      <div class="mt-8 p-6 rounded-2xl bg-black/5 dark:bg-white/5">
+        <h2 class="text-lg font-bold text-wok-text mb-4">Complete Directory of Open Chord Songs</h2>
+        <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
+          {sortedSongs.slice(0, 100).map((s) => (
+            <li>
+              <a href={`/song/${s.slug}/`} class="text-wok-accent hover:underline">
+                {s.title} — {s.artist} ({s.chords.join(', ')})
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </noscript>
+  </div>
+</BaseLayout>
